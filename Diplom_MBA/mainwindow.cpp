@@ -10,76 +10,61 @@ MainWindow::MainWindow(QWidget *parent) :
     const QRect r = QApplication::desktop()->availableGeometry();
     this->resize(r.width()*0.80, r.height()*0.80);
 
+
     loadStyle();
 
-    db=QSqlDatabase::addDatabase("QMYSQL");
-    //db.setHostName("elaks");
-    db.setDatabaseName("journal");
-    db.setUserName("root");
-    db.setPassword("233685614");
+    db2=new Database;
+    db2->Connect("journal");
 
-    if(!db.open()){
-        qDebug()<<"NO";
-    }
+    QWidget* wgt=new QWidget(this);
+    treeview=new QTreeWidget(wgt);
+    treeview->setStyleSheet("margin-left:-10px;margin-right:-10px;font-size:15px;");
 
-    treeview=new QTreeWidget(this);
+    tab=new QTabWidget(this);
 
-
-   QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
-    itemBD->setText(0,db.databaseName());
-
-    QTreeWidgetItem* itemTable=0;
-
-    QStringList list=db.tables();
-
-    foreach(QString st,list){
-        itemTable=new QTreeWidgetItem(itemBD);
-        itemTable->setText(0,st);
-        qDebug()<<st;
-    }
-    QObject::connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
+    createTreeTables();
 
 
-    QDockWidget* dockBD=new QDockWidget(this);
-    dockBD->setWidget(treeview);
+    QPushButton* addData=new QPushButton("AddData",wgt);
+    addData->setStyleSheet("margin-left:50%;margin-right:50%;");
+
+    QVBoxLayout* VBox=new QVBoxLayout;
+    VBox->addWidget(addData);
+    VBox->addWidget(treeview);
+
+    wgt->setLayout(VBox);
 
 
+    QDockWidget* dockBD=new QDockWidget("Repository",this);
+    dockBD->setWidget(wgt);
+    dockBD->setStyleSheet("background-color:lightgray;");
+   // dockBD->setLayout(VBox);
     addDockWidget(Qt::LeftDockWidgetArea,dockBD);
 
 
-    QSqlTableModel *model=new QSqlTableModel(this,db);
+
+    //start test block
+    QSqlTableModel *model=new QSqlTableModel(this);
     model->setTable("stud");
     model->select();
     //зпрещает менять значения в ячейках
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
-
-    QSqlTableModel *model2=new QSqlTableModel(this,db);
-    model2->setTable("marks");
-    model2->select();
-    //зпрещает менять значения в ячейках
-    model2->setEditStrategy(QSqlTableModel::OnFieldChange);
-
     tableview=new QTableView;
     tableview->setModel(model);
-
-    //tableview->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
-
     int tableHeight =  tableview->horizontalHeader()->height() +
                           tableview->verticalHeader()->length() + 2;
-
-    tableview->setFixedHeight(tableHeight);
-
+    //tableview->setMinimumHeight(tableHeight);
     int tableWidth =  tableview->verticalHeader()->width() +
                           tableview->horizontalHeader()->length() + 2;
-
-
-    tableview->setFixedWidth(tableWidth);
-
-
-    tab=new QTabWidget(this);
+   // tableview->setFixedWidth(tableWidth);
     tab->addTab(tableview,"Stud");
+    //end test block
+
+
+
+
+
     tab->setTabsClosable(true);
-    //tab->setTabShape(QTabWidget::Triangular);
 
     //create test dock
     //QDockWidget* dock=new QDockWidget(this);
@@ -87,7 +72,9 @@ MainWindow::MainWindow(QWidget *parent) :
      //addDockWidget(Qt::RightDockWidgetArea ,dock);
 
      setCentralWidget(tab);
+
 }
+
 
 
 void MainWindow::loadStyle(){
@@ -103,12 +90,43 @@ void MainWindow::loadStyle(){
 }
 
 
+
+void MainWindow::createTreeTables(){
+
+    QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
+
+     itemBD->setText(0,db2->getNameBase());
+
+     QPixmap pixmap("../Picture/BD.png");
+
+     itemBD->setIcon(0,pixmap);
+     treeview->setIconSize(QSize(20,20));
+
+     QTreeWidgetItem* itemTable=0;
+
+     QStringList list=db2->tables();
+
+     foreach(QString st,list){
+         itemTable=new QTreeWidgetItem(itemBD);
+         itemTable->setText(0,st);
+
+         qDebug()<<st;
+     }
+     QObject::connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
+
+     treeview->header()->hide();
+
+}
+
+
+
+
 void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
     QString TableName=item->text(i);
     qDebug()<<item->parent()->data(0,0).toString();
 
-    QSqlTableModel *model=new QSqlTableModel(this,db);
+    QSqlTableModel *model=new QSqlTableModel(this);
     model->setTable(TableName);
     model->select();
     //зпрещает менять значения в ячейках
@@ -116,6 +134,16 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
     QTableView* tableview=new QTableView;
      tableview->setModel(model);
+
+    /* int tableHeight =  tableview->horizontalHeader()->height() +
+                           tableview->verticalHeader()->length() + 2;
+
+     tableview->setFixedHeight(tableHeight);
+
+     int tableWidth =  tableview->verticalHeader()->width() +
+                           tableview->horizontalHeader()->length() + 2;
+
+     tableview->setFixedWidth(tableWidth);*/
 
 
     tab->addTab(tableview,TableName);

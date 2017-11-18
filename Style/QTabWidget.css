@@ -1,3 +1,8 @@
+QMainWindow{
+	background-color: white;
+}
+
+
 QTabBar::tab {
 width: 120px;
 margin-left: 0.5;
@@ -12,8 +17,8 @@ border: 0px;
 border-width: 1px;
 border-style: solid;
 border-color: grey;
-padding-left: 30px;
 padding-top: 30px;
+padding-left: 30px;
 background-color: white;
 }
 QTabBar::tab:selected {

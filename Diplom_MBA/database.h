@@ -3,12 +3,15 @@
 
 #include <QtSql>
 
-class database
+class Database:public QObject
 {
 public:
-    database();
-    QSqlDatabase db;
+    Database();
     void Connect(QString);
+    QString getNameBase();
+    QStringList tables();
+private:
+    QSqlDatabase db;
 };
 
 #endif // DATABASE_H

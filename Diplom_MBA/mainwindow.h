@@ -5,6 +5,8 @@
 #include <QtWidgets>
 #include <QtSql>
 
+#include "database.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -25,9 +27,10 @@ private:
     QTableView *tableview;
     QTreeWidget* treeview;
     QTabWidget* tab;
-    QSqlDatabase db;
+    Database* db2;
 public slots:
     void openTable(QTreeWidgetItem*,int);
+    void createTreeTables();
 };
 
 #endif // MAINWINDOW_H
