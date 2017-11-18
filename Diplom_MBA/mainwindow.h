@@ -18,6 +18,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void loadStyle();
 
 private:
     Ui::MainWindow *ui;
@@ -26,7 +27,7 @@ private:
     QTabWidget* tab;
     QSqlDatabase db;
 public slots:
-    void OpenTable(QTreeWidgetItem*,int);
+    void openTable(QTreeWidgetItem*,int);
 };
 
 #endif // MAINWINDOW_H

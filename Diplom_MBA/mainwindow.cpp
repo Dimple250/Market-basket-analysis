@@ -10,16 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     const QRect r = QApplication::desktop()->availableGeometry();
     this->resize(r.width()*0.80, r.height()*0.80);
 
-    QString CSS;
-    QFile FileStyle("../Style/QTabWidget.css");
-    if(FileStyle.open(QIODevice::ReadOnly)){
-        CSS=FileStyle.readAll();
-        FileStyle.close();
-    }
-
-    qApp->setStyleSheet(CSS);
-
-
+    loadStyle();
 
     db=QSqlDatabase::addDatabase("QMYSQL");
     //db.setHostName("elaks");
@@ -46,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
         itemTable->setText(0,st);
         qDebug()<<st;
     }
-    QObject::connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(OpenTable(QTreeWidgetItem*,int)));
+    QObject::connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
 
 
     QDockWidget* dockBD=new QDockWidget(this);
@@ -90,7 +81,18 @@ MainWindow::MainWindow(QWidget *parent) :
      setCentralWidget(tab);
 }
 
-void MainWindow::OpenTable(QTreeWidgetItem * item,int i){
+void MainWindow::loadStyle(){
+    QString CSS;
+    QFile FileStyle("../Style/QTabWidget.css");
+    if(FileStyle.open(QIODevice::ReadOnly)){
+        CSS=FileStyle.readAll();
+        FileStyle.close();
+    }
+
+    qApp->setStyleSheet(CSS);
+}
+
+void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
     QString TableName=item->text(i);
     qDebug()<<item->parent()->data(0,0).toString();

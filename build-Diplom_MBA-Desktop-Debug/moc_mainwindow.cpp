@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../Dimplom_MBA/mainwindow.h"
+#include "../Diplom_MBA/mainwindow.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
@@ -30,12 +30,12 @@ struct qt_meta_stringdata_MainWindow_t {
 static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
     {
 QT_MOC_LITERAL(0, 0, 10), // "MainWindow"
-QT_MOC_LITERAL(1, 11, 9), // "OpenTable"
+QT_MOC_LITERAL(1, 11, 9), // "openTable"
 QT_MOC_LITERAL(2, 21, 0), // ""
 QT_MOC_LITERAL(3, 22, 16) // "QTreeWidgetItem*"
 
     },
-    "MainWindow\0OpenTable\0\0QTreeWidgetItem*"
+    "MainWindow\0openTable\0\0QTreeWidgetItem*"
 };
 #undef QT_MOC_LITERAL
 
@@ -67,7 +67,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         MainWindow *_t = static_cast<MainWindow *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->OpenTable((*reinterpret_cast< QTreeWidgetItem*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 0: _t->openTable((*reinterpret_cast< QTreeWidgetItem*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         default: ;
         }
     }
