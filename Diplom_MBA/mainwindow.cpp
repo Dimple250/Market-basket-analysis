@@ -59,17 +59,25 @@ MainWindow::MainWindow(QWidget *parent) :
     //зпрещает менять значения в ячейках
     model2->setEditStrategy(QSqlTableModel::OnFieldChange);
 
-
     tableview=new QTableView;
     tableview->setModel(model);
 
-    QTableView* t=new QTableView;
-    t->setModel(model2);
+    //tableview->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+
+    int tableHeight =  tableview->horizontalHeader()->height() +
+                          tableview->verticalHeader()->length() + 2;
+
+    tableview->setFixedHeight(tableHeight);
+
+    int tableWidth =  tableview->verticalHeader()->width() +
+                          tableview->horizontalHeader()->length() + 2;
+
+
+    tableview->setFixedWidth(tableWidth);
 
 
     tab=new QTabWidget(this);
     tab->addTab(tableview,"Stud");
-    tab->addTab(t,"Marks");
     tab->setTabsClosable(true);
     //tab->setTabShape(QTabWidget::Triangular);
 
@@ -81,7 +89,9 @@ MainWindow::MainWindow(QWidget *parent) :
      setCentralWidget(tab);
 }
 
+
 void MainWindow::loadStyle(){
+
     QString CSS;
     QFile FileStyle("../Style/QTabWidget.css");
     if(FileStyle.open(QIODevice::ReadOnly)){
@@ -91,6 +101,7 @@ void MainWindow::loadStyle(){
 
     qApp->setStyleSheet(CSS);
 }
+
 
 void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
@@ -105,6 +116,7 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
     QTableView* tableview=new QTableView;
      tableview->setModel(model);
+
 
     tab->addTab(tableview,TableName);
 }
