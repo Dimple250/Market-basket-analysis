@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QWidget* wgt=new QWidget(this);
     treeview=new QTreeWidget(wgt);
-    treeview->setStyleSheet("margin-left:-10px;margin-right:-10px;font-size:15px;");
+    treeview->setStyleSheet("font-size:15px;border:0px;border-top:1 solid gray;padding-top:7px;");
 
     tab=new QTabWidget(this);
 
@@ -26,7 +26,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     QPushButton* addData=new QPushButton("AddData",wgt);
-    addData->setStyleSheet("margin-left:50%;margin-right:50%;");
+    addData->setStyleSheet("margin-left:50%;margin-right:50%;font-size:15px;border:1 solid gray; border-radius:2%;");
+
+    addData->setIcon(QIcon("../Picture/plus.png"));
+    addData->setIconSize(QSize(20,20));
+    addData->setMinimumHeight(30);
+    //treeview->setIconSize(QSize(20,20)););
+
 
     QVBoxLayout* VBox=new QVBoxLayout;
     VBox->addWidget(addData);
@@ -37,10 +43,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QDockWidget* dockBD=new QDockWidget("Repository",this);
     dockBD->setWidget(wgt);
-    dockBD->setStyleSheet("background-color:lightgray;");
+    dockBD->setStyleSheet("background-color:lightgray; ");
    // dockBD->setLayout(VBox);
     addDockWidget(Qt::LeftDockWidgetArea,dockBD);
 
+    setStyleSheet("QDockWidget::titl{background-color: green;}");
 
 
     //start test block
@@ -100,7 +107,7 @@ void MainWindow::createTreeTables(){
      QPixmap pixmap("../Picture/BD.png");
 
      itemBD->setIcon(0,pixmap);
-     treeview->setIconSize(QSize(20,20));
+     treeview->setIconSize(QSize(23,23));
 
      QTreeWidgetItem* itemTable=0;
 
@@ -109,9 +116,10 @@ void MainWindow::createTreeTables(){
      foreach(QString st,list){
          itemTable=new QTreeWidgetItem(itemBD);
          itemTable->setText(0,st);
-
+         itemTable->setIcon(0,QIcon("../Picture/table.png"));
          qDebug()<<st;
      }
+
      QObject::connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
 
      treeview->header()->hide();

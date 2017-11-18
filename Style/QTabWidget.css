@@ -1,7 +1,6 @@
-QMainWindow{
+/*QMainWindow{
 	background-color: white;
-}
-
+}*/
 
 QTabBar::tab {
 width: 120px;
