@@ -2,6 +2,27 @@
 	background-color: white;
 }*/
 
+
+
+
+
+
+QPushButton{ background-color: blue; }
+QPushButton:disabled{ background-color: yellow; }
+QPushButton:pressed{ background-color: orange; }
+QPushButton:focus:pressed{ background-color: black; }
+QPushButton:focus{ background-color: green; }
+QPushButton:hover{ background-color: red; }
+QPushButton:checked{ background-color: pink; }
+
+
+
+
+
+
+
+
+
 QTabBar::tab {
 width: 120px;
 margin-left: 0.5;
@@ -16,8 +37,8 @@ border: 0px;
 border-width: 1px;
 border-style: solid;
 border-color: grey;
-padding-top: 30px;
 padding-left: 30px;
+padding-top: 30px;
 background-color: white;
 }
 QTabBar::tab:selected {
@@ -55,3 +76,55 @@ QTabBar::tab:left, QTabBar::tab:right {
 }
 
 
+
+
+
+
+
+QTableView::item{
+
+}
+
+QTableView{
+border: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+QScrollBar:vertical {
+border: 2px solid green;
+background: green;
+
+}
+QScrollBar::handle:vertical {
+background: green;
+min-width: 20px;
+}
+QScrollBar::add-line:vertical {
+background: blue;
+width: 16px;
+subcontrol-position: right;
+subcontrol-origin: margin;
+border: 2px solid black;
+}
+QScrollBar::sub-line:vertical {
+background: blue;
+width: 16px;
+subcontrol-position: top right;
+subcontrol-origin: margin;
+border: 2px solid black;
+position: absolute;
+right: 20px;
+}
+QScrollBar:left-arrow:vertical, QScrollBar::right-arrow:vertical {
+width: 3px;
+height: 3px;
+background: pink;
+}
