@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Size MainWindow
     const QRect r = QApplication::desktop()->availableGeometry();
     this->resize(r.width()*0.80, r.height()*0.80);
+    //this->setFixedSize(r.width()*0.80, r.height()*0.80);
 
 
     loadStyle();
@@ -43,11 +44,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QDockWidget* dockBD=new QDockWidget("Repository",this);
     dockBD->setWidget(wgt);
-    dockBD->setStyleSheet("background-color:lightgray; ");
+   // dockBD->setStyleSheet("background-color:lightgray; ");
    // dockBD->setLayout(VBox);
     addDockWidget(Qt::LeftDockWidgetArea,dockBD);
-
-    setStyleSheet("QDockWidget::titl{background-color: green;}");
 
 
     //start test block
@@ -58,15 +57,16 @@ MainWindow::MainWindow(QWidget *parent) :
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     tableview=new QTableView;
     tableview->setModel(model);
-    int tableHeight =  tableview->horizontalHeader()->height() +
-                          tableview->verticalHeader()->length() + 2;
-    //tableview->setMinimumHeight(tableHeight);
-    int tableWidth =  tableview->verticalHeader()->width() +
-                          tableview->horizontalHeader()->length() + 2;
-   // tableview->setFixedWidth(tableWidth);
-    tab->addTab(tableview,"Stud");
-    //end test block
+    //tableview->verticalHeader()->hide();
 
+    //tableview->horizontalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
+    //tableview->verticalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
+
+    tableview->setStyleSheet("background-color: white;");
+
+    tab->addTab(tableview,"Stud");
+    tableview->resize(tab->size());
+    //end test block
 
 
 
@@ -143,18 +143,10 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
     QTableView* tableview=new QTableView;
      tableview->setModel(model);
 
-    /* int tableHeight =  tableview->horizontalHeader()->height() +
-                           tableview->verticalHeader()->length() + 2;
-
-     tableview->setFixedHeight(tableHeight);
-
-     int tableWidth =  tableview->verticalHeader()->width() +
-                           tableview->horizontalHeader()->length() + 2;
-
-     tableview->setFixedWidth(tableWidth);*/
-
-
     tab->addTab(tableview,TableName);
+    tableview->resize(tab->size());
+    tableview->setStyleSheet("background-color: white;border:0px;");
+
 }
 
 MainWindow::~MainWindow()
