@@ -50,10 +50,12 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../Diplom_MBA/main.cpp \
 		../Diplom_MBA/mainwindow.cpp \
-		../Diplom_MBA/database.cpp moc_mainwindow.cpp
+		../Diplom_MBA/database.cpp \
+		../Diplom_MBA/style.cpp moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		database.o \
+		style.o \
 		moc_mainwindow.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -114,9 +116,11 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		../Diplom_MBA/Diplom_MBA.pro ../Diplom_MBA/mainwindow.h \
-		../Diplom_MBA/database.h ../Diplom_MBA/main.cpp \
+		../Diplom_MBA/database.h \
+		../Diplom_MBA/style.h ../Diplom_MBA/main.cpp \
 		../Diplom_MBA/mainwindow.cpp \
-		../Diplom_MBA/database.cpp
+		../Diplom_MBA/database.cpp \
+		../Diplom_MBA/style.cpp
 QMAKE_TARGET  = Dimplom_MBA
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = Dimplom_MBA
@@ -292,8 +296,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../Diplom_MBA/mainwindow.h ../Diplom_MBA/database.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../Diplom_MBA/main.cpp ../Diplom_MBA/mainwindow.cpp ../Diplom_MBA/database.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Diplom_MBA/mainwindow.h ../Diplom_MBA/database.h ../Diplom_MBA/style.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../Diplom_MBA/main.cpp ../Diplom_MBA/mainwindow.cpp ../Diplom_MBA/database.cpp ../Diplom_MBA/style.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../Diplom_MBA/mainwindow.ui $(DISTDIR)/
 
 
@@ -353,6 +357,9 @@ mainwindow.o: ../Diplom_MBA/mainwindow.cpp ../Diplom_MBA/mainwindow.h \
 
 database.o: ../Diplom_MBA/database.cpp ../Diplom_MBA/database.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o database.o ../Diplom_MBA/database.cpp
+
+style.o: ../Diplom_MBA/style.cpp ../Diplom_MBA/style.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o style.o ../Diplom_MBA/style.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
