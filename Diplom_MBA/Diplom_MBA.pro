@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui
+QT       += sql
+QT       += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,3 +22,4 @@ HEADERS  += mainwindow.h \
     database.h
 
 FORMS    += mainwindow.ui
+

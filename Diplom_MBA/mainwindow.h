@@ -28,6 +28,7 @@ private:
     QTreeWidget* treeview;
     QTabWidget* tab;
     Database* db2;
+    QSqlDatabase db;
 public slots:
     void openTable(QTreeWidgetItem*,int);
     void createTreeTables();

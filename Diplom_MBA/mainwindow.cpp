@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     db2=new Database;
     db2->Connect("journal");
 
+    qDebug() << QSqlDatabase::drivers();
+
     QWidget* wgt=new QWidget(this);
     treeview=new QTreeWidget(wgt);
     treeview->setStyleSheet("font-size:15px;border:0px;border-top:1 solid gray;padding-top:7px;");
@@ -102,19 +104,22 @@ void MainWindow::createTreeTables(){
 
     QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
 
-     itemBD->setText(0,db2->getNameBase());
+     itemBD->setText(0,"BD");
 
      QPixmap pixmap("../Picture/BD.png");
 
      itemBD->setIcon(0,pixmap);
      treeview->setIconSize(QSize(23,23));
 
+     QTreeWidgetItem* itemBDname=new QTreeWidgetItem(itemBD);
+     itemBDname->setText(0,db2->getNameBase());
+
      QTreeWidgetItem* itemTable=0;
 
      QStringList list=db2->tables();
 
      foreach(QString st,list){
-         itemTable=new QTreeWidgetItem(itemBD);
+         itemTable=new QTreeWidgetItem(itemBDname);
          itemTable->setText(0,st);
          itemTable->setIcon(0,QIcon("../Picture/table.png"));
          qDebug()<<st;
