@@ -11,25 +11,29 @@ MainWindow::MainWindow(QWidget *parent) :
     this->resize(r.width()*0.80, r.height()*0.80);
     //this->setFixedSize(r.width()*0.80, r.height()*0.80);
 
-
-    loadStyle();
-
     db2=new Database;
+    style=new Style;
+    tab=new QTabWidget(this);
+    QWidget* WidgetRepository=new QWidget(this);
+    treeview=new QTreeWidget(WidgetRepository);
+
+
+    //loadStyle();
+
+    this->setStyleSheet(style->getWindowStyleSheet());
+    treeview->setStyleSheet(style->getTreeviewStyleSheet());
+    tab->setStyleSheet(style->getTabWidgetStyleSheet());
+
     db2->Connect("journal");
 
-    qDebug() << QSqlDatabase::drivers();
+    //qDebug() << QSqlDatabase::drivers();
 
-    QWidget* wgt=new QWidget(this);
-    treeview=new QTreeWidget(wgt);
-    treeview->setStyleSheet("font-size:15px;border:0px;border-top:1 solid gray;padding-top:7px;");
-
-    tab=new QTabWidget(this);
 
     createTreeTables();
 
 
-    QPushButton* addData=new QPushButton("AddData",wgt);
-    addData->setStyleSheet("margin-left:50%;margin-right:50%;font-size:15px;border:1 solid gray; border-radius:2%;");
+    QPushButton* addData=new QPushButton("AddData",WidgetRepository);
+    addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
     addData->setIcon(QIcon("../Picture/plus.png"));
     addData->setIconSize(QSize(20,20));
@@ -41,12 +45,12 @@ MainWindow::MainWindow(QWidget *parent) :
     VBox->addWidget(addData);
     VBox->addWidget(treeview);
 
-    wgt->setLayout(VBox);
+    WidgetRepository->setLayout(VBox);
 
 
-    QDockWidget* dockBD=new QDockWidget("Repository",this);
-    dockBD->setWidget(wgt);
-   // dockBD->setStyleSheet("background-color:lightgray; ");
+    QDockWidget* dockBD=new QDockWidget("Repository");
+    dockBD->setWidget(WidgetRepository);
+    dockBD->setStyleSheet("background-color:pink; ");
    // dockBD->setLayout(VBox);
     addDockWidget(Qt::LeftDockWidgetArea,dockBD);
 
@@ -64,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //tableview->horizontalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
     //tableview->verticalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
 
-    tableview->setStyleSheet("background-color: white;");
+    tableview->setStyleSheet("background-color:white;");
 
     tab->addTab(tableview,"Stud");
     tableview->resize(tab->size());
@@ -122,7 +126,7 @@ void MainWindow::createTreeTables(){
          itemTable=new QTreeWidgetItem(itemBDname);
          itemTable->setText(0,st);
          itemTable->setIcon(0,QIcon("../Picture/table.png"));
-         qDebug()<<st;
+        // qDebug()<<st;
      }
 
      QObject::connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
@@ -137,7 +141,7 @@ void MainWindow::createTreeTables(){
 void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
     QString TableName=item->text(i);
-    qDebug()<<item->parent()->data(0,0).toString();
+    //qDebug()<<item->parent()->data(0,0).toString();
 
     QSqlTableModel *model=new QSqlTableModel(this);
     model->setTable(TableName);
@@ -148,9 +152,9 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
     QTableView* tableview=new QTableView;
      tableview->setModel(model);
 
+    tableview->setStyleSheet(style->getTableViewStyleSheet());
     tab->addTab(tableview,TableName);
     tableview->resize(tab->size());
-    tableview->setStyleSheet("background-color: white;border:0px;");
 
 }
 

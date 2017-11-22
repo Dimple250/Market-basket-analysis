@@ -6,6 +6,7 @@
 #include <QtSql>
 
 #include "database.h"
+#include "style.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,7 +29,7 @@ private:
     QTreeWidget* treeview;
     QTabWidget* tab;
     Database* db2;
-    QSqlDatabase db;
+    Style* style;
 public slots:
     void openTable(QTreeWidgetItem*,int);
     void createTreeTables();
