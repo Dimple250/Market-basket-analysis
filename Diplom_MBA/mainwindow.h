@@ -28,6 +28,7 @@ private:
     QTableView *tableview;
     QTreeWidget* treeview;
     QTabWidget* tab;
+    QPushButton* addData;
     Database* db2;
     Style* style;
 public slots:

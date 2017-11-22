@@ -16,24 +16,22 @@ MainWindow::MainWindow(QWidget *parent) :
     tab=new QTabWidget(this);
     QWidget* WidgetRepository=new QWidget(this);
     treeview=new QTreeWidget(WidgetRepository);
+    addData=new QPushButton("AddData",WidgetRepository);
 
 
     //loadStyle();
+    createTreeTables();
 
     this->setStyleSheet(style->getWindowStyleSheet());
     treeview->setStyleSheet(style->getTreeviewStyleSheet());
     tab->setStyleSheet(style->getTabWidgetStyleSheet());
+    addData->setStyleSheet(style->getAddDataButtonStyleSheet());
+
 
     db2->Connect("journal");
 
     //qDebug() << QSqlDatabase::drivers();
 
-
-    createTreeTables();
-
-
-    QPushButton* addData=new QPushButton("AddData",WidgetRepository);
-    addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
     addData->setIcon(QIcon("../Picture/plus.png"));
     addData->setIconSize(QSize(20,20));
@@ -44,14 +42,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QVBoxLayout* VBox=new QVBoxLayout;
     VBox->addWidget(addData);
     VBox->addWidget(treeview);
-
     WidgetRepository->setLayout(VBox);
 
 
     QDockWidget* dockBD=new QDockWidget("Repository");
     dockBD->setWidget(WidgetRepository);
-    dockBD->setStyleSheet("background-color:pink; ");
-   // dockBD->setLayout(VBox);
+    dockBD->setStyleSheet("background-color:pink;");
     addDockWidget(Qt::LeftDockWidgetArea,dockBD);
 
 
@@ -73,8 +69,6 @@ MainWindow::MainWindow(QWidget *parent) :
     tab->addTab(tableview,"Stud");
     tableview->resize(tab->size());
     //end test block
-
-
 
 
     tab->setTabsClosable(true);
@@ -152,9 +146,11 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
     QTableView* tableview=new QTableView;
      tableview->setModel(model);
 
-    tableview->setStyleSheet(style->getTableViewStyleSheet());
+    tableview->setStyleSheet("background-color:white;");
+
     tab->addTab(tableview,TableName);
     tableview->resize(tab->size());
+    tableview->setStyleSheet(style->getTableViewStyleSheet());
 
 }
 

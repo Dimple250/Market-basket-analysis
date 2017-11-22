@@ -102,7 +102,7 @@ QString Style::getAddDataButtonStyleSheet(){
 
 QString Style::getTableViewStyleSheet(){
     return  "QTableView{"
-            "border: 0px;"
+            "border: 0px solid white;"
             "background-color:white;"
             "padding-left: 30px;"
             "padding-top: 30px;"
