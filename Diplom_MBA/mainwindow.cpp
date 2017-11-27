@@ -9,9 +9,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //Size MainWindow
     const QRect r = QApplication::desktop()->availableGeometry();
     this->resize(r.width()*0.80, r.height()*0.80);
-    //this->setFixedSize(r.width()*0.80, r.height()*0.80);
+
+
 
     db2=new Database;
+    db2->Connect("journal");
     style=new Style;
     tab=new QTabWidget(this);
     QWidget* WidgetRepository=new QWidget(this);
@@ -22,15 +24,14 @@ MainWindow::MainWindow(QWidget *parent) :
     //loadStyle();
     createTreeTables();
 
-    this->setStyleSheet(style->getWindowStyleSheet());
-    treeview->setStyleSheet(style->getTreeviewStyleSheet());
-    tab->setStyleSheet(style->getTabWidgetStyleSheet());
-    addData->setStyleSheet(style->getAddDataButtonStyleSheet());
+    //this->setStyleSheet(style->getWindowStyleSheet());
+    //treeview->setStyleSheet(style->getTreeviewStyleSheet());
+    //tab->setStyleSheet(style->getTabWidgetStyleSheet());
+    //addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
 
-    db2->Connect("journal");
 
-    //qDebug() << QSqlDatabase::drivers();
+    connect(tab,SIGNAL(tabCloseRequested(int)),SLOT(closeTab(int)));
 
 
     addData->setIcon(QIcon("../Picture/plus.png"));
@@ -47,18 +48,30 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QDockWidget* dockBD=new QDockWidget("Repository");
     dockBD->setWidget(WidgetRepository);
-    dockBD->setStyleSheet("background-color:pink;");
+    //dockBD->setStyleSheet("background-color:pink;");
     addDockWidget(Qt::LeftDockWidgetArea,dockBD);
 
 
     //start test block
     QSqlTableModel *model=new QSqlTableModel(this);
-    model->setTable("stud");
+    model->setTable("transactions");
     model->select();
     //зпрещает менять значения в ячейках
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     tableview=new QTableView;
-    tableview->setModel(model);
+    //tableview->setModel(model);
+
+
+    QSqlQueryModel* query=new QSqlQueryModel;
+    QSqlQuery* query2=new QSqlQuery;
+    query->setQuery("select count(tid) from transactions group by tid");
+    query2->exec("select count(tid) from transactions group by tid");
+    int kol=query2->numRowsAffected();
+    query2->exec("select count(name)/"+QString::number(kol)+" from transactions group by name;");
+    query2->next();
+    qDebug()<<query2->value(0).toFloat();
+    query->setQuery("select name,count(name)/"+QString::number(kol)+" from transactions group by name;");
+    tableview->setModel(query);
     //tableview->verticalHeader()->hide();
 
     //tableview->horizontalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
@@ -66,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     tableview->setStyleSheet("background-color:white;");
 
-    tab->addTab(tableview,"Stud");
+    tab->addTab(tableview,model->tableName());
     tableview->resize(tab->size());
     //end test block
 
@@ -78,7 +91,12 @@ MainWindow::MainWindow(QWidget *parent) :
     //dock->setWidget(tab);
      //addDockWidget(Qt::RightDockWidgetArea ,dock);
 
+
      setCentralWidget(tab);
+
+}
+
+void MainWindow::createRules(){
 
 }
 
@@ -130,11 +148,17 @@ void MainWindow::createTreeTables(){
 }
 
 
-
-
 void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
     QString TableName=item->text(i);
+
+    int pages = tab->count() ;
+    for ( int i = 0; i < pages; i++ ) {
+     if ( tab->tabText(i) == TableName ) {
+      tab->setCurrentIndex(i);
+      return;
+     }
+    }
     //qDebug()<<item->parent()->data(0,0).toString();
 
     QSqlTableModel *model=new QSqlTableModel(this);
@@ -149,9 +173,16 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
     tableview->setStyleSheet("background-color:white;");
 
     tab->addTab(tableview,TableName);
+
     tableview->resize(tab->size());
     tableview->setStyleSheet(style->getTableViewStyleSheet());
 
+    tab->setCurrentIndex(tab->currentIndex()+1);
+
+}
+
+void MainWindow::closeTab(int index){
+    tab->removeTab(index);
 }
 
 MainWindow::~MainWindow()

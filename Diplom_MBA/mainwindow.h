@@ -22,6 +22,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void loadStyle();
+    void createRules();
 
 private:
     Ui::MainWindow *ui;
@@ -34,6 +35,7 @@ private:
 public slots:
     void openTable(QTreeWidgetItem*,int);
     void createTreeTables();
+    void closeTab(int);
 };
 
 #endif // MAINWINDOW_H

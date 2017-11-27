@@ -69,6 +69,10 @@ QString Style::getTabWidgetStyleSheet(){
             "    min-height: 8ex;"
             "    margin-bottom: -1px;"
             "    padding: 10px 5px 10px 5px;"
+            "}"
+            "QTabWidget::tab-bar"
+            "{"
+            "alignment: center;"
             "}";
 }
 
@@ -106,7 +110,6 @@ QString Style::getTableViewStyleSheet(){
             "background-color:white;"
             "padding-left: 30px;"
             "padding-top: 30px;"
-            "width:100px;"
             "}"
             "QTableView::item{"
             "}";

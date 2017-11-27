@@ -2,6 +2,8 @@
 #define DATABASE_H
 
 #include <QtSql>
+#include <QString>
+#include <QStringList>
 
 class Database:public QObject
 {
