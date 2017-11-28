@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget* WidgetRepository=new QWidget(this);
     treeview=new QTreeWidget(WidgetRepository);
     addData=new QPushButton("AddData",WidgetRepository);
+    tableview=new QTableView;
 
 
     //loadStyle();
@@ -26,12 +27,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //this->setStyleSheet(style->getWindowStyleSheet());
     //treeview->setStyleSheet(style->getTreeviewStyleSheet());
-    //tab->setStyleSheet(style->getTabWidgetStyleSheet());
+    tab->setStyleSheet(style->getTabWidgetStyleSheet());
     //addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
 
 
     connect(tab,SIGNAL(tabCloseRequested(int)),SLOT(closeTab(int)));
+    connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
 
 
     addData->setIcon(QIcon("../Picture/plus.png"));
@@ -58,20 +60,10 @@ MainWindow::MainWindow(QWidget *parent) :
     model->select();
     //зпрещает менять значения в ячейках
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
-    tableview=new QTableView;
-    //tableview->setModel(model);
 
 
-    QSqlQueryModel* query=new QSqlQueryModel;
-    QSqlQuery* query2=new QSqlQuery;
-    query->setQuery("select count(tid) from transactions group by tid");
-    query2->exec("select count(tid) from transactions group by tid");
-    int kol=query2->numRowsAffected();
-    query2->exec("select count(name)/"+QString::number(kol)+" from transactions group by name;");
-    query2->next();
-    qDebug()<<query2->value(0).toFloat();
-    query->setQuery("select name,count(name)/"+QString::number(kol)+" from transactions group by name;");
-    tableview->setModel(query);
+    tableview->setModel(model);
+
     //tableview->verticalHeader()->hide();
 
     //tableview->horizontalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
@@ -93,28 +85,171 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
      setCentralWidget(tab);
+     createRules();
 
 }
 
 void MainWindow::createRules(){
 
+    //bug
+    /*for(int i=0;i<list.length();i++){
+        for(int j=i+1;j<list.length();j++)
+            list<<list[i]+','+list[j];
+    }*/
+
+    QList<QString> list;
+    QList<QString> ListTid;
+    int min_sup=2;
+    int length=1;
+
+    QString items="";
+    QString baskets="";
+    QString ravno="";
+    QString mensh="";
+
+
+    QTableView* tableview=new QTableView;
+    tableview->setStyleSheet("background-color:white;");
+
+
+    QSqlQueryModel* query=new QSqlQueryModel;
+    QSqlQuery* query2=new QSqlQuery;
+    query->setQuery("select count(tid) from transactions group by tid");
+    query2->exec("select count(tid) from transactions group by tid");
+
+    int kol_chek=query2->numRowsAffected();
+
+    query2->exec("SELECT name,COUNT(*) FROm transactions GROUP BY name;");
+
+    while(query2->next()){
+            if(query2->value(1).toInt()>=min_sup){
+                list<<query2->value(0).toString();
+            }
+        }
+        qDebug()<<list;
+
+        int flag=1;
+        int kol_items=3;
+
+        while(flag!=0){
+
+        for(int i=1;i<kol_items;i++){
+        items+="t"+QString::number(i)+".name,";
+        }
+        items=items.remove(items.length()-1,items.length()-1);
+
+        for(int i=1;i<kol_items;i++){
+        baskets+="transactions as t"+QString::number(i)+",";
+        }
+        baskets=baskets.remove(baskets.length()-1,baskets.length()-1);
+
+        for(int i=1;i<kol_items-1;i++){
+        ravno+="t"+QString::number(i)+".tid=t"+QString::number(i+1)+".tid ";
+        ravno+="and ";
+        }
+        ravno=ravno.remove(ravno.length()-5,ravno.length()-1);
+
+        for(int i=1;i<kol_items-1;i++){
+        mensh+="t"+QString::number(i)+".name<t"+QString::number(i+1)+".name ";
+        mensh+="and ";
+        }
+        mensh=mensh.remove(mensh.length()-5,mensh.length()-1);
+
+        QString exec="select "+items+", COUNT(*) from "+baskets+" where "+ravno+" and "+mensh+" group by "+items+" having count(*)>=2;";
+        //qDebug()<<exec;
+
+        query2->exec(exec);
+        QString ss="";
+
+        while(query2->next()){
+            ss="";
+            for(int i=0;i<kol_items-1;i++){
+            ss+=query2->value(i).toString()+",";
+            }
+            list<<ss;
+            }
+            qDebug()<<list;
+
+            kol_items++;
+
+            query2->last();
+           flag=query2->at();
+           qDebug()<<flag;
+        }
+
+
+
+         int kol2=list.length();
+
+
+
+    /*query2->exec("select tid from transactions group by tid");
+
+    while(query2->next()){
+                ListTid<<query2->value(0).toString();
+            //qDebug()<<query2->value(0).toFloat();
+        }
+        qDebug()<<ListTid;*/
+
+
+
+   // query2->exec("select count(tid) from transactions group by tid");
+
+    //query2->next();
+    //qDebug()<<query2->value(0).toString();
+
+    //qDebug()<<query2->value(1).toString();
+    //query2->last();
+    //qDebug()<<query2->at();
+
+
+    /*float count=0;
+    int schet=0;
+    float sup=0;
+
+     QSqlQuery* query3=new QSqlQuery;
+
+        for(int i=0;i<kol2;i++){
+            for(int j=i+1;j<kol2;j++){
+                 count=0;
+                for(int tid=0;tid<ListTid.length();tid++){
+                    schet=0;
+                    query3->exec("select name from transactions where tid="+ListTid[tid]+";");
+
+                    while(query3->next()){
+                        if(query3->value(0).toString()==list[i]||query3->value(0).toString()==list[j]){
+                            schet++;
+                        }
+                    }
+
+                    if(schet==2){
+                        count++;
+                    }
+
+                }
+                    sup=count/kol_chek;
+                   qDebug()<<list[i]<<','<<list[j]<<"="<<sup;
+
+                   if(sup>=min_sup){
+                       list<<list[i]+','+list[j];
+                  }
+                }
+
+        }*/
+        // qDebug()<<list;
+
+
+
+    query->setQuery("select name,count(name)/"+QString::number(kol_chek)+" from transactions group by name;");
+    tableview->setModel(query);
+
+    tab->addTab(tableview,"Test Rusles");
+    tableview->resize(tab->size());
+    tableview->setStyleSheet(style->getTableViewStyleSheet());
+
+    tab->setCurrentIndex(1);
+
 }
-
-
-
-void MainWindow::loadStyle(){
-
-    QString CSS;
-    QFile FileStyle("../Style/QTabWidget.css");
-    if(FileStyle.open(QIODevice::ReadOnly)){
-        CSS=FileStyle.readAll();
-        FileStyle.close();
-    }
-
-    qApp->setStyleSheet(CSS);
-}
-
-
 
 void MainWindow::createTreeTables(){
 
@@ -140,8 +275,6 @@ void MainWindow::createTreeTables(){
          itemTable->setIcon(0,QIcon("../Picture/table.png"));
         // qDebug()<<st;
      }
-
-     QObject::connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
 
      treeview->header()->hide();
 

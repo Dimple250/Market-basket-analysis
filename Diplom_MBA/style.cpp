@@ -39,8 +39,8 @@ QString Style::getTabWidgetStyleSheet(){
             "border-width: 1px;"
             "border-style: solid;"
             "border-color: grey;"
-            //"padding-left: 30px;"
-            //"padding-top: 30px;"
+            "padding-left: 30px;"
+            "padding-top: 30px;"
             "background-color: white;"
             "}"
             "QTabBar::tab:selected {"
@@ -70,10 +70,10 @@ QString Style::getTabWidgetStyleSheet(){
             "    margin-bottom: -1px;"
             "    padding: 10px 5px 10px 5px;"
             "}"
-            "QTabWidget::tab-bar"
+            /*"QTabWidget::tab-bar"
             "{"
             "alignment: center;"
-            "}";
+            "}"*/;
 }
 
 QString Style::getAddDataButtonStyleSheet(){
@@ -107,9 +107,9 @@ QString Style::getAddDataButtonStyleSheet(){
 QString Style::getTableViewStyleSheet(){
     return  "QTableView{"
             "border: 0px solid white;"
-            "background-color:white;"
-            "padding-left: 30px;"
-            "padding-top: 30px;"
+            //"background-color:white;"
+            //"padding-left: 30px;"
+            //"padding-top: 30px;"
             "}"
             "QTableView::item{"
             "}";
