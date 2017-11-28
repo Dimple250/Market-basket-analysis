@@ -123,7 +123,7 @@ void MainWindow::createRules(){
 
     while(query2->next()){
             if(query2->value(1).toInt()>=min_sup){
-                list<<query2->value(0).toString();
+                list<<query2->value(0).toString()+":"+query2->value(1).toString();
             }
         }
         qDebug()<<list;
@@ -131,7 +131,11 @@ void MainWindow::createRules(){
         int flag=1;
         int kol_items=3;
 
-        while(flag!=0){
+        while(flag>0){
+          items="";
+          baskets="";
+          ravno="";
+          mensh="";
 
         for(int i=1;i<kol_items;i++){
         items+="t"+QString::number(i)+".name,";
@@ -166,76 +170,18 @@ void MainWindow::createRules(){
             for(int i=0;i<kol_items-1;i++){
             ss+=query2->value(i).toString()+",";
             }
+            ss=ss.remove(ss.length()-1,ss.length()-1);
+            ss+=":"+query2->value(kol_items-1).toString();
             list<<ss;
             }
             qDebug()<<list;
 
             kol_items++;
 
+
             query2->last();
            flag=query2->at();
-           qDebug()<<flag;
         }
-
-
-
-         int kol2=list.length();
-
-
-
-    /*query2->exec("select tid from transactions group by tid");
-
-    while(query2->next()){
-                ListTid<<query2->value(0).toString();
-            //qDebug()<<query2->value(0).toFloat();
-        }
-        qDebug()<<ListTid;*/
-
-
-
-   // query2->exec("select count(tid) from transactions group by tid");
-
-    //query2->next();
-    //qDebug()<<query2->value(0).toString();
-
-    //qDebug()<<query2->value(1).toString();
-    //query2->last();
-    //qDebug()<<query2->at();
-
-
-    /*float count=0;
-    int schet=0;
-    float sup=0;
-
-     QSqlQuery* query3=new QSqlQuery;
-
-        for(int i=0;i<kol2;i++){
-            for(int j=i+1;j<kol2;j++){
-                 count=0;
-                for(int tid=0;tid<ListTid.length();tid++){
-                    schet=0;
-                    query3->exec("select name from transactions where tid="+ListTid[tid]+";");
-
-                    while(query3->next()){
-                        if(query3->value(0).toString()==list[i]||query3->value(0).toString()==list[j]){
-                            schet++;
-                        }
-                    }
-
-                    if(schet==2){
-                        count++;
-                    }
-
-                }
-                    sup=count/kol_chek;
-                   qDebug()<<list[i]<<','<<list[j]<<"="<<sup;
-
-                   if(sup>=min_sup){
-                       list<<list[i]+','+list[j];
-                  }
-                }
-
-        }*/
         // qDebug()<<list;
 
 
