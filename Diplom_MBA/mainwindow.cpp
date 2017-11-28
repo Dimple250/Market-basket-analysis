@@ -116,20 +116,20 @@ void MainWindow::createRules(){
     QSqlQuery* query2=new QSqlQuery;
     query->setQuery("select count(tid) from transactions group by tid");
     query2->exec("select count(tid) from transactions group by tid");
-
+    //usless
     int kol_chek=query2->numRowsAffected();
-
+    //fix next
     query2->exec("SELECT name,COUNT(*) FROm transactions GROUP BY name;");
 
     while(query2->next()){
             if(query2->value(1).toInt()>=min_sup){
-                list<<query2->value(0).toString()+":"+query2->value(1).toString();
+                list<<query2->value(0).toString()<<query2->value(1).toString();
             }
         }
         qDebug()<<list;
 
         int flag=1;
-        int kol_items=3;
+        int kol_items=4-1;
 
         while(flag>0){
           items="";
@@ -159,7 +159,7 @@ void MainWindow::createRules(){
         }
         mensh=mensh.remove(mensh.length()-5,mensh.length()-1);
 
-        QString exec="select "+items+", COUNT(*) from "+baskets+" where "+ravno+" and "+mensh+" group by "+items+" having count(*)>=2;";
+        QString exec="select "+items+", COUNT(*) from "+baskets+" where "+ravno+" and "+mensh+" group by "+items+" having count(*)>="+QString::number(min_sup)+";";
         //qDebug()<<exec;
 
         query2->exec(exec);
@@ -170,9 +170,8 @@ void MainWindow::createRules(){
             for(int i=0;i<kol_items-1;i++){
             ss+=query2->value(i).toString()+",";
             }
-            ss=ss.remove(ss.length()-1,ss.length()-1);
-            ss+=":"+query2->value(kol_items-1).toString();
-            list<<ss;
+            list<<ss.remove(ss.length()-1,ss.length()-1);
+            list<<query2->value(kol_items-1).toString();
             }
             qDebug()<<list;
 
@@ -189,11 +188,36 @@ void MainWindow::createRules(){
     query->setQuery("select name,count(name)/"+QString::number(kol_chek)+" from transactions group by name;");
     tableview->setModel(query);
 
-    tab->addTab(tableview,"Test Rusles");
+    /*tab->addTab(tableview,"Test Rusles");
     tableview->resize(tab->size());
     tableview->setStyleSheet(style->getTableViewStyleSheet());
 
-    tab->setCurrentIndex(1);
+    tab->setCurrentIndex(1);*/
+
+
+    QTableWidgetItem* tableitem=0;
+
+      QTableWidget*  tablewidget=new QTableWidget;
+      tablewidget->setRowCount(list.length()/2);
+      tablewidget->setColumnCount(2);
+      tablewidget->setHorizontalHeaderLabels(QString("Items;Support").split(";"));
+
+      int kol=0;
+
+        for(int i=0;i<list.length()-1;i+=2){
+         tableitem=new QTableWidgetItem(list[i]);
+         tablewidget->setItem(kol,0,tableitem);
+         tableitem=new QTableWidgetItem(list[i+1]);
+         tablewidget->setItem(kol,1,tableitem);
+         kol++;
+        }
+
+        tab->addTab(tablewidget,"Test Rusles");
+        //tablewidget->resize(tab->size());
+        //tableview->setStyleSheet(style->getTableViewStyleSheet());
+
+        tab->setCurrentIndex(1);
+
 
 }
 
