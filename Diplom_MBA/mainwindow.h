@@ -22,6 +22,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void createRules();
+    void createTreeTables();
 
 private:
     Ui::MainWindow *ui;
@@ -31,9 +32,9 @@ private:
     QPushButton* addData;
     Database* db2;
     Style* style;
+    QMap<QString,double> condits;
 public slots:
     void openTable(QTreeWidgetItem*,int);
-    void createTreeTables();
     void closeTab(int);
 };
 

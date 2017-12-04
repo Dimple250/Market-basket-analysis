@@ -51,7 +51,25 @@ MainWindow::MainWindow(QWidget *parent) :
     QDockWidget* dockBD=new QDockWidget("Repository");
     dockBD->setWidget(WidgetRepository);
     //dockBD->setStyleSheet("background-color:pink;");
-    addDockWidget(Qt::LeftDockWidgetArea,dockBD);
+    addDockWidget(Qt::RightDockWidgetArea,dockBD);
+
+
+
+    QStringList qlist;
+    qlist<<"Look data base"<<"Add transaction"<<"Create Rules";
+
+    QListWidget* lwg=new QListWidget(this);
+    QListWidgetItem* item=0;
+
+    foreach(QString str,qlist){
+        item=new QListWidgetItem(str,lwg);
+    }
+
+    QDockWidget* dockLeft=new QDockWidget("Items");
+    dockLeft->setWidget(lwg);
+    //dockBD->setStyleSheet("background-color:pink;");
+    addDockWidget(Qt::LeftDockWidgetArea,dockLeft);
+
 
 
     //start test block
@@ -123,7 +141,8 @@ void MainWindow::createRules(){
 
     while(query2->next()){
             if(query2->value(1).toInt()>=min_sup){
-                list<<query2->value(0).toString()<<query2->value(1).toString();
+                //list<<query2->value(0).toString()<<query2->value(1).toString();
+                condits[query2->value(0).toString()]=query2->value(1).toDouble();
             }
         }
         qDebug()<<list;
@@ -171,9 +190,12 @@ void MainWindow::createRules(){
             ss+=query2->value(i).toString()+",";
             }
             list<<ss.remove(ss.length()-1,ss.length()-1);
-            list<<query2->value(kol_items-1).toString();
+            //ss=ss.remove(ss.length()-1,ss.length()-1);
+           //list<<query2->value(kol_items-1).toString();
+            condits[ss]=query2->value(kol_items-1).toDouble();
+             qDebug()<<ss;
             }
-            qDebug()<<list;
+            //qDebug()<<list;
 
             kol_items++;
 
@@ -181,7 +203,27 @@ void MainWindow::createRules(){
             query2->last();
            flag=query2->at();
         }
-        // qDebug()<<list;
+
+         QLabel* lb=new QLabel(tab);
+         int y=300;
+         for(int i=0;i<4;i++){
+             lb=new QLabel(tab);
+             y+=20;
+         lb->setStyleSheet("margin-top:"+QString::number(y)+"px;margin-left:100px;");
+         double sup=condits[list[i]]/kol_chek;
+         double cond=condits[list[i]]/condits[list[i].split(",")[0]];
+         //double lift=condits[list[2]]/(condits[list[2].split(",")[0]]*condits[list[2].split(",")[1]]);
+         double lift=cond/condits[list[i].split(",")[0]];
+         QString st="";
+         for(int k=1;k<list[i].split(",").length();k++){
+             st+=list[i].split(",")[k];
+             if(k!=list[i].split(",").length()-1){
+             st+=",";
+             }
+         }
+         lb->setText(list[i].split(",")[0]+"==>"+st+"{support:"+QString::number(sup,'f',2)+",confidence:"+QString::number(cond,'f',2)+",lift:"+QString::number(lift,'f',2)+"}");
+       }
+         qDebug()<<list.length();
 
 
 
@@ -198,16 +240,16 @@ void MainWindow::createRules(){
     QTableWidgetItem* tableitem=0;
 
       QTableWidget*  tablewidget=new QTableWidget;
-      tablewidget->setRowCount(list.length()/2);
+      tablewidget->setRowCount(list.length());
       tablewidget->setColumnCount(2);
       tablewidget->setHorizontalHeaderLabels(QString("Items;Support").split(";"));
 
       int kol=0;
 
-        for(int i=0;i<list.length()-1;i+=2){
+        for(int i=0;i<list.length();i++){
          tableitem=new QTableWidgetItem(list[i]);
          tablewidget->setItem(kol,0,tableitem);
-         tableitem=new QTableWidgetItem(list[i+1]);
+         tableitem=new QTableWidgetItem(QString::number(condits[list[i]]));
          tablewidget->setItem(kol,1,tableitem);
          kol++;
         }
