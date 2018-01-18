@@ -44,7 +44,7 @@ QString Style::getTabWidgetStyleSheet(){
             "background-color: white;"
             "}"
             "QTabBar::tab:selected {"
-            "margin-top: -1px;"
+            "margin-top:0px;"
             "background-color: lightblue;"
             "}"
             "QTabBar::tab:!selected:hover {"

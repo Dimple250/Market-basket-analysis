@@ -16,11 +16,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     database.cpp \
-    style.cpp
+    style.cpp \
+    associationrules.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
-    style.h
+    style.h \
+    associationrules.h
 
 FORMS    += mainwindow.ui
 

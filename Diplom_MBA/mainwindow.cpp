@@ -22,13 +22,48 @@ MainWindow::MainWindow(QWidget *parent) :
     tableview=new QTableView;
 
 
+
+
+    QMenu*  menu_file=new QMenu("&File");
+    menu_file->addAction("Open",this,SLOT(OpenCSVFile()));
+    //menu_file->addAction("Save",this,SLOT(SaveFile()));
+    menu_file->addSeparator();
+    menu_file->addAction("Exit",this,SLOT(close()));
+
+    QMenu*  menu_analiz=new QMenu("&Analysis");
+    menu_file->addAction("Open",this,SLOT(OpenCSVFile()));
+
+    ui->menuBar->addMenu(menu_file);
+    ui->menuBar->addMenu(menu_analiz);
+
+
+
+
+
+    /*QAction* file=new QAction("file",0);
+    file->setIcon(QPixmap("/home/elaks/Документы/College/Диплом/Diplom_MBA/Picture/New/frXbUkgtdj.png"));
+    file->setToolTip("");
+  // QObject::connect(lock,SIGNAL(triggered()),SLOT(Cipher_Atbash_and_Polibia()));
+
+    QAction* open=new QAction("open",0);
+    open->setIcon(QPixmap("/home/elaks/Документы/College/Диплом/Diplom_MBA/Picture/New/image_20170928_192348_4943.png"));
+    open->setToolTip("");
+
+    QToolBar* toolBar=new QToolBar;
+    toolBar->addAction(file);
+    toolBar->addAction(open);
+    toolBar->setIconSize(QSize(30,30));
+    ui->mainToolBar->addWidget(toolBar);
+    //ui->mainToolBar->setStyleSheet("background:white");*/
+    ui->mainToolBar->setVisible(false);
+
     //loadStyle();
     createTreeTables();
 
     //this->setStyleSheet(style->getWindowStyleSheet());
-    //treeview->setStyleSheet(style->getTreeviewStyleSheet());
+   treeview->setStyleSheet(style->getTreeviewStyleSheet());
     tab->setStyleSheet(style->getTabWidgetStyleSheet());
-    //addData->setStyleSheet(style->getAddDataButtonStyleSheet());
+  //  addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
 
 
@@ -105,148 +140,59 @@ MainWindow::MainWindow(QWidget *parent) :
      setCentralWidget(tab);
      createRules();
 
+
+
+
+    /* QSqlDatabase db1 = QSqlDatabase::addDatabase("QODBC3", "xlsx_connection");
+     db1.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + QString("/home/elaks/Excel2.xlsx"));
+     if(db1.open())
+     {
+      QSqlQuery query("select * from [" + QString("Sheet1") + "$]"); // Select range, place A1:B5 after $
+
+      while (query.next())
+      {
+      QString column1= query.value(0).toString();
+      qDebug() << column1;
+      }
+     db1.close();
+     QSqlDatabase::removeDatabase("xlsx_connection");
+     }else{
+      qDebug()<<"sdf"<<db1.lastError().text();
+
+     }*/
+
+     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC3", "xlsx_connection");
+        QString baseName;
+        baseName += "DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)}; FIL={MS Excel}; ";
+        baseName += "DBQ=/home/elaks/Excel2.xlsx";
+        db.setDatabaseName(baseName);
+        if(!db.open()){
+            qDebug()<<"dsfs";
+        }
+
 }
 
 void MainWindow::createRules(){
 
-    //bug
-    /*for(int i=0;i<list.length();i++){
-        for(int j=i+1;j<list.length();j++)
-            list<<list[i]+','+list[j];
-    }*/
-
-    QList<QString> list;
-    QList<QString> ListTid;
-    int min_sup=2;
-    int length=1;
-
-    QString items="";
-    QString baskets="";
-    QString ravno="";
-    QString mensh="";
+     AssociationRules* rules=new AssociationRules;
+     rules->setMinSup(2);
+     rules->CreateRules();
+     //rules->setTable();
 
 
-    QTableView* tableview=new QTableView;
-    tableview->setStyleSheet("background-color:white;");
+         tab->addTab(rules,"Test Rules");
 
 
-    QSqlQueryModel* query=new QSqlQueryModel;
-    QSqlQuery* query2=new QSqlQuery;
-    query->setQuery("select count(tid) from transactions group by tid");
-    query2->exec("select count(tid) from transactions group by tid");
-    //usless
-    int kol_chek=query2->numRowsAffected();
-    //fix next
-    query2->exec("SELECT name,COUNT(*) FROm transactions GROUP BY name;");
-
-    while(query2->next()){
-            if(query2->value(1).toInt()>=min_sup){
-                //list<<query2->value(0).toString()<<query2->value(1).toString();
-                condits[query2->value(0).toString()]=query2->value(1).toDouble();
-            }
-        }
-        qDebug()<<list;
-
-        int flag=1;
-        int kol_items=4-1;
-
-        while(flag>0){
-          items="";
-          baskets="";
-          ravno="";
-          mensh="";
-
-        for(int i=1;i<kol_items;i++){
-        items+="t"+QString::number(i)+".name,";
-        }
-        items=items.remove(items.length()-1,items.length()-1);
-
-        for(int i=1;i<kol_items;i++){
-        baskets+="transactions as t"+QString::number(i)+",";
-        }
-        baskets=baskets.remove(baskets.length()-1,baskets.length()-1);
-
-        for(int i=1;i<kol_items-1;i++){
-        ravno+="t"+QString::number(i)+".tid=t"+QString::number(i+1)+".tid ";
-        ravno+="and ";
-        }
-        ravno=ravno.remove(ravno.length()-5,ravno.length()-1);
-
-        for(int i=1;i<kol_items-1;i++){
-        mensh+="t"+QString::number(i)+".name<t"+QString::number(i+1)+".name ";
-        mensh+="and ";
-        }
-        mensh=mensh.remove(mensh.length()-5,mensh.length()-1);
-
-        QString exec="select "+items+", COUNT(*) from "+baskets+" where "+ravno+" and "+mensh+" group by "+items+" having count(*)>="+QString::number(min_sup)+";";
-        //qDebug()<<exec;
-
-        query2->exec(exec);
-        QString ss="";
-
-        while(query2->next()){
-            ss="";
-            for(int i=0;i<kol_items-1;i++){
-            ss+=query2->value(i).toString()+",";
-            }
-            list<<ss.remove(ss.length()-1,ss.length()-1);
-            //ss=ss.remove(ss.length()-1,ss.length()-1);
-           //list<<query2->value(kol_items-1).toString();
-            condits[ss]=query2->value(kol_items-1).toDouble();
-             qDebug()<<ss;
-            }
-            //qDebug()<<list;
-
-            kol_items++;
-
-
-            query2->last();
-           flag=query2->at();
-        }
-
-         QLabel* lb=new QLabel(tab);
-         int y=300;
-         for(int i=0;i<4;i++){
-             lb=new QLabel(tab);
-             y+=20;
-         lb->setStyleSheet("margin-top:"+QString::number(y)+"px;margin-left:100px;");
-         double sup=condits[list[i]]/kol_chek;
-         double cond=condits[list[i]]/condits[list[i].split(",")[0]];
-         //double lift=condits[list[2]]/(condits[list[2].split(",")[0]]*condits[list[2].split(",")[1]]);
-         double lift=cond/condits[list[i].split(",")[0]];
-         QString st="";
-         for(int k=1;k<list[i].split(",").length();k++){
-             st+=list[i].split(",")[k];
-             if(k!=list[i].split(",").length()-1){
-             st+=",";
-             }
-         }
-         lb->setText(list[i].split(",")[0]+"==>"+st+"{support:"+QString::number(sup,'f',2)+",confidence:"+QString::number(cond,'f',2)+",lift:"+QString::number(lift,'f',2)+"}");
-       }
-         qDebug()<<list.length();
-
-
-
-    query->setQuery("select name,count(name)/"+QString::number(kol_chek)+" from transactions group by name;");
-    tableview->setModel(query);
-
-    /*tab->addTab(tableview,"Test Rusles");
-    tableview->resize(tab->size());
-    tableview->setStyleSheet(style->getTableViewStyleSheet());
-
-    tab->setCurrentIndex(1);*/
-
-
-    QTableWidgetItem* tableitem=0;
+   /* QTableWidgetItem* tableitem=0;
 
       QTableWidget*  tablewidget=new QTableWidget;
-      tablewidget->setRowCount(list.length());
+      tablewidget->setRowCount(rules->getListSize());
       tablewidget->setColumnCount(2);
       tablewidget->setHorizontalHeaderLabels(QString("Items;Support").split(";"));
 
       int kol=0;
 
-        for(int i=0;i<list.length();i++){
+        for(int i=0;i<rules->getListSize();i++){
          tableitem=new QTableWidgetItem(list[i]);
          tablewidget->setItem(kol,0,tableitem);
          tableitem=new QTableWidgetItem(QString::number(condits[list[i]]));
@@ -254,9 +200,9 @@ void MainWindow::createRules(){
          kol++;
         }
 
-        tab->addTab(tablewidget,"Test Rusles");
+        tab->addTab(tablewidget,"Test confidence");
         //tablewidget->resize(tab->size());
-        //tableview->setStyleSheet(style->getTableViewStyleSheet());
+        //tableview->setStyleSheet(style->getTableViewStyleSheet());*/
 
         tab->setCurrentIndex(1);
 
@@ -285,7 +231,6 @@ void MainWindow::createTreeTables(){
          itemTable=new QTreeWidgetItem(itemBDname);
          itemTable->setText(0,st);
          itemTable->setIcon(0,QIcon("../Picture/table.png"));
-        // qDebug()<<st;
      }
 
      treeview->header()->hide();
@@ -304,7 +249,6 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
       return;
      }
     }
-    //qDebug()<<item->parent()->data(0,0).toString();
 
     QSqlTableModel *model=new QSqlTableModel(this);
     model->setTable(TableName);
@@ -330,7 +274,55 @@ void MainWindow::closeTab(int index){
     tab->removeTab(index);
 }
 
+void MainWindow::OpenCSVFile(){
+    QString str = QFileDialog::getOpenFileName(0, "Open file", "", "*.csv");
+    if(str==""){
+        return;
+    }
+
+    QTableView* tableview=new QTableView(this);
+
+    csvModel = new QStandardItemModel;
+       csvModel->setColumnCount(2);
+       csvModel->setHorizontalHeaderLabels(QStringList() << "Марка" << "Модель" << "Цена");
+
+       // Open the file from the resources. Instead of the file
+       // Need to specify the path to your desired file
+       QFile file(str);
+       if ( !file.open(QFile::ReadOnly | QFile::Text) ) {
+           qDebug() << "File not exists";
+       } else {
+           // Create a thread to retrieve data from a file
+           QTextStream in(&file);
+           //Reads the data up to the end of file
+           while (!in.atEnd())
+           {
+               QString line = in.readLine();
+
+               // Adding to the model in line with the elements
+               QList<QStandardItem *> standardItemsList;
+               // consider that the line separated by semicolons into columns
+               QStringList item;
+               item << line.split(',');
+               for (int i=0;i<item.length();i++) {
+                  standardItemsList.append(new QStandardItem(item[i]));
+               }
+               csvModel->insertRow(csvModel->rowCount(), standardItemsList);
+           }
+           file.close();
+       }
+       tableview->setModel(csvModel);
+       tab->addTab(tableview,"CSV");
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete csvModel;
+    delete tableview;
+    delete treeview;
+    delete tab;
+    delete addData;
+    delete db2;
+    delete style;
 }
