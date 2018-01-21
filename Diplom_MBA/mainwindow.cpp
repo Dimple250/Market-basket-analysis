@@ -15,12 +15,12 @@ MainWindow::MainWindow(QWidget *parent) :
     db2=new Database;
     db2->Connect("journal");
     style=new Style;
-    tab=new QTabWidget(this);
-    QWidget* WidgetRepository=new QWidget(this);
+    tab=new QTabWidget;
+    QWidget* WidgetRepository=new QWidget;
     treeview=new QTreeWidget(WidgetRepository);
+    treeviewleft=new QTreeWidget;
     addData=new QPushButton("AddData",WidgetRepository);
     tableview=new QTableView;
-
 
 
 
@@ -83,14 +83,14 @@ MainWindow::MainWindow(QWidget *parent) :
     WidgetRepository->setLayout(VBox);
 
 
-    QDockWidget* dockBD=new QDockWidget("Repository");
-    dockBD->setWidget(WidgetRepository);
+    //QDockWidget* dockBD=new QDockWidget("Repository");
+    //dockBD->setWidget(WidgetRepository);
     //dockBD->setStyleSheet("background-color:pink;");
-    addDockWidget(Qt::RightDockWidgetArea,dockBD);
+   // addDockWidget(Qt::RightDockWidgetArea,dockBD);
 
 
 
-    QStringList qlist;
+    /*QStringList qlist;
     qlist<<"Look data base"<<"Add transaction"<<"Create Rules";
 
     QListWidget* lwg=new QListWidget(this);
@@ -98,12 +98,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
     foreach(QString str,qlist){
         item=new QListWidgetItem(str,lwg);
-    }
 
-    QDockWidget* dockLeft=new QDockWidget("Items");
-    dockLeft->setWidget(lwg);
+    }
+    lwg->setStyleSheet("background:blue;");*/
+
+    treeviewleft->setStyleSheet(style->getTreeviewfeltStyleSheet());
+     QTreeWidgetItem* item=0;
+
+     QStringList list;
+     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Диаграммы"<<"Склад"<<""<<"Заказать пиццу";
+
+     foreach(QString st,list){
+         item=new QTreeWidgetItem(treeviewleft);
+         item->setText(0,st);
+     }
+
+     treeviewleft->header()->hide();
+
+    //QDockWidget* dockLeft=new QDockWidget("Items");
+   // dockLeft->setWidget(treeviewleft);
     //dockBD->setStyleSheet("background-color:pink;");
-    addDockWidget(Qt::LeftDockWidgetArea,dockLeft);
+   // addDockWidget(Qt::LeftDockWidgetArea,dockLeft);
 
 
 
@@ -137,11 +152,24 @@ MainWindow::MainWindow(QWidget *parent) :
      //addDockWidget(Qt::RightDockWidgetArea ,dock);
 
 
-     setCentralWidget(tab);
+     //setCentralWidget(tab);
      createRules();
 
+     treeviewleft->setFixedHeight(r.height()*0.80);
+     treeviewleft->setFixedWidth(r.width()*0.15);
+     WidgetRepository->setFixedWidth(r.width()*0.15);
+     //treeviewleft
+
+     QHBoxLayout* hbox=new QHBoxLayout;
+     hbox->addWidget(treeviewleft);
+     hbox->addWidget(tab);
+     hbox->addWidget(WidgetRepository);
 
 
+     ui->centralWidget->setLayout(hbox);
+    // this->setStyleSheet("background-color:#4C5866");
+
+   // tab->setHidden(false);
 
     /* QSqlDatabase db1 = QSqlDatabase::addDatabase("QODBC3", "xlsx_connection");
      db1.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + QString("/home/elaks/Excel2.xlsx"));
@@ -234,6 +262,7 @@ void MainWindow::createTreeTables(){
      }
 
      treeview->header()->hide();
+
 
 }
 

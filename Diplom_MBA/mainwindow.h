@@ -29,6 +29,7 @@ private:
     Ui::MainWindow *ui;
     QTableView *tableview;
     QTreeWidget* treeview;
+    QTreeWidget* treeviewleft;
     QTabWidget* tab;
     QPushButton* addData;
     Database* db2;

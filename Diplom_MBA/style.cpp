@@ -43,6 +43,10 @@ QString Style::getTabWidgetStyleSheet(){
             "padding-top: 30px;"
             "background-color: white;"
             "}"
+           "QTabWidget{"
+
+           "height:100px;"
+           "}"
             "QTabBar::tab:selected {"
             "margin-top:0px;"
             "background-color: lightblue;"
@@ -115,7 +119,34 @@ QString Style::getTableViewStyleSheet(){
             "}";
 
 }
+QString Style::getTreeviewfeltStyleSheet(){
+    return "QTreeWidget::item"
+    "{"
+            "background-color:#292E3D;"
+            "color:#9aa5b3;"
+            "width:100%;"
+            "height:45%;"
+            "padding-left:10%;"
+            "margin-bottom:1px;"
+    "}"
+      "QTreeWidget::item::hover"
+                "{"
+                       // "background-color:#022027;"
+                        "background-color:#0ABAB5;"
+                        "color:white;"
+                "}"
+    "QTreeWidget"
+        "{"
+                "background-color:#4C5866;"
+                "padding-left:-21%;"
+                "padding-top:2px;"
+                "font-size:15px;"
+                "border:0px solid #102C54;"
 
+                //"margin-left:200px;"
+           // "margin-left:100px;"
+        "}";
+}
 
 
 
