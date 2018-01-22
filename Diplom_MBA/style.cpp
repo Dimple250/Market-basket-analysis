@@ -135,6 +135,11 @@ QString Style::getTreeviewfeltStyleSheet(){
                         "background-color:#0ABAB5;"
                         "color:white;"
                 "}"
+    /* "QTreeWidget::item:selected"
+             "{"
+                        "background-color:#0ABAB5;"
+                        "color:white;"
+           " }"*/
     "QTreeWidget"
         "{"
                 "background-color:#4C5866;"

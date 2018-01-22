@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(tab,SIGNAL(tabCloseRequested(int)),SLOT(closeTab(int)));
     connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
+    connect(treeviewleft,SIGNAL(itemClicked(QTreeWidgetItem*,int)),SLOT(openItem(QTreeWidgetItem*,int)));
 
 
     addData->setIcon(QIcon("../Picture/plus.png"));
@@ -106,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
      QTreeWidgetItem* item=0;
 
      QStringList list;
-     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Диаграммы"<<"Склад"<<""<<"Заказать пиццу";
+     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Диаграммы"<<"Склад"<<""<<"";
 
      foreach(QString st,list){
          item=new QTreeWidgetItem(treeviewleft);
@@ -158,15 +159,17 @@ MainWindow::MainWindow(QWidget *parent) :
      treeviewleft->setFixedHeight(r.height()*0.80);
      treeviewleft->setFixedWidth(r.width()*0.15);
      WidgetRepository->setFixedWidth(r.width()*0.15);
+     welcome=new QLabel("Добро пожаловать ");
+     welcome->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
      //treeviewleft
 
-     QHBoxLayout* hbox=new QHBoxLayout;
-     hbox->addWidget(treeviewleft);
-     hbox->addWidget(tab);
-     hbox->addWidget(WidgetRepository);
+     mainHbox=new QHBoxLayout;
+     mainHbox->addWidget(treeviewleft);
+     mainHbox->addWidget(welcome);
+     //hbox->addWidget(WidgetRepository);
 
 
-     ui->centralWidget->setLayout(hbox);
+     ui->centralWidget->setLayout(mainHbox);
     // this->setStyleSheet("background-color:#4C5866");
 
    // tab->setHidden(false);
@@ -299,6 +302,43 @@ void MainWindow::openTable(QTreeWidgetItem * item,int i){
 
 }
 
+void MainWindow::openItem(QTreeWidgetItem * item,int i){
+
+    if(item->text(i)==isOpenItem){
+        return;
+    }
+
+    if(item->text(i)=="Продукты"){//"Продукты"
+        isOpenItem="Продукты";
+        QLabel* lb=new QLabel("Продукты");
+        lb->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
+      mainHbox->itemAt(1)->widget()->close();
+      mainHbox->removeWidget(mainHbox->itemAt(1)->widget());
+       mainHbox->addWidget(lb);
+    }else
+        if(item->text(i)=="Транзакции"){//"Транзакции"
+            isOpenItem="Транзакции";
+            QLabel* lb=new QLabel("Транзакции");
+             lb->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
+          mainHbox->itemAt(1)->widget()->close();
+          mainHbox->removeWidget(mainHbox->itemAt(1)->widget());
+           mainHbox->addWidget(lb);
+    }else
+        if(item->text(i)=="Анализ корзины"){//"Анализ корзины"
+            mainHbox->itemAt(1)->widget()->close();
+    }else
+        if(item->text(i)=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
+            mainHbox->itemAt(1)->widget()->close();
+    }else
+        if(item->text(i)=="Диаграммы"){//"Диаграммы"
+            mainHbox->itemAt(1)->widget()->close();
+    }else
+        if(item->text(i)=="Склад"){//"Склад"
+            mainHbox->itemAt(1)->widget()->close();
+    }
+
+}
+
 void MainWindow::closeTab(int index){
     tab->removeTab(index);
 }
@@ -354,4 +394,6 @@ MainWindow::~MainWindow()
     delete addData;
     delete db2;
     delete style;
+    delete welcome;
+    delete mainHbox;
 }

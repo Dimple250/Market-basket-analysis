@@ -36,8 +36,12 @@ private:
     Style* style;
     QMap<QString,double> condits;
     QStandardItemModel *csvModel;
+    QHBoxLayout* mainHbox;
+    QLabel* welcome;
+    QString isOpenItem;
 public slots:
     void openTable(QTreeWidgetItem*,int);
+    void openItem(QTreeWidgetItem*,int);
     void closeTab(int);
     void OpenCSVFile();
 };
