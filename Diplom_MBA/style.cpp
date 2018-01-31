@@ -7,9 +7,9 @@ Style::Style()
 
 QString Style::getWindowStyleSheet(){
     return "QWidget { "
-           "background-color: #454545; "
+           "background-color: #4C5866; "
            "border: 0px solid black; "
-
+            "width:100px;"
            "}";
 }
 
@@ -124,7 +124,7 @@ QString Style::getTreeviewfeltStyleSheet(){
     "{"
             "background-color:#292E3D;"
             "color:#9aa5b3;"
-            "width:100%;"
+           //"width:100%;"
             "height:45%;"
             "padding-left:10%;"
             "margin-bottom:1px;"
@@ -145,11 +145,10 @@ QString Style::getTreeviewfeltStyleSheet(){
                 "background-color:#4C5866;"
                 "padding-left:-21%;"
                 "padding-top:2px;"
-                "font-size:15px;"
+                "font-size:25px;"
                 "border:0px solid #102C54;"
-
-                //"margin-left:200px;"
-           // "margin-left:100px;"
+            //"width:500px;"
+              //"margin-right:250px;"
         "}";
 }
 

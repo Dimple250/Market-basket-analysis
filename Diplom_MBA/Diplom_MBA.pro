@@ -24,5 +24,6 @@ HEADERS  += mainwindow.h \
     style.h \
     associationrules.h
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    mainwindow.ui
 

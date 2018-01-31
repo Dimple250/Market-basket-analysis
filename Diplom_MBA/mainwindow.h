@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtWidgets>
+#include <QWidget>
 #include <QtSql>
 #include <QStandardItemModel>
 
@@ -28,17 +29,20 @@ public:
 private:
     Ui::MainWindow *ui;
     QTableView *tableview;
-    QTreeWidget* treeview;
     QTreeWidget* treeviewleft;
     QTabWidget* tab;
-    QPushButton* addData;
     Database* db2;
     Style* style;
     QMap<QString,double> condits;
     QStandardItemModel *csvModel;
-    QHBoxLayout* mainHbox;
-    QLabel* welcome;
+    QGridLayout* mainGbox;
+    QLabel*  welcome;
+
     QString isOpenItem;
+    int prevopen;
+
+    QWidget* Products;
+    QWidget* Tranzactions;
 public slots:
     void openTable(QTreeWidgetItem*,int);
     void openItem(QTreeWidgetItem*,int);

@@ -16,15 +16,43 @@ MainWindow::MainWindow(QWidget *parent) :
     db2->Connect("journal");
     style=new Style;
     tab=new QTabWidget;
-    QWidget* WidgetRepository=new QWidget;
-    treeview=new QTreeWidget(WidgetRepository);
     treeviewleft=new QTreeWidget;
-    addData=new QPushButton("AddData",WidgetRepository);
     tableview=new QTableView;
+    csvModel = new QStandardItemModel;
 
 
 
-    QMenu*  menu_file=new QMenu("&File");
+
+    Products=new QWidget;
+
+    QWidget* ViewPod=new QWidget;
+
+    QWidget* FilterProd=new QWidget;
+
+    QHBoxLayout* layoutprod=new QHBoxLayout;
+    layoutprod->addWidget(ViewPod);
+    layoutprod->addWidget(FilterProd);
+
+    Products->setLayout(layoutprod);
+
+
+
+
+
+    Tranzactions=new QWidget;
+
+    QWidget* ViewTran=new QWidget;
+
+    QWidget* FilterTran=new QWidget;
+
+    QHBoxLayout* layouttran=new QHBoxLayout;
+    layoutprod->addWidget(ViewTran);
+    layoutprod->addWidget(FilterTran);
+
+    Tranzactions->setLayout(layouttran);
+
+
+   /* QMenu*  menu_file=new QMenu("&File");
     menu_file->addAction("Open",this,SLOT(OpenCSVFile()));
     //menu_file->addAction("Save",this,SLOT(SaveFile()));
     menu_file->addSeparator();
@@ -34,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     menu_file->addAction("Open",this,SLOT(OpenCSVFile()));
 
     ui->menuBar->addMenu(menu_file);
-    ui->menuBar->addMenu(menu_analiz);
+    ui->menuBar->addMenu(menu_analiz);*/
 
 
 
@@ -55,59 +83,28 @@ MainWindow::MainWindow(QWidget *parent) :
     toolBar->setIconSize(QSize(30,30));
     ui->mainToolBar->addWidget(toolBar);
     //ui->mainToolBar->setStyleSheet("background:white");*/
-    ui->mainToolBar->setVisible(false);
+    //ui mainToolBar->setVisible(false);
 
     //loadStyle();
     createTreeTables();
 
     //this->setStyleSheet(style->getWindowStyleSheet());
-   treeview->setStyleSheet(style->getTreeviewStyleSheet());
+  // treeview->setStyleSheet(style->getTreeviewStyleSheet());
     tab->setStyleSheet(style->getTabWidgetStyleSheet());
   //  addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
 
 
     connect(tab,SIGNAL(tabCloseRequested(int)),SLOT(closeTab(int)));
-    connect(treeview,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),SLOT(openTable(QTreeWidgetItem*,int)));
     connect(treeviewleft,SIGNAL(itemClicked(QTreeWidgetItem*,int)),SLOT(openItem(QTreeWidgetItem*,int)));
 
 
-    addData->setIcon(QIcon("../Picture/plus.png"));
-    addData->setIconSize(QSize(20,20));
-    addData->setMinimumHeight(30);
-    //treeview->setIconSize(QSize(20,20)););
-
-
-    QVBoxLayout* VBox=new QVBoxLayout;
-    VBox->addWidget(addData);
-    VBox->addWidget(treeview);
-    WidgetRepository->setLayout(VBox);
-
-
-    //QDockWidget* dockBD=new QDockWidget("Repository");
-    //dockBD->setWidget(WidgetRepository);
-    //dockBD->setStyleSheet("background-color:pink;");
-   // addDockWidget(Qt::RightDockWidgetArea,dockBD);
-
-
-
-    /*QStringList qlist;
-    qlist<<"Look data base"<<"Add transaction"<<"Create Rules";
-
-    QListWidget* lwg=new QListWidget(this);
-    QListWidgetItem* item=0;
-
-    foreach(QString str,qlist){
-        item=new QListWidgetItem(str,lwg);
-
-    }
-    lwg->setStyleSheet("background:blue;");*/
 
     treeviewleft->setStyleSheet(style->getTreeviewfeltStyleSheet());
      QTreeWidgetItem* item=0;
 
      QStringList list;
-     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Диаграммы"<<"Склад"<<""<<"";
+     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Диаграммы"<<"Склад"<<"Загрузить файл"<<"";
 
      foreach(QString st,list){
          item=new QTreeWidgetItem(treeviewleft);
@@ -156,50 +153,34 @@ MainWindow::MainWindow(QWidget *parent) :
      //setCentralWidget(tab);
      createRules();
 
-     treeviewleft->setFixedHeight(r.height()*0.80);
-     treeviewleft->setFixedWidth(r.width()*0.15);
-     WidgetRepository->setFixedWidth(r.width()*0.15);
-     welcome=new QLabel("Добро пожаловать ");
-     welcome->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
-     //treeviewleft
+    // treeviewleft->setFixedHeight(r.height()*0.80);
+     //treeviewleft->setFixedWidth(r.width()*0.15);
+     //WidgetRepository->setFixedWidth(r.width()*0.15);
+     welcome=new QLabel("Добро пожаловат\n ");
+     welcome->setStyleSheet("font-size:50px;padding-top:-500%;padding-left:300%;background-color:#4C5866;padding-right:400%");
+    // treeviewleft->setMinimumWidth(300);
 
-     mainHbox=new QHBoxLayout;
-     mainHbox->addWidget(treeviewleft);
-     mainHbox->addWidget(welcome);
-     //hbox->addWidget(WidgetRepository);
+     int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/Berniershade.ttf"); //путь к шрифту
+         QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
+         QFont f(family);  // QFont c вашим шрифтом
+
+         treeviewleft->setFont(f);
+
+     mainGbox=new QGridLayout;
+     mainGbox->addWidget(treeviewleft,0,0);
+     mainGbox->addWidget(welcome,0,1);
+     mainGbox->addWidget(Products,0,1);
+     mainGbox->addWidget(Tranzactions,0,1);
+     prevopen=1;
+     Products->setHidden(true);
+     Tranzactions->setHidden(true);
 
 
-     ui->centralWidget->setLayout(mainHbox);
+
+     ui->centralwidget->setLayout(mainGbox);
     // this->setStyleSheet("background-color:#4C5866");
 
    // tab->setHidden(false);
-
-    /* QSqlDatabase db1 = QSqlDatabase::addDatabase("QODBC3", "xlsx_connection");
-     db1.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + QString("/home/elaks/Excel2.xlsx"));
-     if(db1.open())
-     {
-      QSqlQuery query("select * from [" + QString("Sheet1") + "$]"); // Select range, place A1:B5 after $
-
-      while (query.next())
-      {
-      QString column1= query.value(0).toString();
-      qDebug() << column1;
-      }
-     db1.close();
-     QSqlDatabase::removeDatabase("xlsx_connection");
-     }else{
-      qDebug()<<"sdf"<<db1.lastError().text();
-
-     }*/
-
-     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC3", "xlsx_connection");
-        QString baseName;
-        baseName += "DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)}; FIL={MS Excel}; ";
-        baseName += "DBQ=/home/elaks/Excel2.xlsx";
-        db.setDatabaseName(baseName);
-        if(!db.open()){
-            qDebug()<<"dsfs";
-        }
 
 }
 
@@ -242,7 +223,7 @@ void MainWindow::createRules(){
 
 void MainWindow::createTreeTables(){
 
-    QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
+   /* QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
 
      itemBD->setText(0,"BD");
 
@@ -264,7 +245,7 @@ void MainWindow::createTreeTables(){
          itemTable->setIcon(0,QIcon("../Picture/table.png"));
      }
 
-     treeview->header()->hide();
+     treeview->header()->hide();*/
 
 
 }
@@ -308,33 +289,33 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
         return;
     }
 
+
     if(item->text(i)=="Продукты"){//"Продукты"
         isOpenItem="Продукты";
-        QLabel* lb=new QLabel("Продукты");
-        lb->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
-      mainHbox->itemAt(1)->widget()->close();
-      mainHbox->removeWidget(mainHbox->itemAt(1)->widget());
-       mainHbox->addWidget(lb);
+        //QLabel* lb=new QLabel("Продукты");
+       // lb->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
+      mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+     Products->setHidden(false);
+     prevopen=2;
     }else
         if(item->text(i)=="Транзакции"){//"Транзакции"
             isOpenItem="Транзакции";
-            QLabel* lb=new QLabel("Транзакции");
-             lb->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
-          mainHbox->itemAt(1)->widget()->close();
-          mainHbox->removeWidget(mainHbox->itemAt(1)->widget());
-           mainHbox->addWidget(lb);
+            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+           Tranzactions->setHidden(false);
+           prevopen=3;
+
     }else
         if(item->text(i)=="Анализ корзины"){//"Анализ корзины"
-            mainHbox->itemAt(1)->widget()->close();
+            mainGbox->itemAt(1)->widget()->close();
     }else
         if(item->text(i)=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
-            mainHbox->itemAt(1)->widget()->close();
+            mainGbox->itemAt(1)->widget()->close();
     }else
         if(item->text(i)=="Диаграммы"){//"Диаграммы"
-            mainHbox->itemAt(1)->widget()->close();
+            mainGbox->itemAt(1)->widget()->close();
     }else
         if(item->text(i)=="Склад"){//"Склад"
-            mainHbox->itemAt(1)->widget()->close();
+            mainGbox->itemAt(1)->widget()->close();
     }
 
 }
@@ -387,7 +368,7 @@ void MainWindow::OpenCSVFile(){
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete csvModel;
+   /* delete csvModel;
     delete tableview;
     delete treeview;
     delete tab;
@@ -395,5 +376,5 @@ MainWindow::~MainWindow()
     delete db2;
     delete style;
     delete welcome;
-    delete mainHbox;
+    delete mainHbox;*/
 }
