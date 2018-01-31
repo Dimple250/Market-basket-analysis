@@ -20,36 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tableview=new QTableView;
     csvModel = new QStandardItemModel;
 
-
-
-
-    Products=new QWidget;
-
-    QWidget* ViewPod=new QWidget;
-
-    QWidget* FilterProd=new QWidget;
-
-    QHBoxLayout* layoutprod=new QHBoxLayout;
-    layoutprod->addWidget(ViewPod);
-    layoutprod->addWidget(FilterProd);
-
-    Products->setLayout(layoutprod);
-
-
-
-
-
-    Tranzactions=new QWidget;
-
-    QWidget* ViewTran=new QWidget;
-
-    QWidget* FilterTran=new QWidget;
-
-    QHBoxLayout* layouttran=new QHBoxLayout;
-    layoutprod->addWidget(ViewTran);
-    layoutprod->addWidget(FilterTran);
-
-    Tranzactions->setLayout(layouttran);
+    createWidgetProducts();
+    createWidgetTransactions();
 
 
    /* QMenu*  menu_file=new QMenu("&File");
@@ -144,20 +116,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     tab->setTabsClosable(true);
 
-    //create test dock
-    //QDockWidget* dock=new QDockWidget(this);
-    //dock->setWidget(tab);
-     //addDockWidget(Qt::RightDockWidgetArea ,dock);
 
+    // createRules();
 
-     //setCentralWidget(tab);
-     createRules();
-
-    // treeviewleft->setFixedHeight(r.height()*0.80);
-     //treeviewleft->setFixedWidth(r.width()*0.15);
+    treeviewleft->setMaximumHeight(r.height()*0.80);
+    treeviewleft->setMaximumWidth(r.width()*0.20);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
      welcome=new QLabel("Добро пожаловат\n ");
-     welcome->setStyleSheet("font-size:50px;padding-top:-500%;padding-left:300%;background-color:#4C5866;padding-right:400%");
+     welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%");
     // treeviewleft->setMinimumWidth(300);
 
      int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/Berniershade.ttf"); //путь к шрифту
@@ -181,6 +147,54 @@ MainWindow::MainWindow(QWidget *parent) :
     // this->setStyleSheet("background-color:#4C5866");
 
    // tab->setHidden(false);
+
+}
+
+void MainWindow::createWidgetProducts(){
+    Products=new QWidget;
+
+    QSqlTableModel *model=new QSqlTableModel(db2);
+        model->setTable("products");
+        model->select();
+        //зпрещает менять значения в ячейках
+        model->setEditStrategy(QSqlTableModel::OnFieldChange);
+
+        QTableView* tableview=new QTableView;
+         tableview->setModel(model);
+
+        tableview->setStyleSheet("background-color:white;");
+
+       // tableview->resize();
+       // tableview->setStyleSheet(style->getTableViewStyleSheet());
+
+    QHBoxLayout* layoutprod=new QHBoxLayout;
+    layoutprod->addWidget(tableview);
+
+    Products->setLayout(layoutprod);
+
+}
+
+void MainWindow::createWidgetTransactions(){
+    Tranzactions=new QWidget;
+
+    QSqlTableModel *model=new QSqlTableModel(db2);
+        model->setTable("transactions");
+        model->select();
+        //зпрещает менять значения в ячейках
+        model->setEditStrategy(QSqlTableModel::OnFieldChange);
+
+        QTableView* tableview=new QTableView;
+         tableview->setModel(model);
+
+        tableview->setStyleSheet("background-color:white;");
+
+       // tableview->resize();
+       // tableview->setStyleSheet(style->getTableViewStyleSheet());
+
+    QHBoxLayout* layout=new QHBoxLayout;
+    layout->addWidget(tableview);
+
+    Tranzactions->setLayout(layout);
 
 }
 
@@ -306,16 +320,28 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
 
     }else
         if(item->text(i)=="Анализ корзины"){//"Анализ корзины"
-            mainGbox->itemAt(1)->widget()->close();
+            isOpenItem="Анализ корзины";
+            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+           //Tranzactions->setHidden(false);
+           prevopen=4;
     }else
         if(item->text(i)=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
-            mainGbox->itemAt(1)->widget()->close();
+            isOpenItem="Поиск шаболных покупок";
+            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+          // Tranzactions->setHidden(false);
+           prevopen=5;
     }else
         if(item->text(i)=="Диаграммы"){//"Диаграммы"
-            mainGbox->itemAt(1)->widget()->close();
+            isOpenItem="Диаграммы";
+            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+          // Tranzactions->setHidden(false);
+           prevopen=6;
     }else
         if(item->text(i)=="Склад"){//"Склад"
-            mainGbox->itemAt(1)->widget()->close();
+            isOpenItem="Склад";
+            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+          // Tranzactions->setHidden(false);
+           prevopen=7;
     }
 
 }

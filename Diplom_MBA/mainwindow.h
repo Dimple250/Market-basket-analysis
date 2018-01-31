@@ -26,6 +26,8 @@ public:
     ~MainWindow();
     void createRules();
     void createTreeTables();
+    void createWidgetProducts();
+    void createWidgetTransactions();
 private:
     Ui::MainWindow *ui;
     QTableView *tableview;
