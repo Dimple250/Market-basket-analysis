@@ -10,7 +10,6 @@ public:
     static QString getWindowStyleSheet();
     static QString getTreeviewStyleSheet();
     static QString getTabWidgetStyleSheet();
-    static QString getAddDataButtonStyleSheet();
     static QString getTableViewStyleSheet();
     static QString getTreeviewfeltStyleSheet();
 };

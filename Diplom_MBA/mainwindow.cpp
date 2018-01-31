@@ -119,12 +119,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // createRules();
 
-    treeviewleft->setMaximumHeight(r.height()*0.80);
+   // treeviewleft->setMaximumHeight(r.height()*0.80);
     treeviewleft->setMaximumWidth(r.width()*0.20);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
      welcome=new QLabel("Добро пожаловат\n ");
      welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%");
-    // treeviewleft->setMinimumWidth(300);
 
      int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/Berniershade.ttf"); //путь к шрифту
          QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
@@ -144,14 +143,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
      ui->centralwidget->setLayout(mainGbox);
-    // this->setStyleSheet("background-color:#4C5866");
-
-   // tab->setHidden(false);
-
 }
 
 void MainWindow::createWidgetProducts(){
     Products=new QWidget;
+    Products->setStyleSheet("background-color:#4C5866;");
 
     QSqlTableModel *model=new QSqlTableModel(db2);
         model->setTable("products");
@@ -162,10 +158,14 @@ void MainWindow::createWidgetProducts(){
         QTableView* tableview=new QTableView;
          tableview->setModel(model);
 
-        tableview->setStyleSheet("background-color:white;");
+        tableview->setStyleSheet(style->getTableViewStyleSheet());
+        tableview->setColumnHidden(0,true);
+        int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/christmasscriptc.ttf"); //путь к шрифту
+                  QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
+                  QFont f(family);  // QFont c вашим шрифтом
 
-       // tableview->resize();
-       // tableview->setStyleSheet(style->getTableViewStyleSheet());
+                 tableview->setFont(f);
+
 
     QHBoxLayout* layoutprod=new QHBoxLayout;
     layoutprod->addWidget(tableview);
@@ -186,7 +186,14 @@ void MainWindow::createWidgetTransactions(){
         QTableView* tableview=new QTableView;
          tableview->setModel(model);
 
-        tableview->setStyleSheet("background-color:white;");
+        tableview->setStyleSheet(style->getTableViewStyleSheet());
+        tableview->setColumnHidden(0,true);
+       int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/christmasscriptc.ttf"); //путь к шрифту
+                 QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
+                 QFont f(family);  // QFont c вашим шрифтом
+
+                tableview->setFont(f);
+
 
        // tableview->resize();
        // tableview->setStyleSheet(style->getTableViewStyleSheet());
@@ -230,7 +237,7 @@ void MainWindow::createRules(){
         //tablewidget->resize(tab->size());
         //tableview->setStyleSheet(style->getTableViewStyleSheet());*/
 
-        tab->setCurrentIndex(1);
+       // tab->setCurrentIndex(1);
 
 
 }
@@ -318,7 +325,7 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
            Tranzactions->setHidden(false);
            prevopen=3;
 
-    }else
+    }/*else
         if(item->text(i)=="Анализ корзины"){//"Анализ корзины"
             isOpenItem="Анализ корзины";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
@@ -342,7 +349,7 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
           // Tranzactions->setHidden(false);
            prevopen=7;
-    }
+    }*/
 
 }
 

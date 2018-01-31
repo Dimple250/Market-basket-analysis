@@ -80,50 +80,43 @@ QString Style::getTabWidgetStyleSheet(){
             "}"*/;
 }
 
-QString Style::getAddDataButtonStyleSheet(){
-    return "QPushButton{ "
-           "background-color: blue; "
-           "margin-left:50%;"
-           "margin-right:50%;"
-           "font-size:15px;border:1 solid gray; "
-           "border-radius:2%;"
-           "}"
-           "QPushButton:disabled{ "
-           "background-color: yellow; "
-           "}"
-           "QPushButton:pressed{ "
-           "background-color: orange; "
-           "}"
-           "QPushButton:focus:pressed{ "
-           "background-color: black; "
-           "}"
-           "QPushButton:focus{ "
-           "background-color: green; "
-           "}"
-           "QPushButton:hover{ "
-           "background-color: red; "
-           "}"
-           "QPushButton:checked{ "
-           "background-color: pink; "
-           "}";
-}
-
 QString Style::getTableViewStyleSheet(){
     return  "QTableView{"
             "border: 0px solid white;"
-            //"background-color:white;"
+            "background-color:#4C5866;"
+
             //"padding-left: 30px;"
             //"padding-top: 30px;"
+            "font-size:30px;"
             "}"
             "QTableView::item{"
-            "}";
+            "border:0px solid white;"
+            "background-color :white;"
+            "width:100px;"
+            "}"
+
+            "QTableView QHeaderView{"
+            "background-color:#4C5866;"
+
+          "}"
+           " QHeaderView::section {"
+           // "background-color:white;"
+         //  " color: white;"
+           //" border: 0px solid white"
+          // " padding-left: 4px;"
+         //  " margin-left  : 25px;"
+
+        "}"
+            ;
 
 }
 QString Style::getTreeviewfeltStyleSheet(){
     return "QTreeWidget::item"
     "{"
             "background-color:#292E3D;"
+           //"background-color:#454545;"
             "color:#9aa5b3;"
+            //"color:#FF8229;"
            //"width:100%;"
             "height:45%;"
             "padding-left:10%;"
@@ -131,7 +124,7 @@ QString Style::getTreeviewfeltStyleSheet(){
     "}"
       "QTreeWidget::item::hover"
                 "{"
-                       // "background-color:#022027;"
+                       //"background-color:#022027;"
                         "background-color:#0ABAB5;"
                         "color:white;"
                 "}"
@@ -149,7 +142,8 @@ QString Style::getTreeviewfeltStyleSheet(){
                 "border:0px solid #102C54;"
             //"width:500px;"
               //"margin-right:250px;"
-        "}";
+        "}"
+         ;
 }
 
 
