@@ -11,14 +11,17 @@ class AssociationRules : public QWidget
     Q_OBJECT
 public:
     explicit AssociationRules(QWidget *parent = 0);
+    ~AssociationRules();
     void CreateRules();
     int getListSize();
     void setMinSup(int sup);
+    QWidget *getTextRyles();
 private:
     QList<QString> list;
     int min_sup;
     int length;
     QMap<QString,double> condits;
+    QWidget* textrules;
 signals:
 
 public slots:

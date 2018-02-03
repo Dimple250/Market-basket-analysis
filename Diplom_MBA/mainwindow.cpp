@@ -13,15 +13,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     db2=new Database;
-    db2->Connect("journal");
+    db2->Connect("supermarket");
     style=new Style;
-    tab=new QTabWidget;
+    tabRules=new QTabWidget;
     treeviewleft=new QTreeWidget;
     tableview=new QTableView;
     csvModel = new QStandardItemModel;
 
     createWidgetProducts();
     createWidgetTransactions();
+    createTabWidgetRules();
 
 
    /* QMenu*  menu_file=new QMenu("&File");
@@ -30,13 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
     menu_file->addSeparator();
     menu_file->addAction("Exit",this,SLOT(close()));
 
-    QMenu*  menu_analiz=new QMenu("&Analysis");
-    menu_file->addAction("Open",this,SLOT(OpenCSVFile()));
+   // QMenu*  menu_analiz=new QMenu("&Analysis");
+    //menu_file->addAction("Open",this,SLOT(OpenCSVFile()));*/
+    QMenu*  menu_rules=new QMenu("&Rules");
+    menu_rules->addAction("Create",this,SLOT(createRules()));
 
-    ui->menuBar->addMenu(menu_file);
-    ui->menuBar->addMenu(menu_analiz);*/
-
-
+    ui->menubar->addMenu(menu_rules);
 
 
 
@@ -58,16 +58,16 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui mainToolBar->setVisible(false);
 
     //loadStyle();
-    createTreeTables();
+    //createTreeTables();
 
     //this->setStyleSheet(style->getWindowStyleSheet());
   // treeview->setStyleSheet(style->getTreeviewStyleSheet());
-    tab->setStyleSheet(style->getTabWidgetStyleSheet());
+    tabRules->setStyleSheet(style->getTabWidgetStyleSheet());
   //  addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
 
 
-    connect(tab,SIGNAL(tabCloseRequested(int)),SLOT(closeTab(int)));
+   // connect(tabRules,SIGNAL(tabCloseRequested(int)),SLOT(closeTab(int)));
     connect(treeviewleft,SIGNAL(itemClicked(QTreeWidgetItem*,int)),SLOT(openItem(QTreeWidgetItem*,int)));
 
 
@@ -92,29 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    //start test block
-    QSqlTableModel *model=new QSqlTableModel(this);
-    model->setTable("transactions");
-    model->select();
-    //зпрещает менять значения в ячейках
-    model->setEditStrategy(QSqlTableModel::OnFieldChange);
-
-
-    tableview->setModel(model);
-
-    //tableview->verticalHeader()->hide();
-
-    //tableview->horizontalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
-    //tableview->verticalHeader()->setStyleSheet("QHeaderView::section{border:1px solid lightgray;}");
-
-    tableview->setStyleSheet("background-color:white;");
-
-    tab->addTab(tableview,model->tableName());
-    tableview->resize(tab->size());
-    //end test block
-
-
-    tab->setTabsClosable(true);
+   // tabRules->setTabsClosable(true);
 
 
     // createRules();
@@ -136,10 +114,13 @@ MainWindow::MainWindow(QWidget *parent) :
      mainGbox->addWidget(welcome,0,1);
      mainGbox->addWidget(Products,0,1);
      mainGbox->addWidget(Tranzactions,0,1);
+
+     mainGbox->addWidget(tabRules,0,1);
      prevopen=1;
+
      Products->setHidden(true);
      Tranzactions->setHidden(true);
-
+     tabRules->setHidden(true);
 
 
      ui->centralwidget->setLayout(mainGbox);
@@ -160,7 +141,7 @@ void MainWindow::createWidgetProducts(){
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
         tableview->setColumnHidden(0,true);
-        int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/christmasscriptc.ttf"); //путь к шрифту
+        int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/yessireebob.ttf"); //путь к шрифту
                   QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
                   QFont f(family);  // QFont c вашим шрифтом
 
@@ -176,6 +157,7 @@ void MainWindow::createWidgetProducts(){
 
 void MainWindow::createWidgetTransactions(){
     Tranzactions=new QWidget;
+    Tranzactions->setStyleSheet("background-color:#4C5866;");
 
     QSqlTableModel *model=new QSqlTableModel(db2);
         model->setTable("transactions");
@@ -205,7 +187,13 @@ void MainWindow::createWidgetTransactions(){
 
 }
 
+void MainWindow::createTabWidgetRules(){
+
+}
+
 void MainWindow::createRules(){
+
+    tabRules->clear();
 
      AssociationRules* rules=new AssociationRules;
      rules->setMinSup(2);
@@ -213,31 +201,8 @@ void MainWindow::createRules(){
      //rules->setTable();
 
 
-         tab->addTab(rules,"Test Rules");
-
-
-   /* QTableWidgetItem* tableitem=0;
-
-      QTableWidget*  tablewidget=new QTableWidget;
-      tablewidget->setRowCount(rules->getListSize());
-      tablewidget->setColumnCount(2);
-      tablewidget->setHorizontalHeaderLabels(QString("Items;Support").split(";"));
-
-      int kol=0;
-
-        for(int i=0;i<rules->getListSize();i++){
-         tableitem=new QTableWidgetItem(list[i]);
-         tablewidget->setItem(kol,0,tableitem);
-         tableitem=new QTableWidgetItem(QString::number(condits[list[i]]));
-         tablewidget->setItem(kol,1,tableitem);
-         kol++;
-        }
-
-        tab->addTab(tablewidget,"Test confidence");
-        //tablewidget->resize(tab->size());
-        //tableview->setStyleSheet(style->getTableViewStyleSheet());*/
-
-       // tab->setCurrentIndex(1);
+         tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
+        // tabRules->addTab(rules,"Test Rules Table");
 
 
 }
@@ -268,41 +233,8 @@ void MainWindow::createTreeTables(){
 
      treeview->header()->hide();*/
 
-
 }
 
-
-void MainWindow::openTable(QTreeWidgetItem * item,int i){
-
-    QString TableName=item->text(i);
-
-    int pages = tab->count() ;
-    for ( int i = 0; i < pages; i++ ) {
-     if ( tab->tabText(i) == TableName ) {
-      tab->setCurrentIndex(i);
-      return;
-     }
-    }
-
-    QSqlTableModel *model=new QSqlTableModel(this);
-    model->setTable(TableName);
-    model->select();
-    //зпрещает менять значения в ячейках
-    model->setEditStrategy(QSqlTableModel::OnFieldChange);
-
-    QTableView* tableview=new QTableView;
-     tableview->setModel(model);
-
-    tableview->setStyleSheet("background-color:white;");
-
-    tab->addTab(tableview,TableName);
-
-    tableview->resize(tab->size());
-    tableview->setStyleSheet(style->getTableViewStyleSheet());
-
-    tab->setCurrentIndex(tab->currentIndex()+1);
-
-}
 
 void MainWindow::openItem(QTreeWidgetItem * item,int i){
 
@@ -313,8 +245,6 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
 
     if(item->text(i)=="Продукты"){//"Продукты"
         isOpenItem="Продукты";
-        //QLabel* lb=new QLabel("Продукты");
-       // lb->setStyleSheet("font-size:50px;padding-top:-300%;padding-left:100%;background-color:#4C5866;");
       mainGbox->itemAt(prevopen)->widget()->setHidden(true);
      Products->setHidden(false);
      prevopen=2;
@@ -325,19 +255,19 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
            Tranzactions->setHidden(false);
            prevopen=3;
 
-    }/*else
+    }else
         if(item->text(i)=="Анализ корзины"){//"Анализ корзины"
-            isOpenItem="Анализ корзины";
+            /*isOpenItem="Анализ корзины";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            //Tranzactions->setHidden(false);
-           prevopen=4;
+           prevopen=4;*/
     }else
         if(item->text(i)=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
             isOpenItem="Поиск шаболных покупок";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-          // Tranzactions->setHidden(false);
-           prevopen=5;
-    }else
+           tabRules->setHidden(false);
+           prevopen=4;
+    }/*else
         if(item->text(i)=="Диаграммы"){//"Диаграммы"
             isOpenItem="Диаграммы";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
@@ -353,9 +283,9 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
 
 }
 
-void MainWindow::closeTab(int index){
-    tab->removeTab(index);
-}
+/*void MainWindow::closeTab(int index){
+    tabRules->removeTab(index);
+}*/
 
 void MainWindow::OpenCSVFile(){
     QString str = QFileDialog::getOpenFileName(0, "Open file", "", "*.csv");
@@ -395,7 +325,7 @@ void MainWindow::OpenCSVFile(){
            file.close();
        }
        tableview->setModel(csvModel);
-       tab->addTab(tableview,"CSV");
+       tabRules->addTab(tableview,"CSV");
 }
 
 MainWindow::~MainWindow()

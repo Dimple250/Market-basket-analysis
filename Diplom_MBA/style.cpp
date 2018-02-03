@@ -99,14 +99,14 @@ QString Style::getTableViewStyleSheet(){
             "background-color:#4C5866;"
 
           "}"
-           " QHeaderView::section {"
+          // " QHeaderView::section {"
            // "background-color:white;"
          //  " color: white;"
            //" border: 0px solid white"
           // " padding-left: 4px;"
          //  " margin-left  : 25px;"
 
-        "}"
+       // "}"
             ;
 
 }

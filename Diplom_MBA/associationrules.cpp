@@ -5,6 +5,10 @@ AssociationRules::AssociationRules(QWidget *parent) : QWidget(parent)
 
 }
 
+AssociationRules::~AssociationRules(){
+    delete textrules;
+}
+
 int AssociationRules::getListSize(){
 
     return list.length();
@@ -90,29 +94,33 @@ void AssociationRules::CreateRules(){
             query2->last();
            flag=query2->at();
         }
+}
 
-         QLabel* lb=new QLabel(this);
-         int y=0;
-         for(int i=5;i<list.length();i++){
-             lb=new QLabel(this);
-             y+=20;
-         lb->setStyleSheet("margin-top:"+QString::number(y)+"px;margin-left:0px;");
-         double sup=condits[list[i]];
-         double cond=condits[list[i]]/condits[list[i].split(",")[0]];
-         //double lift=condits[list[2]]/(condits[list[2].split(",")[0]]*condits[list[2].split(",")[1]]);
-         double supX=1;
-         for(int k=0;k<list[i].split(",").length();k++){
-             supX*=condits[list[i].split(",")[k]];
-         }
-         double improvement=sup/supX;
-         QString st="";
-         for(int k=1;k<list[i].split(",").length();k++){
-             st+=list[i].split(",")[k];
-             if(k!=list[i].split(",").length()-1){
-             st+=",";
-             }
-         }
-         lb->setText(list[i].split(",")[0]+"==>{"+st+"} {support:"+QString::number(sup,'f',2)+",confidence:"+QString::number(cond,'f',2)+",improvement:"+QString::number(improvement,'f',2)+"}");
-       }
+QWidget *AssociationRules::getTextRyles(){
 
+    textrules=new QWidget;
+    QLabel* lb=new QLabel(textrules);
+    int y=0;
+    for(int i=5;i<list.length();i++){
+        //lb=new QLabel(textrules);
+        //y+=20;
+    //lb->setStyleSheet("margin-top:"+QString::number(y)+"px;margin-left:0px;");
+    double sup=condits[list[i]];
+    double cond=condits[list[i]]/condits[list[i].split(",")[0]];
+    //double lift=condits[list[2]]/(condits[list[2].split(",")[0]]*condits[list[2].split(",")[1]]);
+    double supX=1;
+    for(int k=0;k<list[i].split(",").length();k++){
+        supX*=condits[list[i].split(",")[k]];
+    }
+    double improvement=sup/supX;
+    QString st="";
+    for(int k=1;k<list[i].split(",").length();k++){
+        st+=list[i].split(",")[k];
+        if(k!=list[i].split(",").length()-1){
+        st+=",";
+        }
+    }
+    lb->setText(lb->text()+list[i].split(",")[0]+"==>{"+st+"} {support:"+QString::number(sup,'f',2)+",confidence:"+QString::number(cond,'f',2)+",improvement:"+QString::number(improvement,'f',2)+"}\n");
+  }
+    return textrules;
 }

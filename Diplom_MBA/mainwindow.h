@@ -24,15 +24,15 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void createRules();
     void createTreeTables();
     void createWidgetProducts();
     void createWidgetTransactions();
+    void createTabWidgetRules();
 private:
     Ui::MainWindow *ui;
     QTableView *tableview;
     QTreeWidget* treeviewleft;
-    QTabWidget* tab;
+    QTabWidget* tabRules;
     Database* db2;
     Style* style;
     QMap<QString,double> condits;
@@ -46,10 +46,10 @@ private:
     QWidget* Products;
     QWidget* Tranzactions;
 public slots:
-    void openTable(QTreeWidgetItem*,int);
     void openItem(QTreeWidgetItem*,int);
-    void closeTab(int);
+   // void closeTab(int);
     void OpenCSVFile();
+    void createRules();
 };
 
 #endif // MAINWINDOW_H
