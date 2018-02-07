@@ -124,3 +124,7 @@ QWidget *AssociationRules::getTextRyles(){
   }
     return textrules;
 }
+
+QWidget *AssociationRules::getTableRyles(){
+
+}

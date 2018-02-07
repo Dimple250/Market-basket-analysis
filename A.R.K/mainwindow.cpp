@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
      welcome=new QLabel("Добро пожаловат\n ");
      welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%");
 
-     int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/Berniershade.ttf"); //путь к шрифту
+     int id = QFontDatabase::addApplicationFont("../Fonts/Berniershade.ttf"); //путь к шрифту
          QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
          QFont f(family);  // QFont c вашим шрифтом
 
@@ -141,7 +141,7 @@ void MainWindow::createWidgetProducts(){
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
         tableview->setColumnHidden(0,true);
-        int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/yessireebob.ttf"); //путь к шрифту
+        int id = QFontDatabase::addApplicationFont("../Fonts/yessireebob.ttf"); //путь к шрифту
                   QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
                   QFont f(family);  // QFont c вашим шрифтом
 
@@ -170,7 +170,7 @@ void MainWindow::createWidgetTransactions(){
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
         tableview->setColumnHidden(0,true);
-       int id = QFontDatabase::addApplicationFont("/home/elaks/Документы/College/Диплом/Diplom_MBA/Fonts/christmasscriptc.ttf"); //путь к шрифту
+       int id = QFontDatabase::addApplicationFont("../Fonts/christmasscriptc.ttf"); //путь к шрифту
                  QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
                  QFont f(family);  // QFont c вашим шрифтом
 
@@ -288,7 +288,7 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
 }*/
 
 void MainWindow::OpenCSVFile(){
-    QString str = QFileDialog::getOpenFileName(0, "Open file", "", "*.csv");
+   /* QString str = QFileDialog::getOpenFileName(0, "Open file", "", "*.csv");
     if(str==""){
         return;
     }
@@ -325,7 +325,7 @@ void MainWindow::OpenCSVFile(){
            file.close();
        }
        tableview->setModel(csvModel);
-       tabRules->addTab(tableview,"CSV");
+       tabRules->addTab(tableview,"CSV");*/
 }
 
 MainWindow::~MainWindow()

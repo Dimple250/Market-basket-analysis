@@ -16,6 +16,7 @@ public:
     int getListSize();
     void setMinSup(int sup);
     QWidget *getTextRyles();
+    QWidget *getTableRyles();
 private:
     QList<QString> list;
     int min_sup;
