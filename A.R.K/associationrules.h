@@ -23,6 +23,8 @@ private:
     int length;
     QMap<QString,double> condits;
     QWidget* textrules;
+    QWidget* tablerules;
+    int propuck;
 signals:
 
 public slots:

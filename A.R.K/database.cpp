@@ -8,7 +8,7 @@ Database::Database()
 void Database::Connect(QString namebd){
 
     db.setHostName("localhost");
-    db.setDatabaseName("supermarket");
+    db.setDatabaseName("market");
     db.setUserName("root");
     db.setPassword("233685614");
 

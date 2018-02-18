@@ -84,33 +84,46 @@ QString Style::getTableViewStyleSheet(){
     return  "QTableView{"
             "border: 0px solid white;"
             "background-color:#4C5866;"
-
-            //"padding-left: 30px;"
-            //"padding-top: 30px;"
-            "font-size:30px;"
+            "font-size:15px;"
             "}"
+
             "QTableView::item{"
             "border:0px solid white;"
             "background-color :white;"
-            "width:100px;"
+            "selection-background-color:yellow;"
+            //"padding-right: 40px;"
+           // "padding-top: 0px;"
+            "color:black;"
+            //"padding-bottom: 10px;"
             "}"
+
+            //"QTableView::item {selection-color: black; selection-background-color:green;}"
+
+            //"QTableView::item::hover{"
+            //"background-color:#0ABAB5;"
+            //"color:black;"
+            //"}"
 
             "QTableView QHeaderView{"
             "background-color:#4C5866;"
 
           "}"
-          // " QHeaderView::section {"
-           // "background-color:white;"
-         //  " color: white;"
-           //" border: 0px solid white"
-          // " padding-left: 4px;"
-         //  " margin-left  : 25px;"
+          /* " QHeaderView::section {"
+            "background-color:white;"
+           " color: white;"
+           " border: 0px solid white"
+           " padding-left: 4px;"
+           " margin-left  : 25px;"
 
-       // "}"
-            ;
+        "}"*/
+            "QTableView::selected"
+    "{"
+    "   selection-background-color: yellow;"
+    "}"
+           ;
 
 }
-QString Style::getTreeviewfeltStyleSheet(){
+QString Style::getTreeviewleftStyleSheet(){
     return "QTreeWidget::item"
     "{"
             "background-color:#292E3D;"

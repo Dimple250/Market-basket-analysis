@@ -42,6 +42,7 @@ private:
 
     QString isOpenItem;
     int prevopen;
+    int numchek;
 
     QWidget* Products;
     QWidget* Tranzactions;

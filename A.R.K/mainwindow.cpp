@@ -10,14 +10,14 @@ MainWindow::MainWindow(QWidget *parent) :
     const QRect r = QApplication::desktop()->availableGeometry();
     this->resize(r.width()*0.80, r.height()*0.80);
 
+    numchek=1001;
 
 
     db2=new Database;
-    db2->Connect("supermarket");
+    db2->Connect("market");
     style=new Style;
     tabRules=new QTabWidget;
     treeviewleft=new QTreeWidget;
-    tableview=new QTableView;
     csvModel = new QStandardItemModel;
 
     createWidgetProducts();
@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    treeviewleft->setStyleSheet(style->getTreeviewfeltStyleSheet());
+    treeviewleft->setStyleSheet(style->getTreeviewleftStyleSheet());
      QTreeWidgetItem* item=0;
 
      QStringList list;
@@ -84,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
      }
 
      treeviewleft->header()->hide();
+
 
     //QDockWidget* dockLeft=new QDockWidget("Items");
    // dockLeft->setWidget(treeviewleft);
@@ -99,11 +100,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
    // treeviewleft->setMaximumHeight(r.height()*0.80);
     treeviewleft->setMaximumWidth(r.width()*0.20);
+    treeviewleft->setMinimumWidth(r.width()*0.10);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
      welcome=new QLabel("Добро пожаловат\n ");
-     welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%");
+     welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%;color:white;");
 
-     int id = QFontDatabase::addApplicationFont("../Fonts/Berniershade.ttf"); //путь к шрифту
+     int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
          QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
          QFont f(family);  // QFont c вашим шрифтом
 
@@ -124,29 +126,66 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
      ui->centralwidget->setLayout(mainGbox);
+
+
 }
 
 void MainWindow::createWidgetProducts(){
     Products=new QWidget;
     Products->setStyleSheet("background-color:#4C5866;");
 
-    QSqlTableModel *model=new QSqlTableModel(db2);
+    tableview=new QTableView(Products);
+    /*QSqlTableModel *model=new QSqlTableModel(db2);
         model->setTable("products");
         model->select();
         //зпрещает менять значения в ячейках
         model->setEditStrategy(QSqlTableModel::OnFieldChange);
 
         QTableView* tableview=new QTableView;
-         tableview->setModel(model);
+         tableview->setModel(model);*/
+    QSqlQuery query;
+        query.exec("select category.name,products.name,price from products inner join category using(idcat);");
+
+        QStandardItemModel *model = new QStandardItemModel;
+        QStandardItem *item;
+
+        QStringList horizontalHeader;
+           horizontalHeader.append("");
+           horizontalHeader.append("Категория");
+           horizontalHeader.append("Продукты");
+           horizontalHeader.append("Цена");
+
+           model->setHorizontalHeaderLabels(horizontalHeader);
+
+           int i=0;
+           while (query.next()) {
+           //Первый ряд
+           item = new QStandardItem(query.value(0).toString());
+           model->setItem(i, 1, item);
+
+           item = new QStandardItem(query.value(1).toString());
+           model->setItem(i, 2, item);
+
+           item = new QStandardItem(QString::number(query.value(2).toFloat()));
+           model->setItem(i, 3, item);
+           i++;
+  }
+
+           tableview->setModel(model);
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
         tableview->setColumnHidden(0,true);
-        int id = QFontDatabase::addApplicationFont("../Fonts/yessireebob.ttf"); //путь к шрифту
+        int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
                   QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
                   QFont f(family);  // QFont c вашим шрифтом
 
                  tableview->setFont(f);
 
+                 tableview->resizeRowsToContents();
+                 tableview->resizeColumnsToContents();
+                 tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
+                    tableview->setAlternatingRowColors(true);
+                     tableview->setSelectionMode(QAbstractItemView::SingleSelection);
 
     QHBoxLayout* layoutprod=new QHBoxLayout;
     layoutprod->addWidget(tableview);
@@ -170,11 +209,15 @@ void MainWindow::createWidgetTransactions(){
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
         tableview->setColumnHidden(0,true);
-       int id = QFontDatabase::addApplicationFont("../Fonts/christmasscriptc.ttf"); //путь к шрифту
+       int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
                  QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
                  QFont f(family);  // QFont c вашим шрифтом
 
                 tableview->setFont(f);
+                tableview->resizeRowsToContents();
+                tableview->resizeColumnsToContents();
+                tableview->setEnabled(false);
+                tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
        // tableview->resize();
@@ -193,16 +236,50 @@ void MainWindow::createTabWidgetRules(){
 
 void MainWindow::createRules(){
 
+    //Creater transaction
+  /*  QTime midnight(0,0,0);
+    qsrand(midnight.secsTo(QTime::currentTime()));
+    QStringList st;
+    QFile file("/home/elaks/Документы/College/Диплом/Diplom_A.R.K/BD/Transactions.txt");
+    if ( !file.open(QFile::ReadOnly | QFile::Text) ) {
+        qDebug() << "File not exists";
+    } else {
+        // Create a thread to retrieve data from a file
+        QTextStream in(&file);
+        //Reads the data up to the end of file
+        while (!in.atEnd())
+        {
+            st<<in.readLine();
+        }
+       // qDebug()<<st[0];
+    }
+     int k=qrand()%15+1;
+     QString str="";
+     for(int i=0;i<k;i++){
+        // qDebug()<<st[qrand()%90];
+        str+=QString::number(numchek)+";"+st[qrand()%90]+QString::number(qrand()%5+1)+'\n';
+     }
+;
+     QFile fileOut("/home/elaks/Документы/College/Диплом/Diplom_A.R.K/BD/TR.txt"); // Связываем объект с файлом fileout.txt
+         if(fileOut.open(QIODevice::Append | QIODevice::Text))
+         { // Если файл успешно открыт для записи в текстовом режиме
+             QTextStream writeStream(&fileOut); // Создаем объект класса QTextStream
+     // и передаем ему адрес объекта fileOut
+             writeStream <<str; // Посылаем строку в поток для записи
+             fileOut.close(); // Закрываем файл
+         }*/
+     numchek++;
+
+
     tabRules->clear();
 
      AssociationRules* rules=new AssociationRules;
-     rules->setMinSup(2);
+     rules->setMinSup(7);
      rules->CreateRules();
      //rules->setTable();
 
-
-         tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
-        // tabRules->addTab(rules,"Test Rules Table");
+       tabRules->addTab(rules->getTableRyles(),"Test Rules Table");
+        tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
 
 
 }

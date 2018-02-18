@@ -11,7 +11,7 @@ public:
     static QString getTreeviewStyleSheet();
     static QString getTabWidgetStyleSheet();
     static QString getTableViewStyleSheet();
-    static QString getTreeviewfeltStyleSheet();
+    static QString getTreeviewleftStyleSheet();
 };
 
 #endif // STYLE_H
