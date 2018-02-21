@@ -159,6 +159,26 @@ QString Style::getTreeviewleftStyleSheet(){
          ;
 }
 
+QString Style::getComboBoxStyleSheet(){
+    return "QComboBox::item"
+    "{"
+
+    "}"
+
+    "QComboBox"
+        "{"
+               // "background-color:#4C5866;"
+                "font-size:15px;"
+                //"border:0px solid #102C54;"
+            "selection-color:white;"
+            "selection-background-color:#0ABAB5;"
+        "}"
+            "QComboBox::selected"
+                "{"
+
+                "}"
+         ;
+}
 
 
 

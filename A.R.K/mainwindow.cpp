@@ -166,8 +166,7 @@ void MainWindow::ProductsView(){
 void MainWindow::createWidgetProducts(){
     Products=new QWidget;
     QWidget* SettingProducts=new QWidget;
-    SettingProducts->setMinimumWidth(100);
-    QLabel* nameFilter=new QLabel("Фильтер");
+    //SettingProducts->setMinimumWidth(100);
 
 
     Products->setStyleSheet("background-color:#4C5866;");
@@ -176,12 +175,24 @@ void MainWindow::createWidgetProducts(){
     tableview=new QTableView(Products);
 
     QStringList ls;
-    ls<<"Все"<<"Овощи"<<"Крупы"<<"Хлеба";
+    ls<<"Все"<<"Овощи"
+    <<"Мясо,копчености"
+    <<"Рыбные"
+    <<"Зелень"
+    <<"Хлеба"
+    <<"Молоко,сыры,яйца"
+    <<"Крупы"
+    <<"Макаронные изделия"
+    <<"Соль,сахар,крахмал,сода"
+    <<"Масла растительные"
+    <<"Алкогольные напитки"
+    <<"Безалкогольные напитки и соки";
 
-    listCategory=new QComboBox;
+    listCategory=new QComboBox(SettingProducts);
+    listCategory->setStyleSheet(style->getComboBoxStyleSheet());
     listCategory->addItems(ls);
 
-    QPushButton* button_setcategory=new QPushButton("Применить");
+    QPushButton* button_setcategory=new QPushButton("Применить",SettingProducts);
     connect(button_setcategory,SIGNAL(clicked()),this,SLOT(ProductsView()));
     /*QSqlTableModel *model=new QSqlTableModel(db2);
         model->setTable("products");
@@ -228,6 +239,7 @@ void MainWindow::createWidgetProducts(){
                   QFont f(family);  // QFont c вашим шрифтом
 
                  tableview->setFont(f);
+                 SettingProducts->setFont(f);
 
                  tableview->resizeRowsToContents();
                  tableview->resizeColumnsToContents();
@@ -235,8 +247,14 @@ void MainWindow::createWidgetProducts(){
                     tableview->setAlternatingRowColors(true);
                      tableview->setSelectionMode(QAbstractItemView::SingleSelection);
 
+
+                     QLabel* nameFilter=new QLabel("Фильтр",SettingProducts);
+                     nameFilter->setAlignment(Qt::AlignCenter);
+                     nameFilter->setStyleSheet("font-size:15px;");
+
     QVBoxLayout*  layoutsettprod=new QVBoxLayout;
     layoutsettprod->addWidget(nameFilter);
+    layoutsettprod->addWidget(new QLabel("Категория:",SettingProducts));
     layoutsettprod->addWidget(listCategory);
     layoutsettprod->addStretch(10);
     layoutsettprod->addWidget(button_setcategory);

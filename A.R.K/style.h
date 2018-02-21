@@ -12,6 +12,7 @@ public:
     static QString getTabWidgetStyleSheet();
     static QString getTableViewStyleSheet();
     static QString getTreeviewleftStyleSheet();
+    static QString getComboBoxStyleSheet();
 };
 
 #endif // STYLE_H
