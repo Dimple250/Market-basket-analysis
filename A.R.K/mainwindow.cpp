@@ -122,11 +122,67 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
+
+void MainWindow::ProductsView(){
+    QString category="";
+    QString querystr="";
+    if(listCategory->currentIndex()==0){
+        querystr="select category.name,products.name,price from products inner join category using(idcat);";
+    }else{
+        category=listCategory->currentText();
+        querystr="select category.name,products.name,price from products inner join category using(idcat) where category.name like '"+category+"';";
+    }
+
+        QSqlQuery query;
+            query.exec(querystr);
+
+        QStandardItemModel *model = new QStandardItemModel;
+        QStandardItem *item;
+
+        QStringList horizontalHeader;
+           horizontalHeader.append("");
+           horizontalHeader.append("Категория");
+           horizontalHeader.append("Продукты");
+           horizontalHeader.append("Цена");
+
+           model->setHorizontalHeaderLabels(horizontalHeader);
+
+           int i=0;
+           while (query.next()) {
+           //Первый ряд
+           item = new QStandardItem(query.value(0).toString());
+           model->setItem(i, 1, item);
+
+           item = new QStandardItem(query.value(1).toString());
+           model->setItem(i, 2, item);
+
+           item = new QStandardItem(QString::number(query.value(2).toFloat()));
+           model->setItem(i, 3, item);
+           i++;
+}
+           tableview->setModel(model);
+}
+
 void MainWindow::createWidgetProducts(){
     Products=new QWidget;
+    QWidget* SettingProducts=new QWidget;
+    SettingProducts->setMinimumWidth(100);
+    QLabel* nameFilter=new QLabel("Фильтер");
+
+
     Products->setStyleSheet("background-color:#4C5866;");
+    SettingProducts->setStyleSheet("background-color:white;color:black;");
 
     tableview=new QTableView(Products);
+
+    QStringList ls;
+    ls<<"Все"<<"Овощи"<<"Крупы"<<"Хлеба";
+
+    listCategory=new QComboBox;
+    listCategory->addItems(ls);
+
+    QPushButton* button_setcategory=new QPushButton("Применить");
+    connect(button_setcategory,SIGNAL(clicked()),this,SLOT(ProductsView()));
     /*QSqlTableModel *model=new QSqlTableModel(db2);
         model->setTable("products");
         model->select();
@@ -179,8 +235,17 @@ void MainWindow::createWidgetProducts(){
                     tableview->setAlternatingRowColors(true);
                      tableview->setSelectionMode(QAbstractItemView::SingleSelection);
 
+    QVBoxLayout*  layoutsettprod=new QVBoxLayout;
+    layoutsettprod->addWidget(nameFilter);
+    layoutsettprod->addWidget(listCategory);
+    layoutsettprod->addStretch(10);
+    layoutsettprod->addWidget(button_setcategory);
+
+    SettingProducts->setLayout(layoutsettprod);
+
     QHBoxLayout* layoutprod=new QHBoxLayout;
     layoutprod->addWidget(tableview);
+    layoutprod->addWidget(SettingProducts);
 
     Products->setLayout(layoutprod);
 
@@ -275,6 +340,8 @@ void MainWindow::createRules(){
      AssociationRules* rules=new AssociationRules;
      rules->setMinSup(5);
      rules->setMinConf(50);
+     rules->setMaxSup(10);
+     rules->setMaxConf(100);
      rules->CreateRules();
      //rules->setTable();
 

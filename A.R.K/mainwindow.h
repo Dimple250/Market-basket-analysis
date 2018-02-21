@@ -40,6 +40,8 @@ private:
     QGridLayout* mainGbox;
     QLabel*  welcome;
 
+    QComboBox* listCategory;
+
     QString isOpenItem;
     int prevopen;
     int numchek;
@@ -51,6 +53,7 @@ public slots:
    // void closeTab(int);
     void OpenCSVFile();
     void createRules();
+    void ProductsView();
 };
 
 #endif // MAINWINDOW_H
