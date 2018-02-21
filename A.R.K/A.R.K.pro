@@ -17,12 +17,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     database.cpp \
     style.cpp \
-    associationrules.cpp
+    associationrules.cpp \
+    salesanalysis.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     style.h \
-    associationrules.h
+    associationrules.h \
+    salesanalysis.h
 
 FORMS    += \
     mainwindow.ui
