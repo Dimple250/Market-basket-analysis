@@ -141,11 +141,11 @@ QString Style::getTreeviewleftStyleSheet(){
                         "background-color:#0ABAB5;"
                         "color:white;"
                 "}"
-    /* "QTreeWidget::item:selected"
+     "QTreeWidget::item:selected"
              "{"
                         "background-color:#0ABAB5;"
                         "color:white;"
-           " }"*/
+           " }"
     "QTreeWidget"
         "{"
                 "background-color:#4C5866;"

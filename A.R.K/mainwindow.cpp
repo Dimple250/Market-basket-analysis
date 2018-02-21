@@ -86,17 +86,9 @@ MainWindow::MainWindow(QWidget *parent) :
      treeviewleft->header()->hide();
 
 
-    //QDockWidget* dockLeft=new QDockWidget("Items");
-   // dockLeft->setWidget(treeviewleft);
-    //dockBD->setStyleSheet("background-color:pink;");
-   // addDockWidget(Qt::LeftDockWidgetArea,dockLeft);
-
 
 
    // tabRules->setTabsClosable(true);
-
-
-    // createRules();
 
    // treeviewleft->setMaximumHeight(r.height()*0.80);
     treeviewleft->setMaximumWidth(r.width()*0.20);
@@ -208,15 +200,15 @@ void MainWindow::createWidgetTransactions(){
          tableview->setModel(model);
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
-        tableview->setColumnHidden(0,true);
+        //tableview->setColumnHidden(0,true);
+        tableview->setColumnWidth(2,250);
        int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
                  QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
                  QFont f(family);  // QFont c вашим шрифтом
 
                 tableview->setFont(f);
-                tableview->resizeRowsToContents();
-                tableview->resizeColumnsToContents();
-                tableview->setEnabled(false);
+              //  tableview->resizeRowsToContents();
+               // tableview->resizeColumnsToContents();
                 tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
@@ -237,7 +229,7 @@ void MainWindow::createTabWidgetRules(){
 void MainWindow::createRules(){
 
     //Creater transaction
-  /*  QTime midnight(0,0,0);
+    /*QTime midnight(0,0,0);
     qsrand(midnight.secsTo(QTime::currentTime()));
     QStringList st;
     QFile file("/home/elaks/Документы/College/Диплом/Diplom_A.R.K/BD/Transactions.txt");
@@ -255,11 +247,18 @@ void MainWindow::createRules(){
     }
      int k=qrand()%15+1;
      QString str="";
+     int rand=0;
+     QList<int> list;
      for(int i=0;i<k;i++){
         // qDebug()<<st[qrand()%90];
-        str+=QString::number(numchek)+";"+st[qrand()%90]+QString::number(qrand()%5+1)+'\n';
+         rand=qrand()%92;
+        while(list.indexOf(rand)!=-1){
+        rand=qrand()%92;
+        }
+        str+=QString::number(numchek)+";"+st[rand]+QString::number(qrand()%5+1)+'\n';
+         list<<rand;
      }
-;
+
      QFile fileOut("/home/elaks/Документы/College/Диплом/Diplom_A.R.K/BD/TR.txt"); // Связываем объект с файлом fileout.txt
          if(fileOut.open(QIODevice::Append | QIODevice::Text))
          { // Если файл успешно открыт для записи в текстовом режиме
@@ -267,14 +266,15 @@ void MainWindow::createRules(){
      // и передаем ему адрес объекта fileOut
              writeStream <<str; // Посылаем строку в поток для записи
              fileOut.close(); // Закрываем файл
-         }*/
-     numchek++;
+         }
+     numchek++;*/
 
 
     tabRules->clear();
 
      AssociationRules* rules=new AssociationRules;
-     rules->setMinSup(7);
+     rules->setMinSup(5);
+     rules->setMinConf(50);
      rules->CreateRules();
      //rules->setTable();
 

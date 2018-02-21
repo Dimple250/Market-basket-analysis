@@ -15,11 +15,17 @@ public:
     void CreateRules();
     int getListSize();
     void setMinSup(int sup);
+    void setMinConf(int conf);
+    void setMaxSup(int sup);
+    void setMaxConf(int conf);
     QWidget *getTextRyles();
     QWidget *getTableRyles();
 private:
     QList<QString> list;
     int min_sup;
+    int min_conf;
+    int max_sup;
+    int max_conf;
     int length;
     QMap<QString,double> condits;
     QWidget* textrules;
