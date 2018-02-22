@@ -10,6 +10,7 @@
 #include "database.h"
 #include "style.h"
 #include "associationrules.h"
+#include "QCustomPlot/qcustomplot.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +40,7 @@ private:
     QStandardItemModel *csvModel;
     QGridLayout* mainGbox;
     QLabel*  welcome;
+    QCustomPlot* customplot;
 
     QComboBox* listCategory;
 

@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     numchek=1001;
 
+    /*customplot = new QCustomPlot;
+    customplot->replot();
+    customplot->show();*/
+
 
     db2=new Database;
     db2->Connect("market");

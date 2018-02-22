@@ -7,7 +7,7 @@
 QT       += core gui
 QT       += sql
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = Dimplom_A.R.K
 TEMPLATE = app
@@ -18,13 +18,15 @@ SOURCES += main.cpp\
     database.cpp \
     style.cpp \
     associationrules.cpp \
-    salesanalysis.cpp
+    salesanalysis.cpp \
+    QCustomPlot/qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     style.h \
     associationrules.h \
-    salesanalysis.h
+    salesanalysis.h \
+    QCustomPlot/qcustomplot.h
 
 FORMS    += \
     mainwindow.ui
