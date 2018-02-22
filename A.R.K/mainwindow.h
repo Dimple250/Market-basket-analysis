@@ -32,6 +32,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QTableView *tableview;
+    QTableView *tableviewTrans;
     QTreeWidget* treeviewleft;
     QTabWidget* tabRules;
     Database* db2;
@@ -47,6 +48,7 @@ private:
     QString isOpenItem;
     int prevopen;
     int numchek;
+    QFont f;
 
     QWidget* Products;
     QWidget* Tranzactions;
@@ -56,6 +58,7 @@ public slots:
     void OpenCSVFile();
     void createRules();
     void ProductsView();
+    void TransactionView();
 };
 
 #endif // MAINWINDOW_H

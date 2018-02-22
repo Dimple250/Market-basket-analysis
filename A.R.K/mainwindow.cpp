@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     /*customplot = new QCustomPlot;
     customplot->replot();
     customplot->show();*/
+    int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
+              QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
+              f.setFamily(family);  // QFont c вашим шрифтом
 
 
     db2=new Database;
@@ -98,12 +101,8 @@ MainWindow::MainWindow(QWidget *parent) :
     treeviewleft->setMaximumWidth(r.width()*0.20);
     treeviewleft->setMinimumWidth(r.width()*0.10);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
-     welcome=new QLabel("Добро пожаловат\n ");
+     welcome=new QLabel("Дабро пожаловаться\n ");
      welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%;color:white;");
-
-     int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
-         QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
-         QFont f(family);  // QFont c вашим шрифтом
 
          treeviewleft->setFont(f);
 
@@ -174,7 +173,10 @@ void MainWindow::createWidgetProducts(){
 
 
     Products->setStyleSheet("background-color:#4C5866;");
-    SettingProducts->setStyleSheet("background-color:white;color:black;");
+    SettingProducts->setObjectName("sett");
+
+    QString stylefilter="background-color:#292E3D;color:#9aa5b3;";
+     SettingProducts->setStyleSheet("#sett{border:2px solid black;"+stylefilter+"}");
 
     tableview=new QTableView(Products);
 
@@ -196,7 +198,10 @@ void MainWindow::createWidgetProducts(){
     listCategory->setStyleSheet(style->getComboBoxStyleSheet());
     listCategory->addItems(ls);
 
-    QPushButton* button_setcategory=new QPushButton("Применить",SettingProducts);
+    connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(ProductsView()));
+
+    QPushButton* button_setcategory=new QPushButton("Применить");
+    button_setcategory->setStyleSheet(stylefilter);
     connect(button_setcategory,SIGNAL(clicked()),this,SLOT(ProductsView()));
     /*QSqlTableModel *model=new QSqlTableModel(db2);
         model->setTable("products");
@@ -238,9 +243,6 @@ void MainWindow::createWidgetProducts(){
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
         tableview->setColumnHidden(0,true);
-        int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
-                  QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
-                  QFont f(family);  // QFont c вашим шрифтом
 
                  tableview->setFont(f);
                  SettingProducts->setFont(f);
@@ -252,9 +254,9 @@ void MainWindow::createWidgetProducts(){
                      tableview->setSelectionMode(QAbstractItemView::SingleSelection);
 
 
-                     QLabel* nameFilter=new QLabel("Фильтр",SettingProducts);
+                     QLabel* nameFilter=new QLabel("Фильтр");
                      nameFilter->setAlignment(Qt::AlignCenter);
-                     nameFilter->setStyleSheet("font-size:15px;");
+                     nameFilter->setStyleSheet("font-size:15px;"+stylefilter);
 
     QVBoxLayout*  layoutsettprod=new QVBoxLayout;
     layoutsettprod->addWidget(nameFilter);
@@ -273,37 +275,89 @@ void MainWindow::createWidgetProducts(){
 
 }
 
+
+void MainWindow::TransactionView(){
+   QSqlQuery query;
+            query.exec("select * from transactions;");
+
+            QStandardItemModel *model = new QStandardItemModel;
+            QStandardItem *item;
+
+            QStringList horizontalHeader;
+               horizontalHeader.append("Номер");
+               horizontalHeader.append("Продукты");
+               horizontalHeader.append("Кол-во");
+
+               model->setHorizontalHeaderLabels(horizontalHeader);
+
+               int i=0;
+               while (query.next()) {
+               //Первый ряд
+               item = new QStandardItem(QString::number(query.value(0).toInt()));
+               model->setItem(i, 0, item);
+
+               item = new QStandardItem(query.value(2).toString());
+               model->setItem(i, 1, item);
+
+               item = new QStandardItem(QString::number(query.value(3).toInt()));
+               model->setItem(i, 2, item);
+               i++;
+      }
+
+             tableviewTrans->setModel(model);
+
+}
+
 void MainWindow::createWidgetTransactions(){
     Tranzactions=new QWidget;
     Tranzactions->setStyleSheet("background-color:#4C5866;");
+    tableviewTrans=new QTableView;
 
-    QSqlTableModel *model=new QSqlTableModel(db2);
-        model->setTable("transactions");
-        model->select();
-        //зпрещает менять значения в ячейках
-        model->setEditStrategy(QSqlTableModel::OnFieldChange);
+    QSqlQuery query;
+        query.exec("select * from transactions;");
 
-        QTableView* tableview=new QTableView;
-         tableview->setModel(model);
+        QStandardItemModel *model = new QStandardItemModel;
+        QStandardItem *item;
 
-        tableview->setStyleSheet(style->getTableViewStyleSheet());
+        QStringList horizontalHeader;
+           horizontalHeader.append("Номер");
+           horizontalHeader.append("Продукты");
+           horizontalHeader.append("Кол-во");
+
+           model->setHorizontalHeaderLabels(horizontalHeader);
+
+           int i=0;
+           while (query.next()) {
+           //Первый ряд
+           item = new QStandardItem(QString::number(query.value(0).toInt()));
+           model->setItem(i, 0, item);
+
+           item = new QStandardItem(query.value(2).toString());
+           model->setItem(i, 1, item);
+
+           item = new QStandardItem(QString::number(query.value(3).toInt()));
+           model->setItem(i, 2, item);
+           i++;
+  }
+
+         tableviewTrans->setModel(model);
+
+        tableviewTrans->setStyleSheet(style->getTableViewStyleSheet());
         //tableview->setColumnHidden(0,true);
-        tableview->setColumnWidth(2,250);
-       int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
-                 QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
-                 QFont f(family);  // QFont c вашим шрифтом
+        tableviewTrans->setColumnWidth(1,250);
 
-                tableview->setFont(f);
+
+                tableviewTrans->setFont(f);
               //  tableview->resizeRowsToContents();
                // tableview->resizeColumnsToContents();
-                tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
+                tableviewTrans->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
        // tableview->resize();
        // tableview->setStyleSheet(style->getTableViewStyleSheet());
 
     QHBoxLayout* layout=new QHBoxLayout;
-    layout->addWidget(tableview);
+    layout->addWidget(tableviewTrans);
 
     Tranzactions->setLayout(layout);
 
