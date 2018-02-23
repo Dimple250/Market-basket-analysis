@@ -12,9 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     numchek=1001;
 
-    /*customplot = new QCustomPlot;
-    customplot->replot();
-    customplot->show();*/
     int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
               QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
               f.setFamily(family);  // QFont c вашим шрифтом
@@ -30,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     createWidgetProducts();
     createWidgetTransactions();
     createTabWidgetRules();
+    createWidgetDiagram();
 
 
    /* QMenu*  menu_file=new QMenu("&File");
@@ -83,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
      QTreeWidgetItem* item=0;
 
      QStringList list;
-     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Диаграммы"<<"Склад"<<"Загрузить файл"<<"";
+     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"";
 
      foreach(QString st,list){
          item=new QTreeWidgetItem(treeviewleft);
@@ -99,25 +97,34 @@ MainWindow::MainWindow(QWidget *parent) :
 
    // treeviewleft->setMaximumHeight(r.height()*0.80);
     treeviewleft->setMaximumWidth(r.width()*0.20);
-    treeviewleft->setMinimumWidth(r.width()*0.10);
+    treeviewleft->setMinimumWidth(r.width()*0.08);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
      welcome=new QLabel("Дабро пожаловаться\n ");
      welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%;color:white;");
 
          treeviewleft->setFont(f);
 
+      //   QLabel* Hat=new QLabel("LUTIK");
+       //  Hat->setStyleSheet(/*"background-color:#292E2D;*/"background-color:#292E3D;padding:15%,10%;padding-left:10%;color:white;font-size:30px;");
+        // Hat->setFont(f);
+
      mainGbox=new QGridLayout;
+    // mainGbox->addWidget(Hat,0,0,1,2);
      mainGbox->addWidget(treeviewleft,0,0);
+     mainGbox->setSpacing(5);
      mainGbox->addWidget(welcome,0,1);
      mainGbox->addWidget(Products,0,1);
      mainGbox->addWidget(Tranzactions,0,1);
 
      mainGbox->addWidget(tabRules,0,1);
+     mainGbox->addWidget(Diagram,0,1);
      prevopen=1;
 
      Products->setHidden(true);
      Tranzactions->setHidden(true);
+
      tabRules->setHidden(true);
+     Diagram->setHidden(true);
 
 
      ui->centralwidget->setLayout(mainGbox);
@@ -427,6 +434,94 @@ void MainWindow::createRules(){
 
 }
 
+void MainWindow::createWidgetDiagram(){
+    Diagram=new QWidget;
+
+    QSqlQuery query;
+        query.exec("select month(date),count(tid) from date group by month(date);");
+
+    double a = 1; //Начало интервала, где рисуем график по оси Ox
+       double b =  13; //Конец интервала, где рисуем график по оси Ox
+       double h = 1; //Шаг, с которым будем пробегать по оси Ox
+
+       int N=(b-a)/h + 2;
+       QVector<double> x(N), y(N);
+       int i=0;
+       while (query.next()) {
+           x[i] = query.value(0).toDouble();
+           y[i] =query.value(1).toDouble();
+           i++;
+       }
+
+    customplot = new QCustomPlot;
+
+
+    customplot->addGraph();
+
+    customplot->graph(0)->setData(x,y);
+    customplot->graph(0)->setLineStyle(QCPGraph::lsImpulse);
+
+    QCPBars *bars1 = new QCPBars(customplot->xAxis, customplot->yAxis);
+    bars1->setWidth(9/(double)x.size());
+    bars1->setData(x, y);
+    bars1->setPen(Qt::NoPen);
+    bars1->setBrush(QColor(10, 140, 70, 160));
+
+    customplot->xAxis->setLabel("Месяцы");
+    customplot->yAxis->setLabel("Кол-во чеков");
+
+    customplot->xAxis->setRange(a,b);
+
+    double minY = y[0], maxY = y[0];
+        for (int i=1; i<N; i++)
+        {
+            if (y[i]<minY) minY = y[i];
+            if (y[i]>maxY) maxY = y[i];
+        }
+
+    customplot->yAxis->setRange(minY, maxY);
+
+    customplot->xAxis->setBasePen(QPen(Qt::white, 1));
+    customplot->yAxis->setBasePen(QPen(Qt::white, 1));
+    customplot->xAxis->setTickPen(QPen(Qt::white, 1));
+    customplot->yAxis->setTickPen(QPen(Qt::white, 1));
+    customplot->xAxis->setSubTickPen(QPen(Qt::white, 1));
+    customplot->yAxis->setSubTickPen(QPen(Qt::white, 1));
+    customplot->xAxis->setTickLabelColor(Qt::white);
+    customplot->yAxis->setTickLabelColor(Qt::white);
+    customplot->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    customplot->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    customplot->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    customplot->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    customplot->xAxis->grid()->setSubGridVisible(true);
+    customplot->yAxis->grid()->setSubGridVisible(true);
+    customplot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+    customplot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+    customplot->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    customplot->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    QLinearGradient plotGradient;
+    plotGradient.setStart(0, 0);
+    plotGradient.setFinalStop(0, 350);
+    plotGradient.setColorAt(0, QColor(80, 80, 80));
+    plotGradient.setColorAt(1, QColor(50, 50, 50));
+    customplot->setBackground(plotGradient);
+    QLinearGradient axisRectGradient;
+    axisRectGradient.setStart(0, 0);
+    axisRectGradient.setFinalStop(0, 350);
+    axisRectGradient.setColorAt(0, QColor(80, 80, 80));
+    axisRectGradient.setColorAt(1, QColor(30, 30, 30));
+    customplot->axisRect()->setBackground(axisRectGradient);
+
+   // customplot->rescaleAxes();
+    customplot->replot();
+
+    QHBoxLayout* layout=new QHBoxLayout;
+    layout->addWidget(customplot);
+
+    Diagram->setLayout(layout);
+
+}
+
 void MainWindow::createTreeTables(){
 
    /* QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
@@ -487,13 +582,13 @@ void MainWindow::openItem(QTreeWidgetItem * item,int i){
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            tabRules->setHidden(false);
            prevopen=4;
-    }/*else
-        if(item->text(i)=="Диаграммы"){//"Диаграммы"
-            isOpenItem="Диаграммы";
-            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-          // Tranzactions->setHidden(false);
-           prevopen=6;
     }else
+        if(item->text(i)=="Аналитика"){//"Диаграммы"
+            isOpenItem="Аналитика";
+            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+           Diagram->setHidden(false);
+           prevopen=5;
+    }/*else
         if(item->text(i)=="Склад"){//"Склад"
             isOpenItem="Склад";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);

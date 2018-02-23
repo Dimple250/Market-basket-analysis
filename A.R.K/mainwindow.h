@@ -29,6 +29,7 @@ public:
     void createWidgetProducts();
     void createWidgetTransactions();
     void createTabWidgetRules();
+    void createWidgetDiagram();
 private:
     Ui::MainWindow *ui;
     QTableView *tableview;
@@ -52,6 +53,7 @@ private:
 
     QWidget* Products;
     QWidget* Tranzactions;
+    QWidget* Diagram;
 public slots:
     void openItem(QTreeWidgetItem*,int);
    // void closeTab(int);
