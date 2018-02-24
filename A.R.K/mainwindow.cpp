@@ -436,6 +436,7 @@ void MainWindow::createRules(){
 
 void MainWindow::createWidgetDiagram(){
     Diagram=new QWidget;
+    Diagram->setStyleSheet("background-color:#4C5866;");
 
     QSqlQuery query;
         query.exec("select month(date),count(tid) from date group by month(date);");
@@ -444,7 +445,7 @@ void MainWindow::createWidgetDiagram(){
        double b =  13; //Конец интервала, где рисуем график по оси Ox
        double h = 1; //Шаг, с которым будем пробегать по оси Ox
 
-       int N=(b-a)/h + 2;
+       double N=(b-a)/h + 2;
        QVector<double> x(N), y(N);
        int i=0;
        while (query.next()) {
@@ -458,19 +459,31 @@ void MainWindow::createWidgetDiagram(){
 
     customplot->addGraph();
 
-    customplot->graph(0)->setData(x,y);
+  //  customplot->graph(0)->setData(x,y);
     customplot->graph(0)->setLineStyle(QCPGraph::lsImpulse);
 
-    QCPBars *bars1 = new QCPBars(customplot->xAxis, customplot->yAxis);
-    bars1->setWidth(9/(double)x.size());
-    bars1->setData(x, y);
-    bars1->setPen(Qt::NoPen);
-    bars1->setBrush(QColor(10, 140, 70, 160));
 
-    customplot->xAxis->setLabel("Месяцы");
-    customplot->yAxis->setLabel("Кол-во чеков");
 
     customplot->xAxis->setRange(a,b);
+    QVector<double> ticks;
+    QVector<QString> labels;
+    ticks << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 <<10 <<11<<12;
+    labels <<"Январь"
+           <<"Февраль"
+           <<"Март"
+           <<"Апрель"
+           <<"Май"
+           <<"Июнь"
+           <<"Июль"
+           <<"Август"
+           <<"Сентябрь"
+           <<"Октябрь"
+           <<"Ноябрь"
+           <<"Декабрь";
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+    customplot->xAxis->setTicker(textTicker);
+
 
     double minY = y[0], maxY = y[0];
         for (int i=1; i<N; i++)
@@ -479,9 +492,27 @@ void MainWindow::createWidgetDiagram(){
             if (y[i]>maxY) maxY = y[i];
         }
 
-    customplot->yAxis->setRange(minY, maxY);
 
-    customplot->xAxis->setBasePen(QPen(Qt::white, 1));
+    customplot->yAxis->setRange(minY, maxY+2);
+
+    QCPBars *bars1 = new QCPBars(customplot->xAxis, customplot->yAxis);
+    bars1->setData(x, y);
+    bars1->setWidth(9/(double)x.size());
+    bars1->setPen(Qt::NoPen);
+    bars1->setBrush(QColor(69, 71, 232));
+
+    customplot->xAxis->setLabel("Месяцы\n2017");
+    customplot->yAxis->setLabel("Кол-во чеков");
+    customplot->xAxis->setRangeUpper(13);
+    customplot->xAxis->setRangeLower(0);
+
+   // customplot->yAxis->setRangeUpper(maxY+200);
+    //customplot->yAxis->setRangeUpper(maxY);
+
+  // customplot->xAxis->setSelectableParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
+
+
+    /*customplot->xAxis->setBasePen(QPen(Qt::white, 1));
     customplot->yAxis->setBasePen(QPen(Qt::white, 1));
     customplot->xAxis->setTickPen(QPen(Qt::white, 1));
     customplot->yAxis->setTickPen(QPen(Qt::white, 1));
@@ -510,12 +541,30 @@ void MainWindow::createWidgetDiagram(){
     axisRectGradient.setFinalStop(0, 350);
     axisRectGradient.setColorAt(0, QColor(80, 80, 80));
     axisRectGradient.setColorAt(1, QColor(30, 30, 30));
-    customplot->axisRect()->setBackground(axisRectGradient);
+    customplot->axisRect()->setBackground(axisRectGradient);*/
 
-   // customplot->rescaleAxes();
+   //customplot->rescaleAxes();
+  //  customplot->yAxis->setTickLength(1);
     customplot->replot();
 
-    QHBoxLayout* layout=new QHBoxLayout;
+    //customplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
+
+    QWidget* choiseGraph=new QWidget;
+
+    QLabel* namegraph=new QLabel("График:");
+
+
+    QHBoxLayout* hbox=new QHBoxLayout;
+    hbox->addWidget(namegraph);
+
+
+    choiseGraph->setStyleSheet("background-color:white;");
+    choiseGraph->setMaximumHeight(50);
+    choiseGraph->setLayout(hbox);
+
+
+    QVBoxLayout* layout=new QVBoxLayout;
+    layout->addWidget(choiseGraph);
     layout->addWidget(customplot);
 
     Diagram->setLayout(layout);
