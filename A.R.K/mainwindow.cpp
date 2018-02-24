@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
      QTreeWidgetItem* item=0;
 
      QStringList list;
-     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"";
+     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
 
      foreach(QString st,list){
          item=new QTreeWidgetItem(treeviewleft);
@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     treeviewleft->setMaximumWidth(r.width()*0.20);
     treeviewleft->setMinimumWidth(r.width()*0.08);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
-     welcome=new QLabel("Дабро пожаловаться\n ");
+     welcome=new QLabel("Добро пожаловаться\n ");
      welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%;color:white;");
 
          treeviewleft->setFont(f);
