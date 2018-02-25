@@ -124,9 +124,10 @@ QString Style::getTableViewStyleSheet(){
 
 }
 QString Style::getTreeviewleftStyleSheet(){
-    return "QTreeWidget::item"
+    return "QListWidget::item"
     "{"
-            "background-color:#292E3D;"
+          //  "background-color:#292E3D;"
+          //  "border-bottom:2px solid #292E3D;"
             //"background-color:#120A8F;"
             "color:white;"
             //style2
@@ -135,11 +136,11 @@ QString Style::getTreeviewleftStyleSheet(){
 
             //"color:#FF8229;"
            //"width:100%;"
-            "height:45%;"
+           // "height:50%;"
             "padding-left:15%;"
-            "margin-bottom:1px;"
+            "margin-bottom:3px;"
     "}"
-      "QTreeWidget::item::hover"
+      "QListWidget::item::hover"
                 "{"
                        //"background-color:#022027;"
                         "background-color:#0ABAB5;"
@@ -148,19 +149,19 @@ QString Style::getTreeviewleftStyleSheet(){
                         //"background-color:#013d56;"
                         "color:black;"
                 "}"
-     "QTreeWidget::item:selected"
+     "QListWidget::item:selected"
              "{"
                         "background-color:#0ABAB5;"
                         "color:black;"
            " }"
-    "QTreeWidget"
+    "QListWidget"
         "{"
                 "background-color:#4C5866;"
             //style2
            // "background-color:#4d5655;"
             //style3
             //"background-color:#015645;"
-                "padding-left:-21%;"
+               // "padding-left:-21%;"
                 "padding-top:2px;"
                 "font-size:20px;"
                 "border:0px solid #102C54;"

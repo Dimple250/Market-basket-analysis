@@ -34,7 +34,7 @@ private:
     Ui::MainWindow *ui;
     QTableView *tableview;
     QTableView *tableviewTrans;
-    QTreeWidget* treeviewleft;
+    QListWidget* treeviewleft;
     QTabWidget* tabRules;
     Database* db2;
     Style* style;
@@ -55,7 +55,7 @@ private:
     QWidget* Tranzactions;
     QWidget* Diagram;
 public slots:
-    void openItem(QTreeWidgetItem*,int);
+    void openItem(QListWidgetItem*);
    // void closeTab(int);
     void OpenCSVFile();
     void createRules();

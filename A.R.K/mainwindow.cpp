@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     db2->Connect("market");
     style=new Style;
     tabRules=new QTabWidget;
-    treeviewleft=new QTreeWidget;
+    treeviewleft=new QListWidget;
     csvModel = new QStandardItemModel;
 
     createWidgetProducts();
@@ -73,22 +73,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
    // connect(tabRules,SIGNAL(tabCloseRequested(int)),SLOT(closeTab(int)));
-    connect(treeviewleft,SIGNAL(itemClicked(QTreeWidgetItem*,int)),SLOT(openItem(QTreeWidgetItem*,int)));
+    connect(treeviewleft,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(openItem(QListWidgetItem*)));
 
 
 
     treeviewleft->setStyleSheet(style->getTreeviewleftStyleSheet());
-     QTreeWidgetItem* item=0;
+     QListWidgetItem* item=0;
 
      QStringList list;
-     list<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
+     list<<"Главная"<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
 
+     treeviewleft->setIconSize(QSize(70,70));
      foreach(QString st,list){
-         item=new QTreeWidgetItem(treeviewleft);
-         item->setText(0,st);
+         item=new QListWidgetItem(st,treeviewleft);
+        item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
+         //item->setText(0,st);
      }
 
-     treeviewleft->header()->hide();
+   //  treeviewleft->header()->hide();
 
 
 
@@ -600,39 +602,45 @@ void MainWindow::createTreeTables(){
 }
 
 
-void MainWindow::openItem(QTreeWidgetItem * item,int i){
+void MainWindow::openItem(QListWidgetItem * item){
 
-    if(item->text(i)==isOpenItem){
+    if(item->text()==isOpenItem){
         return;
     }
 
 
-    if(item->text(i)=="Продукты"){//"Продукты"
+    if(item->text()=="Главная"){//"Продукты"
+        isOpenItem="Главная";
+      mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+     welcome->setHidden(false);
+     prevopen=1;
+    }else
+    if(item->text()=="Продукты"){//"Продукты"
         isOpenItem="Продукты";
       mainGbox->itemAt(prevopen)->widget()->setHidden(true);
      Products->setHidden(false);
      prevopen=2;
     }else
-        if(item->text(i)=="Транзакции"){//"Транзакции"
+        if(item->text()=="Транзакции"){//"Транзакции"
             isOpenItem="Транзакции";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            Tranzactions->setHidden(false);
            prevopen=3;
 
     }else
-        if(item->text(i)=="Анализ корзины"){//"Анализ корзины"
+        if(item->text()=="Анализ корзины"){//"Анализ корзины"
             /*isOpenItem="Анализ корзины";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            //Tranzactions->setHidden(false);
            prevopen=4;*/
     }else
-        if(item->text(i)=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
+        if(item->text()=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
             isOpenItem="Поиск шаболных покупок";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            tabRules->setHidden(false);
            prevopen=4;
     }else
-        if(item->text(i)=="Аналитика"){//"Диаграммы"
+        if(item->text()=="Аналитика"){//"Диаграммы"
             isOpenItem="Аналитика";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            Diagram->setHidden(false);
