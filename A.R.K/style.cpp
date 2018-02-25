@@ -126,9 +126,9 @@ QString Style::getTableViewStyleSheet(){
 QString Style::getTreeviewleftStyleSheet(){
     return "QListWidget::item"
     "{"
-          //  "background-color:#292E3D;"
+            //"background-color:#292E3D;"
           //  "border-bottom:2px solid #292E3D;"
-            //"background-color:#120A8F;"
+            "background-color:#4C5866;"
             "color:white;"
             //style2
            // "background-color:#292E2D;"
@@ -136,9 +136,9 @@ QString Style::getTreeviewleftStyleSheet(){
 
             //"color:#FF8229;"
            //"width:100%;"
-           // "height:50%;"
+           "height:50%;"
             "padding-left:15%;"
-            "margin-bottom:3px;"
+            "margin-bottom:5px;"
     "}"
       "QListWidget::item::hover"
                 "{"
@@ -162,7 +162,7 @@ QString Style::getTreeviewleftStyleSheet(){
             //style3
             //"background-color:#015645;"
                // "padding-left:-21%;"
-                "padding-top:2px;"
+                "padding-top:5px;"
                 "font-size:20px;"
                 "border:0px solid #102C54;"
             //"width:500px;"

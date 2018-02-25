@@ -81,12 +81,12 @@ MainWindow::MainWindow(QWidget *parent) :
      QListWidgetItem* item=0;
 
      QStringList list;
-     list<<"Главная"<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
+     list/*<<"Главная"*/<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
 
      treeviewleft->setIconSize(QSize(70,70));
      foreach(QString st,list){
          item=new QListWidgetItem(st,treeviewleft);
-        item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
+       // item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
          //item->setText(0,st);
      }
 
