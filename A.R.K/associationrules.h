@@ -6,6 +6,8 @@
 #include <QtWidgets>
 #include <QtSql>
 
+#include "style.h"
+
 class AssociationRules : public QWidget
 {
     Q_OBJECT

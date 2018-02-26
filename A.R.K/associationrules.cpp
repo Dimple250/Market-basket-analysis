@@ -128,7 +128,6 @@ QWidget *AssociationRules::getTextRyles(){
 
     textrules=new QWidget;
     QLabel* lb=new QLabel(textrules);
-    int y=0;
     for(int i=propuck;i<list.length();i++){
     double sup=condits[list[i]];
     //qDebug()<<cond;
@@ -154,8 +153,9 @@ QWidget *AssociationRules::getTextRyles(){
 QWidget *AssociationRules::getTableRyles(){
 
         tablerules=new QWidget;
+        tablerules->setStyleSheet("background-color:#4C5866;");
 
-        QTableView* table=new QTableView(tablerules);
+        QTableView* table=new QTableView;
         QStandardItemModel *model = new QStandardItemModel;
         QStandardItem *item;
 
@@ -202,6 +202,14 @@ QWidget *AssociationRules::getTableRyles(){
 
            table->resizeRowsToContents();
            table->resizeColumnsToContents();
+           Style style;
 
-           return table;
+           table->setStyleSheet(style.getTableViewStyleSheet());
+
+           QHBoxLayout* layout=new QHBoxLayout;
+           layout->addWidget(table);
+
+           tablerules->setLayout(layout);
+
+           return tablerules;
 }

@@ -20,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent) :
     db2=new Database;
     db2->Connect("market");
     style=new Style;
-    tabRules=new QTabWidget;
     treeviewleft=new QListWidget;
     csvModel = new QStandardItemModel;
 
@@ -287,7 +286,7 @@ void MainWindow::createWidgetProducts(){
 
 void MainWindow::TransactionView(){
    QSqlQuery query;
-            query.exec("select * from transactions;");
+            query.exec("select * from transactions inner join date using(tid);");
 
             QStandardItemModel *model = new QStandardItemModel;
             QStandardItem *item;
@@ -296,6 +295,7 @@ void MainWindow::TransactionView(){
                horizontalHeader.append("Номер");
                horizontalHeader.append("Продукты");
                horizontalHeader.append("Кол-во");
+               horizontalHeader.append("Дата");
 
                model->setHorizontalHeaderLabels(horizontalHeader);
 
@@ -310,6 +310,9 @@ void MainWindow::TransactionView(){
 
                item = new QStandardItem(QString::number(query.value(3).toInt()));
                model->setItem(i, 2, item);
+
+               item = new QStandardItem(query.value(4).toString());
+               model->setItem(i, 3, item);
                i++;
       }
 
@@ -323,7 +326,7 @@ void MainWindow::createWidgetTransactions(){
     tableviewTrans=new QTableView;
 
     QSqlQuery query;
-        query.exec("select * from transactions;");
+        query.exec("select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);");
 
         QStandardItemModel *model = new QStandardItemModel;
         QStandardItem *item;
@@ -332,6 +335,8 @@ void MainWindow::createWidgetTransactions(){
            horizontalHeader.append("Номер");
            horizontalHeader.append("Продукты");
            horizontalHeader.append("Кол-во");
+           horizontalHeader.append("Дата");
+           horizontalHeader.append("Время");
 
            model->setHorizontalHeaderLabels(horizontalHeader);
 
@@ -341,11 +346,17 @@ void MainWindow::createWidgetTransactions(){
            item = new QStandardItem(QString::number(query.value(0).toInt()));
            model->setItem(i, 0, item);
 
-           item = new QStandardItem(query.value(2).toString());
+           item = new QStandardItem(query.value(1).toString());
            model->setItem(i, 1, item);
 
-           item = new QStandardItem(QString::number(query.value(3).toInt()));
+           item = new QStandardItem(QString::number(query.value(2).toInt()));
            model->setItem(i, 2, item);
+
+           item = new QStandardItem(query.value(3).toString());
+           model->setItem(i, 3, item);
+
+           item = new QStandardItem(query.value(4).toString());
+           model->setItem(i, 4, item);
            i++;
   }
 
@@ -373,6 +384,7 @@ void MainWindow::createWidgetTransactions(){
 }
 
 void MainWindow::createTabWidgetRules(){
+    tabRules=new QTabWidget;
 
 }
 
@@ -418,20 +430,19 @@ void MainWindow::createRules(){
              fileOut.close(); // Закрываем файл
          }
      numchek++;*/
-
-
     tabRules->clear();
 
      AssociationRules* rules=new AssociationRules;
      rules->setMinSup(5);
-     rules->setMinConf(50);
      rules->setMaxSup(10);
+     rules->setMinConf(0);
      rules->setMaxConf(100);
      rules->CreateRules();
      //rules->setTable();
 
        tabRules->addTab(rules->getTableRyles(),"Test Rules Table");
         tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
+        tabRules->addTab(rules->getTextRyles(),"Test Rules Tree");
 
 
 }
