@@ -385,6 +385,48 @@ void MainWindow::createWidgetTransactions(){
 
 void MainWindow::createTabWidgetRules(){
     tabRules=new QTabWidget;
+    QWidget* settingRules=new QWidget;
+
+    QPalette Pal(palette());
+
+    // устанавливаем цвет фона
+    Pal.setColor(QPalette::Background,"#4C5866");
+     settingRules->setAutoFillBackground(true);
+    settingRules->setPalette(Pal);
+
+    QWidget* setting=new QWidget;
+
+    // устанавливаем цвет фона
+    Pal.setColor(QPalette::Background, Qt::white);
+     setting->setAutoFillBackground(true);
+    setting->setPalette(Pal);
+    setting->setMaximumWidth(400);
+
+    QVBoxLayout* layout=new QVBoxLayout;
+
+    QLabel* minsup=new QLabel("Минимальная поддержка:");
+    QLineEdit * minsupline=new QLineEdit;
+
+   // QLabel* minsup=new QLabel("Минимальная поддержка:");
+    //QLineEdit * minsupline=new QLineEdit;
+
+    QPushButton* button_setttules=new QPushButton("Поиск");
+    connect(button_setttules,SIGNAL(clicked()),this,SLOT(createRules()));
+
+    layout->addWidget(minsup);
+    layout->addWidget(minsupline);
+    layout->addStretch(10);
+    layout->addWidget(button_setttules);
+
+    setting->setLayout(layout);
+
+    QHBoxLayout* hbox=new QHBoxLayout;
+    hbox->addWidget(setting);
+
+    settingRules->setLayout(hbox);
+
+    tabRules->addTab(settingRules,"Настройка");
+
 
 }
 
@@ -430,7 +472,9 @@ void MainWindow::createRules(){
              fileOut.close(); // Закрываем файл
          }
      numchek++;*/
-    tabRules->clear();
+    tabRules->removeTab(1);
+    tabRules->removeTab(1);
+    tabRules->removeTab(1);
 
      AssociationRules* rules=new AssociationRules;
      rules->setMinSup(5);
