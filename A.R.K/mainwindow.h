@@ -11,6 +11,7 @@
 #include "style.h"
 #include "associationrules.h"
 #include "QCustomPlot/qcustomplot.h"
+#include "salesanalysis.h"
 
 namespace Ui {
 class MainWindow;

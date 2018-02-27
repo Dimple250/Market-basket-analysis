@@ -80,12 +80,12 @@ MainWindow::MainWindow(QWidget *parent) :
      QListWidgetItem* item=0;
 
      QStringList list;
-     list/*<<"Главная"*/<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
+     list<<"Главная"<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
 
      treeviewleft->setIconSize(QSize(70,70));
      foreach(QString st,list){
          item=new QListWidgetItem(st,treeviewleft);
-       // item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
+      //  item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
          //item->setText(0,st);
      }
 
@@ -129,6 +129,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
      ui->centralwidget->setLayout(mainGbox);
+
+     SalesAnalysis ss;
+     QLabel* lb=new QLabel(ss.getZnach());
+     //lb.setText();
+     lb->show();
 
 
 }
@@ -178,13 +183,24 @@ void MainWindow::createWidgetProducts(){
     Products=new QWidget;
     QWidget* SettingProducts=new QWidget;
     //SettingProducts->setMinimumWidth(100);
+    QPalette Pal(palette());
+
+    // устанавливаем цвет фона
+    Pal.setColor(QPalette::Background,"#4C5866");
+     Products->setAutoFillBackground(true);
+    Products->setPalette(Pal);
 
 
-    Products->setStyleSheet("background-color:#4C5866;");
-    SettingProducts->setObjectName("sett");
 
-    QString stylefilter="background-color:#292E3D;color:#9aa5b3;";
-     SettingProducts->setStyleSheet("#sett{border:2px solid black;"+stylefilter+"}");
+   // SettingProducts->setObjectName("sett");
+
+    //QString stylefilter="background-color:#292E3D;color:#9aa5b3;";
+     //SettingProducts->setStyleSheet("margin-top:-10px;");
+
+        Pal.setColor(QPalette::Background,"#647387");
+         SettingProducts->setAutoFillBackground(true);
+        SettingProducts->setPalette(Pal);
+
 
     tableview=new QTableView(Products);
 
@@ -209,16 +225,9 @@ void MainWindow::createWidgetProducts(){
     connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(ProductsView()));
 
     QPushButton* button_setcategory=new QPushButton("Применить");
-    button_setcategory->setStyleSheet(stylefilter);
+    //button_setcategory->setStyleSheet(stylefilter);
     connect(button_setcategory,SIGNAL(clicked()),this,SLOT(ProductsView()));
-    /*QSqlTableModel *model=new QSqlTableModel(db2);
-        model->setTable("products");
-        model->select();
-        //зпрещает менять значения в ячейках
-        model->setEditStrategy(QSqlTableModel::OnFieldChange);
 
-        QTableView* tableview=new QTableView;
-         tableview->setModel(model);*/
     QSqlQuery query;
         query.exec("select category.name,products.name,price from products inner join category using(idcat);");
 
@@ -264,11 +273,14 @@ void MainWindow::createWidgetProducts(){
 
                      QLabel* nameFilter=new QLabel("Фильтр");
                      nameFilter->setAlignment(Qt::AlignCenter);
-                     nameFilter->setStyleSheet("font-size:15px;"+stylefilter);
+                     nameFilter->setStyleSheet("font-size:15px;color:white;");
+
+                     QLabel* lb2=new QLabel("Категория:");
+                     lb2->setStyleSheet("font-size:15px;color:white;");
 
     QVBoxLayout*  layoutsettprod=new QVBoxLayout;
     layoutsettprod->addWidget(nameFilter);
-    layoutsettprod->addWidget(new QLabel("Категория:",SettingProducts));
+    layoutsettprod->addWidget(lb2);
     layoutsettprod->addWidget(listCategory);
     layoutsettprod->addStretch(10);
     layoutsettprod->addWidget(button_setcategory);
@@ -278,6 +290,7 @@ void MainWindow::createWidgetProducts(){
     QHBoxLayout* layoutprod=new QHBoxLayout;
     layoutprod->addWidget(tableview);
     layoutprod->addWidget(SettingProducts);
+   // layoutprod->setMargin(0);
 
     Products->setLayout(layoutprod);
 

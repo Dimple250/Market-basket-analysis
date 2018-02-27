@@ -85,6 +85,9 @@ QString Style::getTableViewStyleSheet(){
             "border: 0px solid white;"
             "background-color:#4C5866;"
             "font-size:15px;"
+            //"margin-top:10px;"
+            //"margin-left:10px;"
+            //"margin-bottom:10px;"
             "}"
 
             "QTableView::item{"
@@ -174,9 +177,9 @@ QString Style::getTreeviewleftStyleSheet(){
 QString Style::getComboBoxStyleSheet(){
     return "QComboBox::item"
     "{"
-            "background-color:#292E3D;color:#9aa5b3;"
+            "background-color:#292E3D;color:white;"
             "selection-background-color:#0ABAB5;"
-            "selection-color:white;"
+            "selection-color:black;"
     "}"
 
     "QComboBox"
@@ -188,11 +191,11 @@ QString Style::getComboBoxStyleSheet(){
         "}"
             "QComboBox::selection"
                 "{"
-                    "color:white;"
+                    "color:black;"
                 "}"
     "QComboBox:editable {"
          // " background-color: red;"
-           "color:red;"
+          // "color:red;"
         "}"
          ;
 }
