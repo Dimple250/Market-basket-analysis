@@ -139,8 +139,8 @@ QString Style::getTreeviewleftStyleSheet(){
 
             //"color:#FF8229;"
            //"width:100%;"
-           "height:50%;"
-            "padding-left:15%;"
+           "height:60%;"
+            "padding-left:20%;"
             "margin-bottom:5px;"
     "}"
       "QListWidget::item::hover"

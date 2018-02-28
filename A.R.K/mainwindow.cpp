@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
      treeviewleft->setIconSize(QSize(70,70));
      foreach(QString st,list){
          item=new QListWidgetItem(st,treeviewleft);
-      //  item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
+       // item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
          //item->setText(0,st);
      }
 
@@ -133,7 +133,7 @@ MainWindow::MainWindow(QWidget *parent) :
      SalesAnalysis ss;
      QLabel* lb=new QLabel(ss.getZnach());
      //lb.setText();
-     lb->show();
+    // lb->show();
 
 
 }
