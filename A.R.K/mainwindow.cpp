@@ -266,7 +266,7 @@ void MainWindow::createWidgetProducts(){
 
                  tableview->resizeRowsToContents();
                  tableview->resizeColumnsToContents();
-                 tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
+                tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
                     tableview->setAlternatingRowColors(true);
                      tableview->setSelectionMode(QAbstractItemView::SingleSelection);
 
