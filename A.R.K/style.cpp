@@ -177,7 +177,7 @@ QString Style::getTreeviewleftStyleSheet(){
 QString Style::getComboBoxStyleSheet(){
     return "QComboBox::item"
     "{"
-            "background-color:#292E3D;color:white;"
+            "background-color:#647387;color:white;"
             "selection-background-color:#0ABAB5;"
             "selection-color:black;"
     "}"

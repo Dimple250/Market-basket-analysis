@@ -138,7 +138,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-
 void MainWindow::ProductsView(){
     QString category="";
     QString querystr="";
@@ -205,18 +204,14 @@ void MainWindow::createWidgetProducts(){
     tableview=new QTableView(Products);
 
     QStringList ls;
-    ls<<"Все"<<"Овощи"
-    <<"Мясо,копчености"
-    <<"Рыбные"
-    <<"Зелень"
-    <<"Хлеба"
-    <<"Молоко,сыры,яйца"
-    <<"Крупы"
-    <<"Макаронные изделия"
-    <<"Соль,сахар,крахмал,сода"
-    <<"Масла растительные"
-    <<"Алкогольные напитки"
-    <<"Безалкогольные напитки и соки";
+
+    QSqlQuery categoryName;
+        categoryName.exec("select category.name from category;");
+
+         ls<<"Все";
+    while (categoryName.next()){
+        ls<<categoryName.value(0).toString();
+    }
 
     listCategory=new QComboBox(SettingProducts);
     listCategory->setStyleSheet(style->getComboBoxStyleSheet());
