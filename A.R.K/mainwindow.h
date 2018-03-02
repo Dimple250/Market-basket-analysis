@@ -37,12 +37,13 @@ private:
     QTableView *tableviewTrans;
     QListWidget* treeviewleft;
     QTabWidget* tabRules;
-    Database* db2;
+    Database* database;
     Style* style;
     QMap<QString,double> condits;
     QStandardItemModel *csvModel;
     QGridLayout* mainGbox;
     QLabel*  welcome;
+
     QCustomPlot* customplot;
 
     QComboBox* listCategory;
@@ -58,10 +59,10 @@ private:
 public slots:
     void openItem(QListWidgetItem*);
    // void closeTab(int);
+    void changeProductsView();
+    void changeTransactionsView();
     void OpenCSVFile();
     void createRules();
-    void ProductsView();
-    void TransactionView();
 };
 
 #endif // MAINWINDOW_H

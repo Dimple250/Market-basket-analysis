@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
               f.setFamily(family);  // QFont c вашим шрифтом
 
 
-    db2=new Database;
-    db2->Connect("market");
+    database=new Database;
+    database->Connect("market");
     style=new Style;
     treeviewleft=new QListWidget;
     csvModel = new QStandardItemModel;
@@ -138,7 +138,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-void MainWindow::ProductsView(){
+void MainWindow::changeProductsView(){
     QString category="";
     QString querystr="";
     if(listCategory->currentIndex()==0){
@@ -147,48 +147,25 @@ void MainWindow::ProductsView(){
         category=listCategory->currentText();
         querystr="select category.name,products.name,price from products inner join category using(idcat) where category.name like '"+category+"';";
     }
-
-        QSqlQuery query;
-            query.exec(querystr);
-
-        QStandardItemModel *model = new QStandardItemModel;
-        QStandardItem *item;
-
-        QStringList horizontalHeader;
-           horizontalHeader.append("");
-           horizontalHeader.append("Категория");
-           horizontalHeader.append("Продукты");
-           horizontalHeader.append("Цена");
-
-           model->setHorizontalHeaderLabels(horizontalHeader);
-
-           int i=0;
-           while (query.next()) {
-           //Первый ряд
-           item = new QStandardItem(query.value(0).toString());
-           model->setItem(i, 1, item);
-
-           item = new QStandardItem(query.value(1).toString());
-           model->setItem(i, 2, item);
-
-           item = new QStandardItem(QString::number(query.value(2).toFloat()));
-           model->setItem(i, 3, item);
-           i++;
+            tableview->setModel(database->getModelProducts(querystr));
 }
-           tableview->setModel(model);
-}
+
 
 void MainWindow::createWidgetProducts(){
     Products=new QWidget;
-    QWidget* SettingProducts=new QWidget;
+
+
+
+    tableview=new QTableView(Products);
+
+    QWidget* FilterProductsView=new QWidget;
     //SettingProducts->setMinimumWidth(100);
     QPalette Pal(palette());
 
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
      Products->setAutoFillBackground(true);
-    Products->setPalette(Pal);
-
+   Products->setPalette(Pal);
 
 
    // SettingProducts->setObjectName("sett");
@@ -197,11 +174,8 @@ void MainWindow::createWidgetProducts(){
      //SettingProducts->setStyleSheet("margin-top:-10px;");
 
         Pal.setColor(QPalette::Background,"#647387");
-         SettingProducts->setAutoFillBackground(true);
-        SettingProducts->setPalette(Pal);
-
-
-    tableview=new QTableView(Products);
+         FilterProductsView->setAutoFillBackground(true);
+        FilterProductsView->setPalette(Pal);
 
     QStringList ls;
 
@@ -213,65 +187,22 @@ void MainWindow::createWidgetProducts(){
         ls<<categoryName.value(0).toString();
     }
 
-    listCategory=new QComboBox(SettingProducts);
+    listCategory=new QComboBox(FilterProductsView);
     listCategory->setStyleSheet(style->getComboBoxStyleSheet());
     listCategory->addItems(ls);
 
-    connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(ProductsView()));
+    connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(changeProductsView()));
 
     QPushButton* button_setcategory=new QPushButton("Применить");
     //button_setcategory->setStyleSheet(stylefilter);
-    connect(button_setcategory,SIGNAL(clicked()),this,SLOT(ProductsView()));
+    connect(button_setcategory,SIGNAL(clicked()),this,SLOT(changeProductsView()));
 
-    QSqlQuery query;
-        query.exec("select category.name,products.name,price from products inner join category using(idcat);");
+        QLabel* nameFilter=new QLabel("Фильтр");
+        nameFilter->setAlignment(Qt::AlignCenter);
+        nameFilter->setStyleSheet("font-size:15px;color:white;");
 
-        QStandardItemModel *model = new QStandardItemModel;
-        QStandardItem *item;
-
-        QStringList horizontalHeader;
-           horizontalHeader.append("");
-           horizontalHeader.append("Категория");
-           horizontalHeader.append("Продукты");
-           horizontalHeader.append("Цена");
-
-           model->setHorizontalHeaderLabels(horizontalHeader);
-
-           int i=0;
-           while (query.next()) {
-           //Первый ряд
-           item = new QStandardItem(query.value(0).toString());
-           model->setItem(i, 1, item);
-
-           item = new QStandardItem(query.value(1).toString());
-           model->setItem(i, 2, item);
-
-           item = new QStandardItem(QString::number(query.value(2).toFloat()));
-           model->setItem(i, 3, item);
-           i++;
-  }
-
-           tableview->setModel(model);
-
-        tableview->setStyleSheet(style->getTableViewStyleSheet());
-        tableview->setColumnHidden(0,true);
-
-                 tableview->setFont(f);
-                 SettingProducts->setFont(f);
-
-                 tableview->resizeRowsToContents();
-                 tableview->resizeColumnsToContents();
-                tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
-                    tableview->setAlternatingRowColors(true);
-                     tableview->setSelectionMode(QAbstractItemView::SingleSelection);
-
-
-                     QLabel* nameFilter=new QLabel("Фильтр");
-                     nameFilter->setAlignment(Qt::AlignCenter);
-                     nameFilter->setStyleSheet("font-size:15px;color:white;");
-
-                     QLabel* lb2=new QLabel("Категория:");
-                     lb2->setStyleSheet("font-size:15px;color:white;");
+        QLabel* lb2=new QLabel("Категория:");
+        lb2->setStyleSheet("font-size:15px;color:white;");
 
     QVBoxLayout*  layoutsettprod=new QVBoxLayout;
     layoutsettprod->addWidget(nameFilter);
@@ -280,112 +211,124 @@ void MainWindow::createWidgetProducts(){
     layoutsettprod->addStretch(10);
     layoutsettprod->addWidget(button_setcategory);
 
-    SettingProducts->setLayout(layoutsettprod);
+   FilterProductsView->setLayout(layoutsettprod);
+
+
+
+           tableview->setModel(database->getModelProducts("select category.name,products.name,price from products inner join category using(idcat);"));
+
+        tableview->setStyleSheet(style->getTableViewStyleSheet());
+        tableview->setColumnHidden(0,true);
+
+                 tableview->setFont(f);
+                 FilterProductsView->setFont(f);
+
+                 tableview->resizeRowsToContents();
+                 tableview->resizeColumnsToContents();
+                tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
+                    tableview->setAlternatingRowColors(true);
+                     tableview->setSelectionMode(QAbstractItemView::SingleSelection);
+
+
+
 
     QHBoxLayout* layoutprod=new QHBoxLayout;
     layoutprod->addWidget(tableview);
-    layoutprod->addWidget(SettingProducts);
+    layoutprod->addWidget(FilterProductsView);
    // layoutprod->setMargin(0);
 
     Products->setLayout(layoutprod);
 
 }
 
-
-void MainWindow::TransactionView(){
-   QSqlQuery query;
-            query.exec("select * from transactions inner join date using(tid);");
-
-            QStandardItemModel *model = new QStandardItemModel;
-            QStandardItem *item;
-
-            QStringList horizontalHeader;
-               horizontalHeader.append("Номер");
-               horizontalHeader.append("Продукты");
-               horizontalHeader.append("Кол-во");
-               horizontalHeader.append("Дата");
-
-               model->setHorizontalHeaderLabels(horizontalHeader);
-
-               int i=0;
-               while (query.next()) {
-               //Первый ряд
-               item = new QStandardItem(QString::number(query.value(0).toInt()));
-               model->setItem(i, 0, item);
-
-               item = new QStandardItem(query.value(2).toString());
-               model->setItem(i, 1, item);
-
-               item = new QStandardItem(QString::number(query.value(3).toInt()));
-               model->setItem(i, 2, item);
-
-               item = new QStandardItem(query.value(4).toString());
-               model->setItem(i, 3, item);
-               i++;
-      }
-
-             tableviewTrans->setModel(model);
-
+void MainWindow::changeTransactionsView(){
+    QString tid="";
+    QString querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
+   if(listCategory->currentIndex()==0){
+        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
+    }else{
+        tid=listCategory->currentText();
+        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where tid="+tid+";";
+    }
+            tableviewTrans->setModel(database->getModelTransactions(querystr));
 }
 
 void MainWindow::createWidgetTransactions(){
     Tranzactions=new QWidget;
-    Tranzactions->setStyleSheet("background-color:#4C5866;");
-    tableviewTrans=new QTableView;
+   // Tranzactions->setStyleSheet("background-color:#4C5866;");
+    QPalette Pal(palette());
 
-    QSqlQuery query;
-        query.exec("select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);");
+    // устанавливаем цвет фона
+    Pal.setColor(QPalette::Background,"#4C5866");
+     Tranzactions->setAutoFillBackground(true);
+  Tranzactions->setPalette(Pal);
 
-        QStandardItemModel *model = new QStandardItemModel;
-        QStandardItem *item;
 
-        QStringList horizontalHeader;
-           horizontalHeader.append("Номер");
-           horizontalHeader.append("Продукты");
-           horizontalHeader.append("Кол-во");
-           horizontalHeader.append("Дата");
-           horizontalHeader.append("Время");
+  tableviewTrans=new QTableView;
+  tableviewTrans->setModel(database->getModelTransactions("select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);"));
 
-           model->setHorizontalHeaderLabels(horizontalHeader);
-
-           int i=0;
-           while (query.next()) {
-           //Первый ряд
-           item = new QStandardItem(QString::number(query.value(0).toInt()));
-           model->setItem(i, 0, item);
-
-           item = new QStandardItem(query.value(1).toString());
-           model->setItem(i, 1, item);
-
-           item = new QStandardItem(QString::number(query.value(2).toInt()));
-           model->setItem(i, 2, item);
-
-           item = new QStandardItem(query.value(3).toString());
-           model->setItem(i, 3, item);
-
-           item = new QStandardItem(query.value(4).toString());
-           model->setItem(i, 4, item);
-           i++;
-  }
-
-         tableviewTrans->setModel(model);
-
-        tableviewTrans->setStyleSheet(style->getTableViewStyleSheet());
+    tableviewTrans->setStyleSheet(style->getTableViewStyleSheet());
         //tableview->setColumnHidden(0,true);
-        tableviewTrans->setColumnWidth(1,250);
+    tableviewTrans->setColumnWidth(1,250);
 
 
-                tableviewTrans->setFont(f);
+    tableviewTrans->setFont(f);
               //  tableview->resizeRowsToContents();
                // tableview->resizeColumnsToContents();
-                tableviewTrans->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableviewTrans->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
        // tableview->resize();
-       // tableview->setStyleSheet(style->getTableViewStyleSheet());
+ // tableview->setStyleSheet(style->getTableViewStyleSheet());
+
+
+    QWidget* FilterTransactionsView=new QWidget;
+    FilterTransactionsView->setMinimumWidth(300);
+
+        Pal.setColor(QPalette::Background,"#647387");
+         FilterTransactionsView->setAutoFillBackground(true);
+        FilterTransactionsView->setPalette(Pal);
+        FilterTransactionsView->setFont(f);
+
+    QStringList ls;
+
+    QSqlQuery categoryName;
+        categoryName.exec("select tid from transactions;");
+
+         ls<<"Все";
+    while (categoryName.next()){
+        ls<<categoryName.value(0).toString();
+    }
+
+    listCategory=new QComboBox(FilterTransactionsView);
+    listCategory->setStyleSheet(style->getComboBoxStyleSheet());
+    listCategory->addItems(ls);
+
+    connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(changeTransactionsView()));
+
+    QPushButton* button_setcategory=new QPushButton("Применить");
+    //button_setcategory->setStyleSheet(stylefilter);
+    connect(button_setcategory,SIGNAL(clicked()),this,SLOT(changeTransactionsView()));
+
+        QLabel* nameFilter=new QLabel("Фильтр");
+        nameFilter->setAlignment(Qt::AlignCenter);
+        nameFilter->setStyleSheet("font-size:15px;color:white;");
+
+        QLabel* lb2=new QLabel("Категория:");
+        lb2->setStyleSheet("font-size:15px;color:white;");
+
+    QVBoxLayout*  layoutsettrans=new QVBoxLayout;
+    layoutsettrans->addWidget(nameFilter);
+    layoutsettrans->addWidget(lb2);
+    layoutsettrans->addWidget(listCategory);
+    layoutsettrans->addStretch(10);
+    layoutsettrans->addWidget(button_setcategory);
+
+   FilterTransactionsView->setLayout(layoutsettrans);
 
     QHBoxLayout* layout=new QHBoxLayout;
     layout->addWidget(tableviewTrans);
+    layout->addWidget(FilterTransactionsView);
 
     Tranzactions->setLayout(layout);
 
