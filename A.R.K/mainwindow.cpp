@@ -238,18 +238,19 @@ void MainWindow::createWidgetProducts(){
    // layoutprod->setMargin(0);
 
     Products->setLayout(layoutprod);
+    FilterProductsView->setMinimumWidth(Products->width()*0.45);
 
 }
 
 void MainWindow::changeTransactionsView(){
     QString tid="";
     QString querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
-   if(listCategory->currentIndex()==0){
-        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
-    }else{
-        tid=listCategory->currentText();
-        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where tid="+tid+";";
-    }
+   //if(listCategory->currentIndex()==0){
+    //    querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
+  //  }else{
+     //   tid=listCategory->currentText();
+       // querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where tid="+tid+";";
+   // }
             tableviewTrans->setModel(database->getModelTransactions(querystr));
 }
 
@@ -283,7 +284,6 @@ void MainWindow::createWidgetTransactions(){
 
 
     QWidget* FilterTransactionsView=new QWidget;
-    FilterTransactionsView->setMinimumWidth(300);
 
         Pal.setColor(QPalette::Background,"#647387");
          FilterTransactionsView->setAutoFillBackground(true);
@@ -300,11 +300,11 @@ void MainWindow::createWidgetTransactions(){
         ls<<categoryName.value(0).toString();
     }
 
-    listCategory=new QComboBox(FilterTransactionsView);
-    listCategory->setStyleSheet(style->getComboBoxStyleSheet());
-    listCategory->addItems(ls);
+   // listCategory=new QComboBox(FilterTransactionsView);
+    //listCategory->setStyleSheet(style->getComboBoxStyleSheet());
+   // listCategory->addItems(ls);
 
-    connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(changeTransactionsView()));
+   // connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(changeTransactionsView()));
 
     QPushButton* button_setcategory=new QPushButton("Применить");
     //button_setcategory->setStyleSheet(stylefilter);
@@ -320,7 +320,7 @@ void MainWindow::createWidgetTransactions(){
     QVBoxLayout*  layoutsettrans=new QVBoxLayout;
     layoutsettrans->addWidget(nameFilter);
     layoutsettrans->addWidget(lb2);
-    layoutsettrans->addWidget(listCategory);
+   // layoutsettrans->addWidget(listCategory);
     layoutsettrans->addStretch(10);
     layoutsettrans->addWidget(button_setcategory);
 
@@ -331,6 +331,7 @@ void MainWindow::createWidgetTransactions(){
     layout->addWidget(FilterTransactionsView);
 
     Tranzactions->setLayout(layout);
+    FilterTransactionsView->setMinimumWidth(Tranzactions->width()*0.45);
 
 }
 

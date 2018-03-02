@@ -47,6 +47,7 @@ private:
     QCustomPlot* customplot;
 
     QComboBox* listCategory;
+    //QComboBox* listCategory;
 
     QString isOpenItem;
     int prevopen;
