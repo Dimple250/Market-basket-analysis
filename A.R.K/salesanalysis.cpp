@@ -157,11 +157,58 @@ QString SalesAnalysis::getZnach(){
    // qDebug()<<a;
     //qDebug()<<b;
     QString st=QString::number(a,'d',5)+","+QString::number(b,'f',5)+"\n";
-    QString ss="Отклонение знач. продаж от знач. тренда";
-    st+="Месяц         Продажи руб.         Значения тренда         "+ss+"\n";
+    QString ss="Отклонение знач.";
+    st+="Месяц         Продажи руб.         Значения тренда         "+ss+"        Среднее отклонение \n";
+    //Значения тренда
+    double ztr[n];
     for(int i=0;i<n;i++){
-        st+=QString::number(i)+"              "+QString::number(y[i],'d',5)+"           "+QString::number(a*(i+1)+b,'d',5)+"                "+QString::number(y[i]/(a*(i+1)+b),'d',5)+"\n";
+        ztr[i]=a*(i+1)+b;
     }
+
+    //Отклонение фактических значений от значений тренда
+    double zt[n];
+    for(int i=0;i<n;i++){
+        zt[i]=y[i]/(a*(i+1)+b);
+    }
+
+   //Среднее отклонение для каждого месяца
+     double g[12];
+     int k=0;
+     while(k<12){
+         int t=k;
+         int kol=0;
+        while(t<n){
+            g[k]+=zt[t];
+            kol++;
+            t+=12;
+        }
+        g[k]/=kol;
+         k++;
+     }
+     for(int i=0;i<12;i++){
+          qDebug()<<g[i];
+     }
+     //Общий индекс сезонности
+     double sr=0;
+     for(int i=0;i<12;i++){
+          sr+=g[i];
+     }
+     sr=sr/12;
+     qDebug()<<"Общий индекс сезонности:"<<sr;
+    // Коэффициенты сезонности очищенные от роста
+     double ghy[12];
+     for(int i=0;i<12;i++){
+          ghy[i]=g[i]/sr;
+         qDebug()<<ghy[i];
+     }
+
+     for(int i=0;i<n;i++){
+         st+=QString::number(i)+"              "+QString::number(y[i],'d',5)+"           "+QString::number(ztr[i],'d',5)+"                "+QString::number(zt[i],'d',5)+"\n";
+     }
+
+
+
+
     return st;
 
     //Результат:

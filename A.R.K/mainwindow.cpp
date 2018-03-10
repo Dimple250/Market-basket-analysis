@@ -133,7 +133,7 @@ MainWindow::MainWindow(QWidget *parent) :
      SalesAnalysis ss;
      QLabel* lb=new QLabel(ss.getZnach());
      //lb.setText();
-    // lb->show();
+     lb->show();
 
 
 }
@@ -445,7 +445,7 @@ void MainWindow::createRules(){
 
 void MainWindow::createWidgetDiagram(){
     Diagram=new QWidget;
-    Diagram->setStyleSheet("background-color:#4C5866;");
+   Diagram->setStyleSheet("background-color:#4C5866;");
 
     QSqlQuery query;
         query.exec("select month(date),count(tid) from date group by month(date);");
@@ -562,9 +562,15 @@ void MainWindow::createWidgetDiagram(){
 
     QLabel* namegraph=new QLabel("График:");
 
+    QPushButton* settgraph=new QPushButton("Настрйки");
+   settgraph->setStyleSheet("background-color:#4547E8;color:white;");
+   // settgraph->setPalette(QColor(69, 71, 232));
+    settgraph->setMaximumWidth(100);
 
     QHBoxLayout* hbox=new QHBoxLayout;
     hbox->addWidget(namegraph);
+    hbox->addSpacing(100);
+    hbox->addWidget(settgraph);
 
 
     choiseGraph->setStyleSheet("background-color:white;");
@@ -710,13 +716,21 @@ void MainWindow::OpenCSVFile(){
 MainWindow::~MainWindow()
 {
     delete ui;
-   /* delete csvModel;
-    delete tableview;
-    delete treeview;
-    delete tab;
-    delete addData;
-    delete db2;
+    /*delete tableview;
+    delete tableviewTrans;
+    delete treeviewleft;
+    delete tabRules;
+    delete database;
     delete style;
-    delete welcome;
-    delete mainHbox;*/
+    delete csvModel;
+    delete mainGbox;
+    delete  welcome;
+
+    delete customplot;
+
+    delete listCategory;
+
+    delete Products;
+    delete Tranzactions;
+    delete Diagram;*/
 }
