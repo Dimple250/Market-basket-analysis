@@ -186,7 +186,7 @@ QString SalesAnalysis::getZnach(){
          k++;
      }
      for(int i=0;i<12;i++){
-          qDebug()<<g[i];
+       //   qDebug()<<g[i];
      }
      //Общий индекс сезонности
      double sr=0;
@@ -194,12 +194,12 @@ QString SalesAnalysis::getZnach(){
           sr+=g[i];
      }
      sr=sr/12;
-     qDebug()<<"Общий индекс сезонности:"<<sr;
+  //   qDebug()<<"Общий индекс сезонности:"<<sr;
     // Коэффициенты сезонности очищенные от роста
      double ghy[12];
      for(int i=0;i<12;i++){
           ghy[i]=g[i]/sr;
-         qDebug()<<ghy[i];
+     //    qDebug()<<ghy[i];
      }
 
      for(int i=0;i<n;i++){

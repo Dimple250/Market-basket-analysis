@@ -31,6 +31,8 @@ public:
     void createWidgetTransactions();
     void createTabWidgetRules();
     void createWidgetDiagram();
+    void createWidgetAnalis();
+    void createWidgetSclad();
 private:
     Ui::MainWindow *ui;
     QTableView *tableview;
@@ -46,8 +48,14 @@ private:
 
     QCustomPlot* customplot;
 
-    QComboBox* listCategory;
-    //QComboBox* listCategory;
+    QComboBox listCategory;
+    QLineEdit namepProducts;
+
+    QLineEdit minsupline;
+    QLineEdit maxsupline;
+    QLineEdit minconfline;
+    QLineEdit maxconfline;
+
 
     QString isOpenItem;
     int prevopen;
@@ -57,6 +65,8 @@ private:
     QWidget* Products;
     QWidget* Tranzactions;
     QWidget* Diagram;
+    QWidget* Analis;
+    QWidget* Sclad;
 public slots:
     void openItem(QListWidgetItem*);
    // void closeTab(int);

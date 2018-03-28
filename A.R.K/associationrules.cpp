@@ -46,23 +46,36 @@ void AssociationRules::CreateRules(){
     kol_chek=query2->value(0).toInt();
     }
     min_sup=(kol_chek*min_sup)/100;
+    max_sup=(kol_chek*max_sup)/100;
     //fix next
     query2->exec("SELECT name,COUNT(*) FROm transactions GROUP BY name having count(*)>="+QString::number(min_sup)+";");
     propuck=0;
 
+    QMap<int,QString> condits2;
+    int p=0;
+
     while(query2->next()){
                 condits[query2->value(0).toString()]=query2->value(1).toDouble()/kol_chek;
+                condits2[p++]=query2->value(0).toString();
         }
 
     int flag=1;
-    int kol_items=4;
+    int kol_items=2;
 
     int lenght=1;
+    int size=condits.size();
     while(lenght<kol_items){
       items="";
       baskets="";
       ravno="";
       mensh="";
+
+     // for(int e=0;e<size-1;e++){
+       //   for(int r=e+1;r<size;r++){
+         //     items="";
+           //   baskets="";
+             // ravno="";
+              //mensh="";
 
     for(int i=0;i<=lenght;i++){
     items+="t"+QString::number(i)+".name,";
@@ -86,7 +99,10 @@ void AssociationRules::CreateRules(){
     }
     mensh=mensh.remove(mensh.length()-5,mensh.length()-1);
 
-    QString exec="select "+items+", COUNT(*) from "+baskets+" where "+ravno+" and "+mensh+" group by "+items+" having count(*)>="+QString::number(min_sup)+";";
+    //QString tor="";
+    //tor="t0.name like '"+condits2[e]+"' and t1.name like '"+condits2[r]+"' and ";
+
+    QString exec="select "+items+", COUNT(*) from "+baskets+" where "+ravno+" and "+mensh+" group by "+items+" having count(*)>="+QString::number(min_sup)+" and count(*)<="+QString::number(max_sup)+";";
 
     query2->exec(exec);
     QString ss="";
@@ -113,12 +129,15 @@ void AssociationRules::CreateRules(){
                 }
             }
             double sup=query2->value(lenght+1).toDouble()/kol_chek;
+          //  qDebug()<<"(sup/condits[st])*100="<<(sup/condits[st])*100<<"min_conf="<<min_conf;
             if((sup/condits[st])*100>=min_conf){
             list<<cond;
             condits[ss]=query2->value(lenght+1).toDouble()/kol_chek;
             }
             }
         }
+       //   }
+     // }
      lenght++;
         }
 

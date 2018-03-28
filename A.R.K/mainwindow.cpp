@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
     createWidgetTransactions();
     createTabWidgetRules();
     createWidgetDiagram();
+    createWidgetAnalis();
+    createWidgetSclad();
 
 
    /* QMenu*  menu_file=new QMenu("&File");
@@ -100,32 +102,29 @@ MainWindow::MainWindow(QWidget *parent) :
     treeviewleft->setMaximumWidth(r.width()*0.20);
     treeviewleft->setMinimumWidth(r.width()*0.08);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
-     welcome=new QLabel("Добро пожаловаться\n ");
+     welcome=new QLabel("Добро пожаловать\n ");
      welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%;color:white;");
 
          treeviewleft->setFont(f);
 
-      //   QLabel* Hat=new QLabel("LUTIK");
-       //  Hat->setStyleSheet(/*"background-color:#292E2D;*/"background-color:#292E3D;padding:15%,10%;padding-left:10%;color:white;font-size:30px;");
-        // Hat->setFont(f);
-
      mainGbox=new QGridLayout;
-    // mainGbox->addWidget(Hat,0,0,1,2);
      mainGbox->addWidget(treeviewleft,0,0);
      mainGbox->setSpacing(5);
      mainGbox->addWidget(welcome,0,1);
      mainGbox->addWidget(Products,0,1);
      mainGbox->addWidget(Tranzactions,0,1);
-
+     mainGbox->addWidget(Analis,0,1);
      mainGbox->addWidget(tabRules,0,1);
      mainGbox->addWidget(Diagram,0,1);
+     mainGbox->addWidget(Sclad,0,1);
      prevopen=1;
 
      Products->setHidden(true);
      Tranzactions->setHidden(true);
-
+     Analis->setHidden(true);
      tabRules->setHidden(true);
      Diagram->setHidden(true);
+     Sclad->setHidden(true);
 
 
      ui->centralwidget->setLayout(mainGbox);
@@ -133,7 +132,8 @@ MainWindow::MainWindow(QWidget *parent) :
      SalesAnalysis ss;
      QLabel* lb=new QLabel(ss.getZnach());
      //lb.setText();
-     lb->show();
+    // lb->show();
+     //Kagle
 
 
 }
@@ -141,10 +141,10 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::changeProductsView(){
     QString category="";
     QString querystr="";
-    if(listCategory->currentIndex()==0){
+    if(listCategory.currentIndex()==0){
         querystr="select category.name,products.name,price from products inner join category using(idcat);";
     }else{
-        category=listCategory->currentText();
+        category=listCategory.currentText();
         querystr="select category.name,products.name,price from products inner join category using(idcat) where category.name like '"+category+"';";
     }
             tableview->setModel(database->getModelProducts(querystr));
@@ -187,11 +187,11 @@ void MainWindow::createWidgetProducts(){
         ls<<categoryName.value(0).toString();
     }
 
-    listCategory=new QComboBox(FilterProductsView);
-    listCategory->setStyleSheet(style->getComboBoxStyleSheet());
-    listCategory->addItems(ls);
+    listCategory;// (FilterProductsView);
+    listCategory.setStyleSheet(style->getComboBoxStyleSheet());
+    listCategory.addItems(ls);
 
-    connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(changeProductsView()));
+    connect(&listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(changeProductsView()));
 
     QPushButton* button_setcategory=new QPushButton("Применить");
     //button_setcategory->setStyleSheet(stylefilter);
@@ -207,7 +207,7 @@ void MainWindow::createWidgetProducts(){
     QVBoxLayout*  layoutsettprod=new QVBoxLayout;
     layoutsettprod->addWidget(nameFilter);
     layoutsettprod->addWidget(lb2);
-    layoutsettprod->addWidget(listCategory);
+    layoutsettprod->addWidget(&listCategory);
     layoutsettprod->addStretch(10);
     layoutsettprod->addWidget(button_setcategory);
 
@@ -243,14 +243,27 @@ void MainWindow::createWidgetProducts(){
 }
 
 void MainWindow::changeTransactionsView(){
+    QString product="";
     QString tid="";
-    QString querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
-   //if(listCategory->currentIndex()==0){
-    //    querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
-  //  }else{
-     //   tid=listCategory->currentText();
-       // querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where tid="+tid+";";
-   // }
+    QString querystr;
+   if(namepProducts.text()==""){
+       querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
+    }else{
+        product=namepProducts.text();
+
+        QSqlQuery productsName;
+            productsName.exec("select tid from transactions where name like '"+product+"';");
+           // qDebug()<<product;
+
+        while (productsName.next()){
+            tid+="tid="+productsName.value(0).toString()+" or ";
+           // qDebug()<<productsName.value(0).toString();
+        }
+        tid=tid.remove(tid.length()-3,tid.length()-1);
+
+        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where "+tid+";";
+    //qDebug()<<querystr;
+   }
             tableviewTrans->setModel(database->getModelTransactions(querystr));
 }
 
@@ -290,21 +303,23 @@ void MainWindow::createWidgetTransactions(){
         FilterTransactionsView->setPalette(Pal);
         FilterTransactionsView->setFont(f);
 
-    QStringList ls;
+    /*QStringList ls;
 
-    QSqlQuery categoryName;
-        categoryName.exec("select tid from transactions;");
+    QSqlQuery productsName;
+        productsName.exec("select name from products;");
+        listproducts.view()->setMaximumHeight(100);
 
          ls<<"Все";
-    while (categoryName.next()){
-        ls<<categoryName.value(0).toString();
+    while (productsName.next()){
+        ls<<productsName.value(0).toString();
     }
 
-   // listCategory=new QComboBox(FilterTransactionsView);
-    //listCategory->setStyleSheet(style->getComboBoxStyleSheet());
-   // listCategory->addItems(ls);
+   // listproducts.setStyleSheet(style->getComboBoxStyleSheet());
+    listproducts.addItems(ls);*/
 
-   // connect(listCategory,SIGNAL(currentTextChanged(QString)),this,SLOT(changeTransactionsView()));
+   // namepProducts.setMaximumWidth(100);
+
+    //connect(&listproducts,SIGNAL(currentTextChanged(QString)),this,SLOT(changeTransactionsView()));
 
     QPushButton* button_setcategory=new QPushButton("Применить");
     //button_setcategory->setStyleSheet(stylefilter);
@@ -314,13 +329,13 @@ void MainWindow::createWidgetTransactions(){
         nameFilter->setAlignment(Qt::AlignCenter);
         nameFilter->setStyleSheet("font-size:15px;color:white;");
 
-        QLabel* lb2=new QLabel("Категория:");
+        QLabel* lb2=new QLabel("Продукты:");
         lb2->setStyleSheet("font-size:15px;color:white;");
 
     QVBoxLayout*  layoutsettrans=new QVBoxLayout;
     layoutsettrans->addWidget(nameFilter);
     layoutsettrans->addWidget(lb2);
-   // layoutsettrans->addWidget(listCategory);
+    layoutsettrans->addWidget(&namepProducts);
     layoutsettrans->addStretch(10);
     layoutsettrans->addWidget(button_setcategory);
 
@@ -331,8 +346,217 @@ void MainWindow::createWidgetTransactions(){
     layout->addWidget(FilterTransactionsView);
 
     Tranzactions->setLayout(layout);
-    FilterTransactionsView->setMinimumWidth(Tranzactions->width()*0.45);
+    FilterTransactionsView->setMaximumWidth(Tranzactions->width()*0.45);
 
+}
+
+void MainWindow::createWidgetAnalis(){
+    Analis=new QWidget;
+   Analis->setStyleSheet("background-color:#4C5866;");
+
+
+
+   int kol_month=12;
+
+  QTableView* salesTableView=new QTableView;
+
+   QStandardItemModel* modelSales=new QStandardItemModel;
+
+     QStandardItem *item;
+
+   QStringList horizontalHeader;
+      horizontalHeader.append("");
+      horizontalHeader.append("Товар");
+      horizontalHeader.append("Январь");
+      horizontalHeader.append("Февраль");
+      horizontalHeader.append("Март");
+      horizontalHeader.append("Апрель");
+      horizontalHeader.append("Май");
+      horizontalHeader.append("Июнь");
+      horizontalHeader.append("Июль");
+      horizontalHeader.append("Август");
+      horizontalHeader.append("Сентябрь");
+      horizontalHeader.append("Октябрь");
+      horizontalHeader.append("Ноябрь");
+      horizontalHeader.append("Декабрь");
+
+      modelSales->setHorizontalHeaderLabels(horizontalHeader);
+
+   for(int i=1;i<=kol_month;i++){
+   QSqlQuery query;
+       query.prepare("select name,count(*) from transactions natural join date where name like '"+QString("яйца")+"' and month(date)="+QString::number(i)+" group by name;");
+        query.exec();
+
+
+       int j=0;
+      /* qDebug()<<query.record();
+       if(!query.exec())
+       {
+           qDebug()<<"sdf";
+           for(j=0;j<kol_month+1;j++)
+            item = new QStandardItem(QString::number(0));
+          modelSales->setItem(j, i+1, item);
+       }else*/
+
+          while (query.next()) {
+          //Первый ряд
+              if(i==1){
+          item = new QStandardItem(query.value(0).toString());
+          modelSales->setItem(j, 1, item);
+              }
+
+            item = new QStandardItem(query.value(1).toString());;
+          modelSales->setItem(j, i+1, item);
+
+          j++;
+        }
+
+   }
+
+    salesTableView->setModel(modelSales);
+
+    salesTableView->setStyleSheet(style->getTableViewStyleSheet());
+    salesTableView->setColumnHidden(0,true);
+
+    salesTableView->setFont(f);
+
+    salesTableView->resizeRowsToContents();
+    salesTableView->resizeColumnsToContents();
+    salesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    salesTableView->setAlternatingRowColors(true);
+    salesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    int beg=2017;
+    int end=1019;
+
+    double Tt=0;
+    double Lt1=0;
+    double Lt2=0;
+    double sale=0;
+
+    double k=0.9;
+    double b=0.1;
+    double q=0.9;
+
+    int y[]={ 17986229,
+                 23571965,
+                 25537589,
+                 24630951,
+                 24429696,
+                 26116377,
+                 27931501,
+                 25914893,
+                 24904130,
+                 22360354,
+                 23825299,
+                 22241744,
+                 21149853,
+                 23770186,
+                 29608386,
+                 28588548,
+                 29712036,
+                 31191793,
+                 28311730,
+                 27438262,
+                 26166319,
+                 25916207,
+                 23168086,
+                 27707909,
+                 25379305,
+                 27823570,
+                 28518039,
+                 33971886,
+                 31577081,
+                 29328611,
+                 34312920,
+                 31364478,
+                 29046432,
+                 27244171,
+                 24353446,
+                 25447525,
+                 24255101,
+                 22391876,
+                 27902911,
+                 24102028,
+                 24939643,
+                 25401741,
+                 22817314,
+                 23554471,
+                 21219769,
+                 21144903,
+                 19185427,
+                 20507490,
+                 16116508,
+                 20363081
+};
+
+    QSqlQuery query;
+     query.exec("select distinct year(date) from date;");
+    int count_years=0;
+    while (query.next()) {
+    count_years=query.value(0).toInt();;
+    }
+
+    double St[50];
+    double avg=0;
+    int i=0;
+
+    for(int year=2017;year<=2019;year++){
+    for(int month=1;month<=kol_month;month++){
+    QSqlQuery query;
+        query.prepare("select name,count(*) from transactions natural join date where name like '"+QString("сода")+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by name;");
+         query.exec();
+
+           while (query.next()) {
+            if(year==beg && month==1){
+                sale=query.value(1).toDouble();
+                Lt1=sale;
+                double ozenka=Lt1+Tt;
+                int fail=sale-ozenka;
+                avg+=(fail*fail)/(sale*sale);
+            }else{
+                double ozenka=Lt1+Tt;
+                int fail=sale-ozenka;
+                avg+=(fail*fail)/(sale*sale);
+       // sale=y[0];Lt1=sale;
+        //qDebug()<<"sale="<<sale<<" Lt="<<Lt1<<" Tt="<<Tt;
+      //  for(int i=1;i<50;i++){
+                sale=query.value(1).toDouble();
+            //sale=y[i];
+                Lt2=(k*sale/1)+(1-k)*(Lt1+Tt);
+                Tt=b*(Lt2-Lt1)+(1-b)*Tt;
+                Lt1=Lt2;
+                if(year==2017){
+                    St[i]=1.0;
+                }else{
+                St[i]=q*(sale/Lt2)+(1-q)*St[i];
+                }
+            }
+            qDebug()<<month<<"sale="<<QString::number(sale,'f',2)<<" Lt="<<QString::number(Lt1,'f',2)<<" Tt="<<QString::number(Tt,'f',2)<<" St"<<QString::number(St[i],'f',2);
+            i++;
+        }
+           }
+         }
+    qDebug()<<i;
+
+
+        double pr=0;
+        for(int t=1;t<=7;t++){
+            pr=(Lt2+Tt*t)*St[i-(12-t-1)];
+           // qDebug()<<St[i-(12-t)];
+            qDebug()<<QString::number(pr,'d',2);
+        }
+    qDebug()<<1-(avg/i);
+
+
+
+
+
+
+    QVBoxLayout* layout=new QVBoxLayout;
+    layout->addWidget(salesTableView);
+
+    Analis->setLayout(layout);
 }
 
 void MainWindow::createTabWidgetRules(){
@@ -356,17 +580,25 @@ void MainWindow::createTabWidgetRules(){
 
     QVBoxLayout* layout=new QVBoxLayout;
 
-    QLabel* minsup=new QLabel("Минимальная поддержка:");
-    QLineEdit * minsupline=new QLineEdit;
+    QLabel* minsup=new QLabel("Минимальная поддержка %:");
 
-   // QLabel* minsup=new QLabel("Минимальная поддержка:");
-    //QLineEdit * minsupline=new QLineEdit;
+    QLabel* maxsup=new QLabel("Максимальная поддержка %:");
+
+    QLabel* minconf=new QLabel("Минимальная достоверность %:");
+
+    QLabel* maxconf=new QLabel("Максимальная достоверность %:");
 
     QPushButton* button_setttules=new QPushButton("Поиск");
     connect(button_setttules,SIGNAL(clicked()),this,SLOT(createRules()));
 
     layout->addWidget(minsup);
-    layout->addWidget(minsupline);
+    layout->addWidget(&minsupline);
+    layout->addWidget(maxsup);
+    layout->addWidget(&maxsupline);
+    layout->addWidget(minconf);
+    layout->addWidget(&minconfline);
+    layout->addWidget(maxconf);
+    layout->addWidget(&maxconfline);
     layout->addStretch(10);
     layout->addWidget(button_setttules);
 
@@ -428,11 +660,12 @@ void MainWindow::createRules(){
     tabRules->removeTab(1);
     tabRules->removeTab(1);
 
+
      AssociationRules* rules=new AssociationRules;
-     rules->setMinSup(5);
-     rules->setMaxSup(10);
-     rules->setMinConf(0);
-     rules->setMaxConf(100);
+     rules->setMinSup(minsupline.text().toInt());
+     rules->setMaxSup(maxsupline.text().toInt());
+     rules->setMinConf(minconfline.text().toInt());
+     rules->setMaxConf(maxconfline.text().toInt());
      rules->CreateRules();
      //rules->setTable();
 
@@ -448,7 +681,7 @@ void MainWindow::createWidgetDiagram(){
    Diagram->setStyleSheet("background-color:#4C5866;");
 
     QSqlQuery query;
-        query.exec("select month(date),count(tid) from date group by month(date);");
+        query.exec("select month(date),count(tid) from date where year(date)=2017 group by month(date);");
 
     double a = 1; //Начало интервала, где рисуем график по оси Ox
        double b =  13; //Конец интервала, где рисуем график по оси Ox
@@ -586,6 +819,17 @@ void MainWindow::createWidgetDiagram(){
 
 }
 
+void MainWindow::createWidgetSclad(){
+    Sclad=new QWidget;
+   Sclad->setStyleSheet("background-color:#4C5866;");
+
+
+    QVBoxLayout* layout=new QVBoxLayout;
+   // layout->addWidget();
+
+    Sclad->setLayout(layout);
+}
+
 void MainWindow::createTreeTables(){
 
    /* QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
@@ -642,29 +886,29 @@ void MainWindow::openItem(QListWidgetItem * item){
 
     }else
         if(item->text()=="Анализ корзины"){//"Анализ корзины"
-            /*isOpenItem="Анализ корзины";
+            isOpenItem="Анализ корзины";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-           //Tranzactions->setHidden(false);
-           prevopen=4;*/
+           Analis->setHidden(false);
+           prevopen=4;
     }else
         if(item->text()=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
             isOpenItem="Поиск шаболных покупок";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            tabRules->setHidden(false);
-           prevopen=4;
+           prevopen=5;
     }else
         if(item->text()=="Аналитика"){//"Диаграммы"
             isOpenItem="Аналитика";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
            Diagram->setHidden(false);
-           prevopen=5;
-    }/*else
-        if(item->text(i)=="Склад"){//"Склад"
+           prevopen=6;
+    }else
+        if(item->text()=="Склад"){//"Склад"
             isOpenItem="Склад";
             mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-          // Tranzactions->setHidden(false);
+           Sclad->setHidden(false);
            prevopen=7;
-    }*/
+    }
 
 }
 
