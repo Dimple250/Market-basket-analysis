@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
      QListWidgetItem* item=0;
 
      QStringList list;
-     list<<"Главная"<<"Продукты"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Склад"<<"Загрузить файл"<<"Профиль";
+     list<<"Главная"<<"Товары"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Загрузить файл";
 
      treeviewleft->setIconSize(QSize(70,70));
      foreach(QString st,list){
@@ -229,6 +229,11 @@ void MainWindow::createWidgetProducts(){
                     tableview->setAlternatingRowColors(true);
                      tableview->setSelectionMode(QAbstractItemView::SingleSelection);
 
+                     tableview->setColumnWidth(1,250);
+                     tableview->setColumnWidth(2,250);
+                    // tableview->s;
+                    // tableview->set
+
 
 
 
@@ -247,7 +252,7 @@ void MainWindow::changeTransactionsView(){
     QString tid="";
     QString querystr;
    if(namepProducts.text()==""){
-       querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);";
+       querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) order by tid;";
     }else{
         product=namepProducts.text();
 
@@ -261,10 +266,21 @@ void MainWindow::changeTransactionsView(){
         }
         tid=tid.remove(tid.length()-3,tid.length()-1);
 
-        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where "+tid+";";
+        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where "+tid+" order by tid;";
     //qDebug()<<querystr;
    }
+
+            tableviewTrans->clearSpans();
             tableviewTrans->setModel(database->getModelTransactions(querystr));
+
+            for(int i=0;i<tableviewTrans->model()->rowCount();i++){
+                QString number=tableviewTrans->model()->data(tableviewTrans->model()->index(i,0)).toString();
+                if(number.contains( "Транзакция №", Qt::CaseInsensitive)){
+               tableviewTrans->setSpan(i,0,1,5);
+               const QModelIndex index =tableviewTrans->model()->index(i,0);
+               tableviewTrans->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+                }
+            }
 }
 
 void MainWindow::createWidgetTransactions(){
@@ -279,11 +295,20 @@ void MainWindow::createWidgetTransactions(){
 
 
   tableviewTrans=new QTableView;
-  tableviewTrans->setModel(database->getModelTransactions("select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid);"));
+  tableviewTrans->setModel(database->getModelTransactions("select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) order by tid;"));
 
     tableviewTrans->setStyleSheet(style->getTableViewStyleSheet());
         //tableview->setColumnHidden(0,true);
-    tableviewTrans->setColumnWidth(1,250);
+    tableviewTrans->setColumnWidth(0,250);
+
+   for(int i=0;i<tableviewTrans->model()->rowCount();i++){
+       QString number=tableviewTrans->model()->data(tableviewTrans->model()->index(i,0)).toString();
+       if(number.contains( "Транзакция №", Qt::CaseInsensitive)){
+    tableviewTrans->setSpan(i,0,1,5);
+    const QModelIndex index =tableviewTrans->model()->index(i,0);
+    tableviewTrans->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+       }
+   }
 
 
     tableviewTrans->setFont(f);
@@ -434,61 +459,10 @@ void MainWindow::createWidgetAnalis(){
     double Lt2=0;
     double sale=0;
 
-    double k=0.9;
+    double k=0.5;
     double b=0.1;
     double q=0.9;
 
-    int y[]={ 17986229,
-                 23571965,
-                 25537589,
-                 24630951,
-                 24429696,
-                 26116377,
-                 27931501,
-                 25914893,
-                 24904130,
-                 22360354,
-                 23825299,
-                 22241744,
-                 21149853,
-                 23770186,
-                 29608386,
-                 28588548,
-                 29712036,
-                 31191793,
-                 28311730,
-                 27438262,
-                 26166319,
-                 25916207,
-                 23168086,
-                 27707909,
-                 25379305,
-                 27823570,
-                 28518039,
-                 33971886,
-                 31577081,
-                 29328611,
-                 34312920,
-                 31364478,
-                 29046432,
-                 27244171,
-                 24353446,
-                 25447525,
-                 24255101,
-                 22391876,
-                 27902911,
-                 24102028,
-                 24939643,
-                 25401741,
-                 22817314,
-                 23554471,
-                 21219769,
-                 21144903,
-                 19185427,
-                 20507490,
-                 16116508,
-                 20363081
-};
 
     QSqlQuery query;
      query.exec("select distinct year(date) from date;");
@@ -514,39 +488,41 @@ void MainWindow::createWidgetAnalis(){
                 double ozenka=Lt1+Tt;
                 int fail=sale-ozenka;
                 avg+=(fail*fail)/(sale*sale);
+                 St[0]=1.0;
             }else{
+
                 double ozenka=Lt1+Tt;
                 int fail=sale-ozenka;
                 avg+=(fail*fail)/(sale*sale);
-       // sale=y[0];Lt1=sale;
-        //qDebug()<<"sale="<<sale<<" Lt="<<Lt1<<" Tt="<<Tt;
-      //  for(int i=1;i<50;i++){
-                sale=query.value(1).toDouble();
-            //sale=y[i];
+
+                sale=query.value(1).toDouble();;
                 Lt2=(k*sale/1)+(1-k)*(Lt1+Tt);
                 Tt=b*(Lt2-Lt1)+(1-b)*Tt;
                 Lt1=Lt2;
-                if(year==2017){
+
+                if(i<=12){//year==2017){
                     St[i]=1.0;
                 }else{
-                St[i]=q*(sale/Lt2)+(1-q)*St[i];
+                St[i]=q*(sale/Lt2)+(1-q)*St[i-13];
                 }
             }
-            qDebug()<<month<<"sale="<<QString::number(sale,'f',2)<<" Lt="<<QString::number(Lt1,'f',2)<<" Tt="<<QString::number(Tt,'f',2)<<" St"<<QString::number(St[i],'f',2);
+
+           qDebug()<<month<<"sale="<<QString::number(sale,'f',2)<<" Lt="<<QString::number(Lt1,'f',2)<<" Tt="<<QString::number(Tt,'f',2)<<" St"<<QString::number(St[i],'f',2);
             i++;
-        }
            }
-         }
-    qDebug()<<i;
+    }
+
+    }
+   // qDebug()<<i;
 
 
         double pr=0;
-        for(int t=1;t<=7;t++){
-            pr=(Lt2+Tt*t)*St[i-(12-t-1)];
+        for(int t=1;t<=10;t++){
+            pr=(Lt2+Tt*t)*St[i-(13-t)];
            // qDebug()<<St[i-(12-t)];
             qDebug()<<QString::number(pr,'d',2);
         }
-    qDebug()<<1-(avg/i);
+   // qDebug()<<1-(avg/i);
 
 
 
@@ -704,6 +680,11 @@ void MainWindow::createWidgetDiagram(){
   //  customplot->graph(0)->setData(x,y);
     customplot->graph(0)->setLineStyle(QCPGraph::lsImpulse);
 
+    //средняя цена чека на месяц
+    //select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2018 group by month(date);
+
+    //объем продаж за месяц в гривнах
+    //select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2018 group by month(date);
 
 
     customplot->xAxis->setRange(a,b);
@@ -872,8 +853,8 @@ void MainWindow::openItem(QListWidgetItem * item){
      welcome->setHidden(false);
      prevopen=1;
     }else
-    if(item->text()=="Продукты"){//"Продукты"
-        isOpenItem="Продукты";
+    if(item->text()=="Товары"){//"Продукты"
+        isOpenItem="Товары";
       mainGbox->itemAt(prevopen)->widget()->setHidden(true);
      Products->setHidden(false);
      prevopen=2;

@@ -64,7 +64,7 @@ void AssociationRules::CreateRules(){
 
     int lenght=1;
     int size=condits.size();
-    while(lenght<kol_items){
+   /* while(lenght<kol_items){
       items="";
       baskets="";
       ravno="";
@@ -103,8 +103,43 @@ void AssociationRules::CreateRules(){
     //tor="t0.name like '"+condits2[e]+"' and t1.name like '"+condits2[r]+"' and ";
 
     QString exec="select "+items+", COUNT(*) from "+baskets+" where "+ravno+" and "+mensh+" group by "+items+" having count(*)>="+QString::number(min_sup)+" and count(*)<="+QString::number(max_sup)+";";
+  //  qDebug()<<exec;
 
-    query2->exec(exec);
+   // QString exec="";
+
+    /*int k=0;
+    for(int i=0;i<condits2.size();i++){
+        for(int j=i+1;j<condits2.size();j++){
+            qDebug()<<"1="<<condits2[i]<<" 2="<<condits2[j];
+            k++;
+        }
+    }
+    qDebug()<<k;*/
+
+    //select name,count(tid) from transactions where tid in(select t0.tid from transactions as t0 inner join transactions as t1 using(tid) where t0.name like 'яйца' and t1.name like 'ужины') group by name;
+
+
+    for(int i=0;i<condits2.size();i++){
+         QString exec=" select name,count(tid) from transactions where tid in(select tid from transactions where name like '"+condits2[i]+"') group by name;";
+         query2->exec(exec);
+         while(query2->next()){
+            if(condits2[i]>query2->value(0).toString()){
+                if(query2->value(1).toInt()>=min_sup && query2->value(1).toInt()<=max_sup){
+                     QString ss=condits2[i]+","+query2->value(0).toString();
+                    double sup=query2->value(1).toDouble()/kol_chek;
+                    double conf=(sup/condits[condits2[i]])*100;
+                    if(conf>=min_conf && conf<=max_conf){
+                        list<<ss;
+                        condits[ss]=query2->value(1).toDouble()/kol_chek;
+                    }
+                }
+            }
+         }
+    }
+
+
+
+    /*query2->exec(exec);
     QString ss="";
 
         while(query2->next()){
@@ -120,7 +155,7 @@ void AssociationRules::CreateRules(){
             ss+=query2->value(i).toString()+",";
             }
             QString st="";
-            QString cond=ss.remove(ss.length()-1,ss.length()-1);;
+            QString cond=ss.remove(ss.length()-1,ss.length()-1);
 
             for(int k=0;k<cond.split(",").length()-1;k++){
                 st+=cond.split(",")[k];
@@ -131,6 +166,8 @@ void AssociationRules::CreateRules(){
             double sup=query2->value(lenght+1).toDouble()/kol_chek;
           //  qDebug()<<"(sup/condits[st])*100="<<(sup/condits[st])*100<<"min_conf="<<min_conf;
             if((sup/condits[st])*100>=min_conf){
+                qDebug()<<"cond="<<cond;
+                qDebug()<<"st="<<st;
             list<<cond;
             condits[ss]=query2->value(lenght+1).toDouble()/kol_chek;
             }
@@ -139,7 +176,7 @@ void AssociationRules::CreateRules(){
        //   }
      // }
      lenght++;
-        }
+        }*/
 
 }
 

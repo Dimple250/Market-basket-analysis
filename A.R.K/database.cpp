@@ -69,7 +69,7 @@ QStandardItemModel* Database::getModelTransactions(QString querystr){
        //QTableView::setSpan ( int row, int column, int rowSpanCount, int columnSpanCount )
 
        QStringList horizontalHeader;
-          horizontalHeader.append("Номер");
+        //  horizontalHeader.append("Номер");
           horizontalHeader.append("Продукты");
           horizontalHeader.append("Кол-во");
           horizontalHeader.append("Дата");
@@ -77,23 +77,31 @@ QStandardItemModel* Database::getModelTransactions(QString querystr){
 
           modelTransactions->setHorizontalHeaderLabels(horizontalHeader);
 
+          int tid=0;
           int i=0;
           while (query.next()) {
-          //Первый ряд
-          item = new QStandardItem(QString::number(query.value(0).toInt()));
-          modelTransactions->setItem(i, 0, item);
+
+            if(tid!=query.value(0).toInt()){
+                tid=query.value(0).toInt();
+                item = new QStandardItem("Транзакция №"+QString::number(tid));
+                modelTransactions->setItem(i, 0, item);
+                i++;
+            }
+
+         // item = new QStandardItem(QString::number(query.value(0).toInt()));
+         // modelTransactions->setItem(i, 0, item);
 
           item = new QStandardItem(query.value(1).toString());
-          modelTransactions->setItem(i, 1, item);
+          modelTransactions->setItem(i, 0, item);
 
           item = new QStandardItem(QString::number(query.value(2).toInt()));
-          modelTransactions->setItem(i, 2, item);
+          modelTransactions->setItem(i, 1, item);
 
           item = new QStandardItem(query.value(3).toString());
-          modelTransactions->setItem(i, 3, item);
+          modelTransactions->setItem(i, 2, item);
 
           item = new QStandardItem(query.value(4).toString());
-          modelTransactions->setItem(i, 4, item);
+          modelTransactions->setItem(i, 3, item);
           i++;
  }
       /* query.exec("select tid,name,kol,price,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) natural join products where tid=1025;");
