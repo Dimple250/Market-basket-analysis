@@ -19,14 +19,16 @@ SOURCES += main.cpp\
     style.cpp \
     associationrules.cpp \
     salesanalysis.cpp \
-    QCustomPlot/qcustomplot.cpp
+    QCustomPlot/qcustomplot.cpp \
+    chart.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     style.h \
     associationrules.h \
     salesanalysis.h \
-    QCustomPlot/qcustomplot.h
+    QCustomPlot/qcustomplot.h \
+    chart.h
 
 FORMS    += \
     mainwindow.ui

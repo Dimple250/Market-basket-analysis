@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     style=new Style;
     treeviewleft=new QListWidget;
     csvModel = new QStandardItemModel;
-    SalesAnalysis salesAnalysis;
+    customplot=new QCustomPlot;
 
     createWidgetProducts();
     createWidgetTransactions();
@@ -40,10 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
    // QMenu*  menu_analiz=new QMenu("&Analysis");
     //menu_file->addAction("Open",this,SLOT(OpenCSVFile()));*/
-    QMenu*  menu_rules=new QMenu("&Rules");
-    menu_rules->addAction("Create",this,SLOT(createRules()));
+   // QMenu*  menu_rules=new QMenu("&Rules");
+   // menu_rules->addAction("Create",this,SLOT(createRules()));
 
-    ui->menubar->addMenu(menu_rules);
+   // ui->menubar->addMenu(menu_rules);
 
 
 
@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     treeviewleft->setStyleSheet(style->getTreeviewleftStyleSheet());
-     QListWidgetItem* item=0;
+     QListWidgetItem* item;
 
      QStringList list;
      list<<"Главная"<<"Товары"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Загрузить файл";
@@ -130,8 +130,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
      ui->centralwidget->setLayout(mainGbox);
 
-     SalesAnalysis ss;
-     QLabel* lb=new QLabel(ss.getZnach());
+     //SalesAnalysis ss;
+    // QLabel* lb=new QLabel(ss.getZnach());
      //lb.setText();
     // lb->show();
      //Kagle
@@ -188,7 +188,7 @@ void MainWindow::createWidgetProducts(){
         ls<<categoryName.value(0).toString();
     }
 
-    listCategory;// (FilterProductsView);
+    //listCategory;// (FilterProductsView);
     listCategory.setStyleSheet(style->getComboBoxStyleSheet());
     listCategory.addItems(ls);
 
@@ -378,16 +378,15 @@ void MainWindow::createWidgetTransactions(){
 
 void MainWindow::changeAnalisProdycts(){
 
-    salesTableView->setModel(salesAnalysis.getModelSales(namepProducts.text()));
+    salesTableView->setModel(salesAnalysis.getModelSales(namepSalesProducts.text()));
 
     salesTableView->resizeRowsToContents();
     salesTableView->resizeColumnsToContents();
 
-    ostatkiTableView->setModel(salesAnalysis.getModelOstatki(namepProducts.text(),inMonth.currentText().toInt()));
+    ostatkiTableView->setModel(salesAnalysis.getModelOstatki(namepSalesProducts.text(),inMonth.currentText().toInt()));
 
     ostatkiTableView->resizeRowsToContents();
     ostatkiTableView->resizeColumnsToContents();
-
     QString month="";
     int flagMonth=0;
 
@@ -420,17 +419,17 @@ void MainWindow::createWidgetAnalis(){
   }
 
   QLabel* label=new QLabel("Продукты:");
-  label->setStyleSheet("font-size:15px;color:white;");
+  label->setStyleSheet("font-size:20px;color:white;");
 
   QLabel* label2=new QLabel("Кол-во месяцев:");
-  label2->setStyleSheet("font-size:15px;color:white;");
+  label2->setStyleSheet("font-size:20px;color:white;");
 
   QPushButton* settingName=new QPushButton("Применить");
     connect(settingName,SIGNAL(clicked(bool)),SLOT(changeAnalisProdycts()));
 
    QHBoxLayout* HBox=new QHBoxLayout;
    HBox->addWidget(label);
-   HBox->addWidget(&namepProducts);
+   HBox->addWidget(&namepSalesProducts);
    HBox->addWidget(label2);
    HBox->addWidget(&inMonth);
    HBox->addWidget(settingName);
@@ -438,7 +437,7 @@ void MainWindow::createWidgetAnalis(){
 
    QString tovar="";
 
-   int kol_month=12;
+   //int kol_month=12;
 
     salesTableView=new QTableView;
 
@@ -464,7 +463,7 @@ void MainWindow::createWidgetAnalis(){
     ostatkiTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
         QString month="";
-        int flagMonth=0;
+        //int flagMonth=0;
 
         /*for(int i=0;i<ostatkiTableView->model()->columnCount();i++){
             int number=ostatkiTableView->model()->data(ostatkiTableView->model()->index(0,i)).toInt();
@@ -480,13 +479,13 @@ void MainWindow::createWidgetAnalis(){
         }*/
 
         QLabel* lb=new QLabel("Продажи за 2018");
-        lb->setStyleSheet("color:white;font-size:23px;");
+        lb->setStyleSheet("color:white;font-size:20px;");
 
         QLabel* lb2=new QLabel("Остатки на конец периода");
-        lb2->setStyleSheet("color:white;font-size:23px;");
+        lb2->setStyleSheet("color:white;font-size:20px;");
 
         QLabel* lb3=new QLabel("Товар "+tovar+" закончится на складе в месяце "+month);
-        lb3->setStyleSheet("color:white;font-size:23px;");
+        lb3->setStyleSheet("color:white;font-size:20px;");
 
         QPushButton* prodazaOstatcov=new QPushButton("Расчет продажи остатков");
        // prodazaOstatcov->setFixedWidth(200);
@@ -502,6 +501,7 @@ void MainWindow::createWidgetAnalis(){
 
     QVBoxLayout* layout=new QVBoxLayout;
     layout->addLayout(HBox);
+    layout->addStretch(2);
     layout->addWidget(lb);
     layout->addWidget(salesTableView);
     layout->addWidget(lb2);
@@ -526,7 +526,7 @@ void MainWindow::createTabWidgetRules(){
     QWidget* setting=new QWidget;
 
     // устанавливаем цвет фона
-    Pal.setColor(QPalette::Background, Qt::white);
+    Pal.setColor(QPalette::Background,"#4C5866");
      setting->setAutoFillBackground(true);
     setting->setPalette(Pal);
     setting->setMaximumWidth(400);
@@ -534,12 +534,16 @@ void MainWindow::createTabWidgetRules(){
     QVBoxLayout* layout=new QVBoxLayout;
 
     QLabel* minsup=new QLabel("Минимальная поддержка %:");
+    minsup->setStyleSheet("font-size:20px;color:white;");
 
     QLabel* maxsup=new QLabel("Максимальная поддержка %:");
+    maxsup->setStyleSheet("font-size:20px;color:white;");
 
     QLabel* minconf=new QLabel("Минимальная достоверность %:");
+    minconf->setStyleSheet("font-size:20px;color:white;");
 
     QLabel* maxconf=new QLabel("Максимальная достоверность %:");
+    maxconf->setStyleSheet("font-size:20px;color:white;");
 
     QPushButton* button_setttules=new QPushButton("Поиск");
     connect(button_setttules,SIGNAL(clicked()),this,SLOT(createRules()));
@@ -629,123 +633,52 @@ void MainWindow::createRules(){
 
 }
 
+void MainWindow::changeDiagram(){
+
+    switch(variantDiagram.currentIndex()){
+    case 0:{
+        chart.ChangeDiagram(*customplot,"select month(date),count(tid) from date where year(date)=2017 group by month(date);","Кол-вл чекла");
+        break;
+    }
+    case 1:{
+        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by month(date);","Средняя цена чека");
+        break;
+    }
+    case 2:{
+        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by month(date);","Объем продаж в у.е.");
+        break;
+    }
+    default:{
+        break;
+    }
+    }
+
+}
+
 void MainWindow::createWidgetDiagram(){
     Diagram=new QWidget;
-   Diagram->setStyleSheet("background-color:#4C5866;");
 
-    QSqlQuery query;
-        query.exec("select month(date),count(tid) from date where year(date)=2017 group by month(date);");
+    QPalette Pal(palette());
 
-    double a = 1; //Начало интервала, где рисуем график по оси Ox
-       double b =  13; //Конец интервала, где рисуем график по оси Ox
-       double h = 1; //Шаг, с которым будем пробегать по оси Ox
+    // устанавливаем цвет фона
+    Pal.setColor(QPalette::Background,"#4C5866");
+      Diagram->setAutoFillBackground(true);
+   Diagram->setPalette(Pal);
 
-       double N=(b-a)/h + 2;
-       QVector<double> x(N), y(N);
-       int i=0;
-       while (query.next()) {
-           x[i] = query.value(0).toDouble();
-           y[i] =query.value(1).toDouble();
-           i++;
-       }
+   variantDiagram.addItem("Количество чеков за месяц");
+   variantDiagram.addItem("Средняя цена чека за месяц");
+   variantDiagram.addItem("Объем продаж в у.е.за месяц");
 
-    customplot = new QCustomPlot;
+   customplot->addGraph();
 
 
-    customplot->addGraph();
+        //select month(date),count(tid) from date where year(date)=2017 group by month(date);
 
-  //  customplot->graph(0)->setData(x,y);
-    customplot->graph(0)->setLineStyle(QCPGraph::lsImpulse);
+        //средняя цена чека на месяц
+        //select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2018 group by month(date);
 
-    //средняя цена чека на месяц
-    //select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2018 group by month(date);
-
-    //объем продаж за месяц в гривнах
-    //select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2018 group by month(date);
-
-
-    customplot->xAxis->setRange(a,b);
-    QVector<double> ticks;
-    QVector<QString> labels;
-    ticks << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 <<10 <<11<<12;
-    labels <<"Январь"
-           <<"Февраль"
-           <<"Март"
-           <<"Апрель"
-           <<"Май"
-           <<"Июнь"
-           <<"Июль"
-           <<"Август"
-           <<"Сентябрь"
-           <<"Октябрь"
-           <<"Ноябрь"
-           <<"Декабрь";
-    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
-    textTicker->addTicks(ticks, labels);
-    customplot->xAxis->setTicker(textTicker);
-
-
-    double minY = y[0], maxY = y[0];
-        for (int i=1; i<N; i++)
-        {
-            if (y[i]<minY) minY = y[i];
-            if (y[i]>maxY) maxY = y[i];
-        }
-
-
-    customplot->yAxis->setRange(minY, maxY+2);
-
-    QCPBars *bars1 = new QCPBars(customplot->xAxis, customplot->yAxis);
-    bars1->setData(x, y);
-    bars1->setWidth(9/(double)x.size());
-    bars1->setPen(Qt::NoPen);
-    bars1->setBrush(QColor(69, 71, 232));
-
-    customplot->xAxis->setLabel("Месяцы\n2017");
-    customplot->yAxis->setLabel("Кол-во чеков");
-    customplot->xAxis->setRangeUpper(13);
-    customplot->xAxis->setRangeLower(0);
-
-   // customplot->yAxis->setRangeUpper(maxY+200);
-    //customplot->yAxis->setRangeUpper(maxY);
-
-  // customplot->xAxis->setSelectableParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-
-
-    /*customplot->xAxis->setBasePen(QPen(Qt::white, 1));
-    customplot->yAxis->setBasePen(QPen(Qt::white, 1));
-    customplot->xAxis->setTickPen(QPen(Qt::white, 1));
-    customplot->yAxis->setTickPen(QPen(Qt::white, 1));
-    customplot->xAxis->setSubTickPen(QPen(Qt::white, 1));
-    customplot->yAxis->setSubTickPen(QPen(Qt::white, 1));
-    customplot->xAxis->setTickLabelColor(Qt::white);
-    customplot->yAxis->setTickLabelColor(Qt::white);
-    customplot->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
-    customplot->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
-    customplot->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
-    customplot->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
-    customplot->xAxis->grid()->setSubGridVisible(true);
-    customplot->yAxis->grid()->setSubGridVisible(true);
-    customplot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
-    customplot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
-    customplot->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
-    customplot->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
-    QLinearGradient plotGradient;
-    plotGradient.setStart(0, 0);
-    plotGradient.setFinalStop(0, 350);
-    plotGradient.setColorAt(0, QColor(80, 80, 80));
-    plotGradient.setColorAt(1, QColor(50, 50, 50));
-    customplot->setBackground(plotGradient);
-    QLinearGradient axisRectGradient;
-    axisRectGradient.setStart(0, 0);
-    axisRectGradient.setFinalStop(0, 350);
-    axisRectGradient.setColorAt(0, QColor(80, 80, 80));
-    axisRectGradient.setColorAt(1, QColor(30, 30, 30));
-    customplot->axisRect()->setBackground(axisRectGradient);*/
-
-   //customplot->rescaleAxes();
-  //  customplot->yAxis->setTickLength(1);
-    customplot->replot();
+        //объем продаж за месяц в гривнах
+        //select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2018 group by month(date);
 
     //customplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
 
@@ -758,13 +691,20 @@ void MainWindow::createWidgetDiagram(){
    // settgraph->setPalette(QColor(69, 71, 232));
     settgraph->setMaximumWidth(100);
 
+   // variantDiagram.setStyleSheet(style->getComboBoxStyleSheet());
+
+    connect(&variantDiagram,SIGNAL(activated(int)),SLOT(changeDiagram()));
+
     QHBoxLayout* hbox=new QHBoxLayout;
     hbox->addWidget(namegraph);
-    hbox->addSpacing(100);
+    hbox->addWidget(&variantDiagram);
+    hbox->addStretch(1);
     hbox->addWidget(settgraph);
 
 
-    choiseGraph->setStyleSheet("background-color:white;");
+    Pal.setColor(QPalette::Background,"white");
+      choiseGraph->setAutoFillBackground(true);
+   choiseGraph->setPalette(Pal);
     choiseGraph->setMaximumHeight(50);
     choiseGraph->setLayout(hbox);
 

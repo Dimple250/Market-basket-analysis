@@ -12,6 +12,7 @@
 #include "associationrules.h"
 #include "QCustomPlot/qcustomplot.h"
 #include "salesanalysis.h"
+#include "chart.h"
 
 namespace Ui {
 class MainWindow;
@@ -46,6 +47,7 @@ private:
     Database* database;
     Style* style;
     SalesAnalysis salesAnalysis;
+    Chart chart;
 
     QMap<QString,double> condits;
     QStandardItemModel *csvModel;
@@ -56,7 +58,9 @@ private:
 
     QComboBox listCategory;
     QLineEdit namepProducts;
+    QLineEdit namepSalesProducts;
     QComboBox inMonth;
+    QComboBox variantDiagram;
 
     QLineEdit minsupline;
     QLineEdit maxsupline;
@@ -80,6 +84,7 @@ public slots:
     void changeProductsView();
     void changeTransactionsView();
     void changeAnalisProdycts();
+    void changeDiagram();
     void OpenCSVFile();
     void createRules();
 };
