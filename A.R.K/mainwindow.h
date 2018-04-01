@@ -40,9 +40,12 @@ private:
     QTableView *tableviewTrans;
     QListWidget* treeviewleft;
     QTabWidget* tabRules;
+    QTableView* salesTableView;
+    QTableView* ostatkiTableView;
 
     Database* database;
     Style* style;
+    SalesAnalysis salesAnalysis;
 
     QMap<QString,double> condits;
     QStandardItemModel *csvModel;
@@ -53,6 +56,7 @@ private:
 
     QComboBox listCategory;
     QLineEdit namepProducts;
+    QComboBox inMonth;
 
     QLineEdit minsupline;
     QLineEdit maxsupline;
@@ -75,6 +79,7 @@ public slots:
    // void closeTab(int);
     void changeProductsView();
     void changeTransactionsView();
+    void changeAnalisProdycts();
     void OpenCSVFile();
     void createRules();
 };

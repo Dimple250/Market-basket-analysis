@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     style=new Style;
     treeviewleft=new QListWidget;
     csvModel = new QStandardItemModel;
+    SalesAnalysis salesAnalysis;
 
     createWidgetProducts();
     createWidgetTransactions();
@@ -375,6 +376,35 @@ void MainWindow::createWidgetTransactions(){
 
 }
 
+void MainWindow::changeAnalisProdycts(){
+
+    salesTableView->setModel(salesAnalysis.getModelSales(namepProducts.text()));
+
+    salesTableView->resizeRowsToContents();
+    salesTableView->resizeColumnsToContents();
+
+    ostatkiTableView->setModel(salesAnalysis.getModelOstatki(namepProducts.text(),inMonth.currentText().toInt()));
+
+    ostatkiTableView->resizeRowsToContents();
+    ostatkiTableView->resizeColumnsToContents();
+
+    QString month="";
+    int flagMonth=0;
+
+    for(int i=0;i<ostatkiTableView->model()->columnCount();i++){
+        int number=ostatkiTableView->model()->data(ostatkiTableView->model()->index(0,i)).toInt();
+        if(number<0){
+            if(flagMonth==0){
+
+             //   month=horizontalHeader.at(i);
+                flagMonth=1;
+            }
+       const QModelIndex index =ostatkiTableView->model()->index(0,i);
+       ostatkiTableView->model()->setData(index,QColor("#FF0F12"),Qt::TextColorRole);
+        }
+    }
+}
+
 void MainWindow::createWidgetAnalis(){
     Analis=new QWidget;
   // Analis->setStyleSheet("background-color:#4C5866;");
@@ -385,23 +415,36 @@ void MainWindow::createWidgetAnalis(){
      Analis->setAutoFillBackground(true);
   Analis->setPalette(Pal);
 
-   QString tovar="сода";
+  for(int i=1;i<=12;i++){
+      inMonth.addItem(QString::number(i));
+  }
 
-   int inMonth=8;
+  QLabel* label=new QLabel("Продукты:");
+  label->setStyleSheet("font-size:15px;color:white;");
+
+  QLabel* label2=new QLabel("Кол-во месяцев:");
+  label2->setStyleSheet("font-size:15px;color:white;");
+
+  QPushButton* settingName=new QPushButton("Применить");
+    connect(settingName,SIGNAL(clicked(bool)),SLOT(changeAnalisProdycts()));
+
+   QHBoxLayout* HBox=new QHBoxLayout;
+   HBox->addWidget(label);
+   HBox->addWidget(&namepProducts);
+   HBox->addWidget(label2);
+   HBox->addWidget(&inMonth);
+   HBox->addWidget(settingName);
+   HBox->addStretch(9);
+
+   QString tovar="";
+
    int kol_month=12;
 
-    SalesAnalysis salesAnalysis;
+    salesTableView=new QTableView;
 
-  QTableView* salesTableView=new QTableView;
-
-
-
-    salesTableView->setModel(salesAnalysis.getModelSales(tovar));
-
+   // salesTableView->setModel(salesAnalysis.getModelSales(tovar));
     salesTableView->setStyleSheet(style->getTableViewStyleSheet());
-
     salesTableView->setFont(f);
-
     salesTableView->resizeRowsToContents();
     salesTableView->resizeColumnsToContents();
     salesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -409,39 +452,32 @@ void MainWindow::createWidgetAnalis(){
     salesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 
-    QTableView* ostatkiTableView=new QTableView;
+    ostatkiTableView=new QTableView;
 
-        ostatkiTableView->setModel(salesAnalysis.getModelOstatki(tovar,inMonth));
-
-        ostatkiTableView->setStyleSheet(style->getTableViewStyleSheet());
-
-        ostatkiTableView->setFont(f);
-
-        ostatkiTableView->resizeRowsToContents();
-        ostatkiTableView->resizeColumnsToContents();
-        ostatkiTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        ostatkiTableView->setAlternatingRowColors(true);
-        ostatkiTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+   // ostatkiTableView->setModel(salesAnalysis.getModelOstatki(tovar,inMonth.currentText().toInt()));
+    ostatkiTableView->setStyleSheet(style->getTableViewStyleSheet());
+    ostatkiTableView->setFont(f);
+    ostatkiTableView->resizeRowsToContents();
+    ostatkiTableView->resizeColumnsToContents();
+    ostatkiTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ostatkiTableView->setAlternatingRowColors(true);
+    ostatkiTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
         QString month="";
         int flagMonth=0;
 
-        for(int i=0;i<ostatkiTableView->model()->columnCount();i++){
+        /*for(int i=0;i<ostatkiTableView->model()->columnCount();i++){
             int number=ostatkiTableView->model()->data(ostatkiTableView->model()->index(0,i)).toInt();
             if(number<0){
                 if(flagMonth==0){
+
                  //   month=horizontalHeader.at(i);
                     flagMonth=1;
                 }
            const QModelIndex index =ostatkiTableView->model()->index(0,i);
            ostatkiTableView->model()->setData(index,QColor("#FF0F12"),Qt::TextColorRole);
             }
-        }
-
-        QPushButton* prodazaOstatcov=new QPushButton("Расчет продажи остатков");
-       // prodazaOstatcov->setFixedWidth(200);
-        QPushButton* kolProdaz=new QPushButton("Расчет объема продаж");
-       //  kolProdaz->setFixedWidth(200);
+        }*/
 
         QLabel* lb=new QLabel("Продажи за 2018");
         lb->setStyleSheet("color:white;font-size:23px;");
@@ -452,6 +488,11 @@ void MainWindow::createWidgetAnalis(){
         QLabel* lb3=new QLabel("Товар "+tovar+" закончится на складе в месяце "+month);
         lb3->setStyleSheet("color:white;font-size:23px;");
 
+        QPushButton* prodazaOstatcov=new QPushButton("Расчет продажи остатков");
+       // prodazaOstatcov->setFixedWidth(200);
+        QPushButton* kolProdaz=new QPushButton("Расчет объема продаж");
+       //  kolProdaz->setFixedWidth(200);
+
         QHBoxLayout* Hbox=new QHBoxLayout;
         //Hbox->addSpacing(400);
         Hbox->addWidget(prodazaOstatcov);
@@ -460,13 +501,13 @@ void MainWindow::createWidgetAnalis(){
 
 
     QVBoxLayout* layout=new QVBoxLayout;
-    layout->addLayout(Hbox);
+    layout->addLayout(HBox);
     layout->addWidget(lb);
     layout->addWidget(salesTableView);
     layout->addWidget(lb2);
     layout->addWidget(ostatkiTableView);
-    layout->addWidget(lb3);
-    layout->addStretch(0);
+    //layout->addWidget(lb3);
+    layout->addStretch(10);
 
     Analis->setLayout(layout);
 }

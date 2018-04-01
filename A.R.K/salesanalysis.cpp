@@ -215,7 +215,6 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
         for(int t=1;t<=inMonth;t++){
 
             pr=(Lt2+Tt*t)*St[i-(13-t)];
-            qDebug()<<pr;
 
             if(t==1){
             ostatok=kol_on_sclad-pr;
