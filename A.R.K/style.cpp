@@ -96,7 +96,7 @@ QString Style::getTableViewStyleSheet(){
             "selection-background-color:yellow;"
             //"padding-right: 40px;"
            // "padding-top: 0px;"
-            "color:black;"
+           // "color:black;"
             //"padding-bottom: 10px;"
             "}"
 
@@ -108,6 +108,7 @@ QString Style::getTableViewStyleSheet(){
             //"}"
 
             "QTableView QHeaderView{"
+            "font-size:15px;"
             "background-color:#4C5866;"
 
           "}"

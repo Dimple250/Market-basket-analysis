@@ -215,7 +215,7 @@ void MainWindow::createWidgetProducts(){
 
 
 
-           tableview->setModel(database->getModelProducts("select category.name,products.name,price from products inner join category using(idcat);"));
+           tableview->setModel(database->getModelProducts("select category.name,products.name,price,kol_on_sclad from products inner join category using(idcat);"));
 
         tableview->setStyleSheet(style->getTableViewStyleSheet());
         tableview->setColumnHidden(0,true);
@@ -377,10 +377,17 @@ void MainWindow::createWidgetTransactions(){
 
 void MainWindow::createWidgetAnalis(){
     Analis=new QWidget;
-   Analis->setStyleSheet("background-color:#4C5866;");
+  // Analis->setStyleSheet("background-color:#4C5866;");
+   QPalette Pal(palette());
 
+   // устанавливаем цвет фона
+   Pal.setColor(QPalette::Background,"#4C5866");
+     Analis->setAutoFillBackground(true);
+  Analis->setPalette(Pal);
 
+   QString tovar="сода";
 
+   int inMonth=8;
    int kol_month=12;
 
   QTableView* salesTableView=new QTableView;
@@ -390,12 +397,11 @@ void MainWindow::createWidgetAnalis(){
      QStandardItem *item;
 
       QStringList verticalHeader;
-      verticalHeader.append("яйца");
+      verticalHeader.append(tovar);
 
 
 
    QStringList horizontalHeader;
-      horizontalHeader.append("");
       horizontalHeader.append("Январь");
       horizontalHeader.append("Февраль");
       horizontalHeader.append("Март");
@@ -414,39 +420,28 @@ void MainWindow::createWidgetAnalis(){
 
    for(int i=1;i<=kol_month;i++){
    QSqlQuery query;
-       query.prepare("select count(*) from transactions natural join date where name like '"+QString("яйца")+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by name;");
+       query.prepare("select count(*) from transactions natural join date where name like '"+QString(tovar)+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by name;");
         query.exec();
 
 
        int j=0;
-      /* qDebug()<<query.record();
-       if(!query.exec())
-       {
-           qDebug()<<"sdf";
-           for(j=0;j<kol_month+1;j++)
-            item = new QStandardItem(QString::number(0));
-          modelSales->setItem(j, i+1, item);
-       }else*/
 
           while (query.next()) {
-          //Первый ряд
-            //  if(i==1){
           item = new QStandardItem(query.value(0).toString());
-          modelSales->setItem(j, i, item);
-             // }
-
-           // item = new QStandardItem(query.value(1).toString());;
-          //modelSales->setItem(j, i+1, item);
+          modelSales->setItem(j, i-1, item);
 
           j++;
         }
+          if(j==0){
+              item = new QStandardItem("0");
+              modelSales->setItem(j, i-1, item);
+          }
 
    }
 
     salesTableView->setModel(modelSales);
 
     salesTableView->setStyleSheet(style->getTableViewStyleSheet());
-    salesTableView->setColumnHidden(0,true);
 
     salesTableView->setFont(f);
 
@@ -479,11 +474,12 @@ void MainWindow::createWidgetAnalis(){
     double St[50];
     double avg=0;
     int i=0;
+    int lastMonth=0;
 
     for(int year=2017;year<=2018;year++){
     for(int month=1;month<=kol_month;month++){
     QSqlQuery query;
-        query.prepare("select name,count(*) from transactions natural join date where name like '"+QString("сода")+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by name;");
+        query.prepare("select name,count(*) from transactions natural join date where name like '"+QString(tovar)+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by name;");
          query.exec();
 
            while (query.next()) {
@@ -512,30 +508,170 @@ void MainWindow::createWidgetAnalis(){
                 }
             }
 
-           qDebug()<<month<<"sale="<<QString::number(sale,'f',2)<<" Lt="<<QString::number(Lt1,'f',2)<<" Tt="<<QString::number(Tt,'f',2)<<" St"<<QString::number(St[i],'f',2);
+        //   qDebug()<<month<<"sale="<<QString::number(sale,'f',2)<<" Lt="<<QString::number(Lt1,'f',2)<<" Tt="<<QString::number(Tt,'f',2)<<" St"<<QString::number(St[i],'f',2);
             i++;
+            lastMonth=month;
            }
+        }
     }
 
-    }
-   // qDebug()<<i;
+
+    QTableView* ostatkiTableView=new QTableView;
+
+     QStandardItemModel* modelOstatki=new QStandardItemModel;
+
+        horizontalHeader.clear();
+        horizontalHeader.append("На складе");
+        int kol_on_sclad=0;
+
+          for(int t=1;t<=inMonth;t++){
+
+              lastMonth++;
+
+              if(lastMonth>12){
+                  lastMonth=1;
+              }
+
+              switch (lastMonth) {
+              case 1:{
+                   horizontalHeader.append("Январь");
+                  break;
+              }
+              case 2:{
+                   horizontalHeader.append("Февраль");
+                  break;
+              }
+              case 3:{
+                   horizontalHeader.append("Март");
+                  break;
+              }
+              case 4:{
+                   horizontalHeader.append("Апрель");
+                  break;
+              }
+              case 5:{
+                  horizontalHeader.append("Май");
+                  break;
+              }
+              case 6:{
+                   horizontalHeader.append("Июнь");
+                  break;
+              }
+              case 7:{
+                  horizontalHeader.append("Июль");
+                  break;
+              }
+              case 8:{
+                   horizontalHeader.append("Август");
+                  break;
+              }
+              case 9:{
+                   horizontalHeader.append("Сентябрь");
+                  break;
+              }
+              case 10:{
+                   horizontalHeader.append("Октябрь");
+                  break;
+              }
+              case 11:{
+                   horizontalHeader.append("Ноябрь");
+                  break;
+              }
+              case 12:{
+                    horizontalHeader.append("Декабрь");
+                  break;
+              }
+              default:
+                  break;
+              }
+          }
+          modelOstatki->setHorizontalHeaderLabels(horizontalHeader);
+          modelOstatki->setVerticalHeaderLabels(verticalHeader);
+
+          query.exec("select kol_on_sclad from products where name like '"+tovar+"';");
+          while (query.next()) {
+             kol_on_sclad=query.value(0).toInt();
+          }
+
+          item = new QStandardItem(QString::number(kol_on_sclad));
+           modelOstatki->setItem(0, 0, item);
 
 
-        double pr=0;
-        for(int t=1;t<=10;t++){
+        int pr=0;
+        int ostatok=0;
+        for(int t=1;t<=inMonth;t++){
+
             pr=(Lt2+Tt*t)*St[i-(13-t)];
-           // qDebug()<<St[i-(12-t)];
+
+            if(t==1){
+            ostatok=kol_on_sclad-pr;
+            }else{
+            ostatok=ostatok-pr;
+            }
+
+            item = new QStandardItem(QString::number(ostatok));
+             modelOstatki->setItem(0, t, item);
+
             qDebug()<<QString::number(pr,'d',2);
         }
-   // qDebug()<<1-(avg/i);
+   // qDebug()<<1-(avg/i)
 
+        ostatkiTableView->setModel(modelOstatki);
 
+        ostatkiTableView->setStyleSheet(style->getTableViewStyleSheet());
 
+        ostatkiTableView->setFont(f);
 
+        ostatkiTableView->resizeRowsToContents();
+        ostatkiTableView->resizeColumnsToContents();
+        ostatkiTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        ostatkiTableView->setAlternatingRowColors(true);
+        ostatkiTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+        QString month="";
+        int flagMonth=0;
+
+        for(int i=0;i<ostatkiTableView->model()->columnCount();i++){
+            int number=ostatkiTableView->model()->data(ostatkiTableView->model()->index(0,i)).toInt();
+            if(number<0){
+                if(flagMonth==0){
+                    month=horizontalHeader.at(i);
+                    flagMonth=1;
+                }
+           const QModelIndex index =ostatkiTableView->model()->index(0,i);
+           ostatkiTableView->model()->setData(index,QColor("#FF0F12"),Qt::TextColorRole);
+            }
+        }
+
+        QPushButton* prodazaOstatcov=new QPushButton("Расчет продажи остатков");
+       // prodazaOstatcov->setFixedWidth(200);
+        QPushButton* kolProdaz=new QPushButton("Расчет объема продаж");
+       //  kolProdaz->setFixedWidth(200);
+
+        QLabel* lb=new QLabel("Продажи за 2018");
+        lb->setStyleSheet("color:white;font-size:23px;");
+
+        QLabel* lb2=new QLabel("Остатки на конец периода");
+        lb2->setStyleSheet("color:white;font-size:23px;");
+
+        QLabel* lb3=new QLabel("Товар "+tovar+" закончится на складе в месяце "+month);
+        lb3->setStyleSheet("color:white;font-size:23px;");
+
+        QHBoxLayout* Hbox=new QHBoxLayout;
+        //Hbox->addSpacing(400);
+        Hbox->addWidget(prodazaOstatcov);
+        Hbox->addWidget(kolProdaz);
+      //  Hbox->addSpacing(400);
 
 
     QVBoxLayout* layout=new QVBoxLayout;
+    layout->addLayout(Hbox);
+    layout->addWidget(lb);
     layout->addWidget(salesTableView);
+    layout->addWidget(lb2);
+    layout->addWidget(ostatkiTableView);
+    layout->addWidget(lb3);
+    layout->addStretch(0);
 
     Analis->setLayout(layout);
 }

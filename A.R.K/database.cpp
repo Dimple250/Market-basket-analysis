@@ -37,6 +37,7 @@ QStandardItemModel* Database::getModelProducts(QString querystr){
            horizontalHeader.append("Категория");
            horizontalHeader.append("Продукты");
            horizontalHeader.append("Цена");
+           horizontalHeader.append("На складе");
 
            modelProducts->setHorizontalHeaderLabels(horizontalHeader);
 
@@ -51,6 +52,9 @@ QStandardItemModel* Database::getModelProducts(QString querystr){
 
            item = new QStandardItem(QString::number(query.value(2).toFloat()));
            modelProducts->setItem(i, 3, item);
+
+           item = new QStandardItem(QString::number(query.value(3).toFloat()));
+           modelProducts->setItem(i, 4, item);
            i++;
   }
 
