@@ -390,56 +390,13 @@ void MainWindow::createWidgetAnalis(){
    int inMonth=8;
    int kol_month=12;
 
+    SalesAnalysis salesAnalysis;
+
   QTableView* salesTableView=new QTableView;
 
-   QStandardItemModel* modelSales=new QStandardItemModel;
-
-     QStandardItem *item;
-
-      QStringList verticalHeader;
-      verticalHeader.append(tovar);
 
 
-
-   QStringList horizontalHeader;
-      horizontalHeader.append("Январь");
-      horizontalHeader.append("Февраль");
-      horizontalHeader.append("Март");
-      horizontalHeader.append("Апрель");
-      horizontalHeader.append("Май");
-      horizontalHeader.append("Июнь");
-      horizontalHeader.append("Июль");
-      horizontalHeader.append("Август");
-      horizontalHeader.append("Сентябрь");
-      horizontalHeader.append("Октябрь");
-      horizontalHeader.append("Ноябрь");
-      horizontalHeader.append("Декабрь");
-
-      modelSales->setHorizontalHeaderLabels(horizontalHeader);
-      modelSales->setVerticalHeaderLabels(verticalHeader);
-
-   for(int i=1;i<=kol_month;i++){
-   QSqlQuery query;
-       query.prepare("select count(*) from transactions natural join date where name like '"+QString(tovar)+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by name;");
-        query.exec();
-
-
-       int j=0;
-
-          while (query.next()) {
-          item = new QStandardItem(query.value(0).toString());
-          modelSales->setItem(j, i-1, item);
-
-          j++;
-        }
-          if(j==0){
-              item = new QStandardItem("0");
-              modelSales->setItem(j, i-1, item);
-          }
-
-   }
-
-    salesTableView->setModel(modelSales);
+    salesTableView->setModel(salesAnalysis.getModelSales(tovar));
 
     salesTableView->setStyleSheet(style->getTableViewStyleSheet());
 
@@ -451,172 +408,10 @@ void MainWindow::createWidgetAnalis(){
     salesTableView->setAlternatingRowColors(true);
     salesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    int beg=2017;
-    int end=1019;
-
-    double Tt=0;
-    double Lt1=0;
-    double Lt2=0;
-    double sale=0;
-
-    double k=0.5;
-    double b=0.1;
-    double q=0.9;
-
-
-    QSqlQuery query;
-     query.exec("select distinct year(date) from date;");
-    int count_years=0;
-    while (query.next()) {
-    count_years=query.value(0).toInt();;
-    }
-
-    double St[50];
-    double avg=0;
-    int i=0;
-    int lastMonth=0;
-
-    for(int year=2017;year<=2018;year++){
-    for(int month=1;month<=kol_month;month++){
-    QSqlQuery query;
-        query.prepare("select name,count(*) from transactions natural join date where name like '"+QString(tovar)+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by name;");
-         query.exec();
-
-           while (query.next()) {
-            if(year==beg && month==1){
-                sale=query.value(1).toDouble();
-                Lt1=sale;
-                double ozenka=Lt1+Tt;
-                int fail=sale-ozenka;
-                avg+=(fail*fail)/(sale*sale);
-                 St[0]=1.0;
-            }else{
-
-                double ozenka=Lt1+Tt;
-                int fail=sale-ozenka;
-                avg+=(fail*fail)/(sale*sale);
-
-                sale=query.value(1).toDouble();;
-                Lt2=(k*sale/1)+(1-k)*(Lt1+Tt);
-                Tt=b*(Lt2-Lt1)+(1-b)*Tt;
-                Lt1=Lt2;
-
-                if(i<=12){//year==2017){
-                    St[i]=1.0;
-                }else{
-                St[i]=q*(sale/Lt2)+(1-q)*St[i-13];
-                }
-            }
-
-        //   qDebug()<<month<<"sale="<<QString::number(sale,'f',2)<<" Lt="<<QString::number(Lt1,'f',2)<<" Tt="<<QString::number(Tt,'f',2)<<" St"<<QString::number(St[i],'f',2);
-            i++;
-            lastMonth=month;
-           }
-        }
-    }
-
 
     QTableView* ostatkiTableView=new QTableView;
 
-     QStandardItemModel* modelOstatki=new QStandardItemModel;
-
-        horizontalHeader.clear();
-        horizontalHeader.append("На складе");
-        int kol_on_sclad=0;
-
-          for(int t=1;t<=inMonth;t++){
-
-              lastMonth++;
-
-              if(lastMonth>12){
-                  lastMonth=1;
-              }
-
-              switch (lastMonth) {
-              case 1:{
-                   horizontalHeader.append("Январь");
-                  break;
-              }
-              case 2:{
-                   horizontalHeader.append("Февраль");
-                  break;
-              }
-              case 3:{
-                   horizontalHeader.append("Март");
-                  break;
-              }
-              case 4:{
-                   horizontalHeader.append("Апрель");
-                  break;
-              }
-              case 5:{
-                  horizontalHeader.append("Май");
-                  break;
-              }
-              case 6:{
-                   horizontalHeader.append("Июнь");
-                  break;
-              }
-              case 7:{
-                  horizontalHeader.append("Июль");
-                  break;
-              }
-              case 8:{
-                   horizontalHeader.append("Август");
-                  break;
-              }
-              case 9:{
-                   horizontalHeader.append("Сентябрь");
-                  break;
-              }
-              case 10:{
-                   horizontalHeader.append("Октябрь");
-                  break;
-              }
-              case 11:{
-                   horizontalHeader.append("Ноябрь");
-                  break;
-              }
-              case 12:{
-                    horizontalHeader.append("Декабрь");
-                  break;
-              }
-              default:
-                  break;
-              }
-          }
-          modelOstatki->setHorizontalHeaderLabels(horizontalHeader);
-          modelOstatki->setVerticalHeaderLabels(verticalHeader);
-
-          query.exec("select kol_on_sclad from products where name like '"+tovar+"';");
-          while (query.next()) {
-             kol_on_sclad=query.value(0).toInt();
-          }
-
-          item = new QStandardItem(QString::number(kol_on_sclad));
-           modelOstatki->setItem(0, 0, item);
-
-
-        int pr=0;
-        int ostatok=0;
-        for(int t=1;t<=inMonth;t++){
-
-            pr=(Lt2+Tt*t)*St[i-(13-t)];
-
-            if(t==1){
-            ostatok=kol_on_sclad-pr;
-            }else{
-            ostatok=ostatok-pr;
-            }
-
-            item = new QStandardItem(QString::number(ostatok));
-             modelOstatki->setItem(0, t, item);
-
-            qDebug()<<QString::number(pr,'d',2);
-        }
-   // qDebug()<<1-(avg/i)
-
-        ostatkiTableView->setModel(modelOstatki);
+        ostatkiTableView->setModel(salesAnalysis.getModelOstatki(tovar,inMonth));
 
         ostatkiTableView->setStyleSheet(style->getTableViewStyleSheet());
 
@@ -635,7 +430,7 @@ void MainWindow::createWidgetAnalis(){
             int number=ostatkiTableView->model()->data(ostatkiTableView->model()->index(0,i)).toInt();
             if(number<0){
                 if(flagMonth==0){
-                    month=horizontalHeader.at(i);
+                 //   month=horizontalHeader.at(i);
                     flagMonth=1;
                 }
            const QModelIndex index =ostatkiTableView->model()->index(0,i);

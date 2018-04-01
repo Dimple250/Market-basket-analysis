@@ -35,12 +35,15 @@ public:
     void createWidgetSclad();
 private:
     Ui::MainWindow *ui;
+
     QTableView *tableview;
     QTableView *tableviewTrans;
     QListWidget* treeviewleft;
     QTabWidget* tabRules;
+
     Database* database;
     Style* style;
+
     QMap<QString,double> condits;
     QStandardItemModel *csvModel;
     QGridLayout* mainGbox;
