@@ -389,9 +389,13 @@ void MainWindow::createWidgetAnalis(){
 
      QStandardItem *item;
 
+      QStringList verticalHeader;
+      verticalHeader.append("яйца");
+
+
+
    QStringList horizontalHeader;
       horizontalHeader.append("");
-      horizontalHeader.append("Товар");
       horizontalHeader.append("Январь");
       horizontalHeader.append("Февраль");
       horizontalHeader.append("Март");
@@ -406,10 +410,11 @@ void MainWindow::createWidgetAnalis(){
       horizontalHeader.append("Декабрь");
 
       modelSales->setHorizontalHeaderLabels(horizontalHeader);
+      modelSales->setVerticalHeaderLabels(verticalHeader);
 
    for(int i=1;i<=kol_month;i++){
    QSqlQuery query;
-       query.prepare("select name,count(*) from transactions natural join date where name like '"+QString("яйца")+"' and month(date)="+QString::number(i)+" group by name;");
+       query.prepare("select count(*) from transactions natural join date where name like '"+QString("яйца")+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by name;");
         query.exec();
 
 
@@ -425,13 +430,13 @@ void MainWindow::createWidgetAnalis(){
 
           while (query.next()) {
           //Первый ряд
-              if(i==1){
+            //  if(i==1){
           item = new QStandardItem(query.value(0).toString());
-          modelSales->setItem(j, 1, item);
-              }
+          modelSales->setItem(j, i, item);
+             // }
 
-            item = new QStandardItem(query.value(1).toString());;
-          modelSales->setItem(j, i+1, item);
+           // item = new QStandardItem(query.value(1).toString());;
+          //modelSales->setItem(j, i+1, item);
 
           j++;
         }
@@ -475,7 +480,7 @@ void MainWindow::createWidgetAnalis(){
     double avg=0;
     int i=0;
 
-    for(int year=2017;year<=2019;year++){
+    for(int year=2017;year<=2018;year++){
     for(int month=1;month<=kol_month;month++){
     QSqlQuery query;
         query.prepare("select name,count(*) from transactions natural join date where name like '"+QString("сода")+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by name;");
