@@ -53,7 +53,7 @@ QStandardItemModel* Database::getModelProducts(QString querystr){
            item = new QStandardItem(QString::number(query.value(2).toFloat()));
            modelProducts->setItem(i, 3, item);
 
-           item = new QStandardItem(QString::number(query.value(3).toFloat()));
+           item = new QStandardItem(tr("%1").arg(query.value(3).toFloat()));
            modelProducts->setItem(i, 4, item);
            i++;
   }
@@ -76,8 +76,8 @@ QStandardItemModel* Database::getModelTransactions(QString querystr){
         //  horizontalHeader.append("Номер");
           horizontalHeader.append("Продукты");
           horizontalHeader.append("Кол-во");
-          horizontalHeader.append("Дата");
-          horizontalHeader.append("Время");
+         // horizontalHeader.append("Дата");
+          //horizontalHeader.append("Время");
 
           modelTransactions->setHorizontalHeaderLabels(horizontalHeader);
 
@@ -87,7 +87,7 @@ QStandardItemModel* Database::getModelTransactions(QString querystr){
 
             if(tid!=query.value(0).toInt()){
                 tid=query.value(0).toInt();
-                item = new QStandardItem("Транзакция №"+QString::number(tid));
+                item = new QStandardItem("Транзакция №"+QString::number(tid)+"   "+query.value(3).toString()+"   "+query.value(4).toString());
                 modelTransactions->setItem(i, 0, item);
                 i++;
             }
@@ -101,11 +101,11 @@ QStandardItemModel* Database::getModelTransactions(QString querystr){
           item = new QStandardItem(QString::number(query.value(2).toInt()));
           modelTransactions->setItem(i, 1, item);
 
-          item = new QStandardItem(query.value(3).toString());
-          modelTransactions->setItem(i, 2, item);
+          //item = new QStandardItem();
+          //modelTransactions->setItem(i, 2, item);
 
-          item = new QStandardItem(query.value(4).toString());
-          modelTransactions->setItem(i, 3, item);
+          //item = new QStandardItem();
+          //modelTransactions->setItem(i, 3, item);
           i++;
  }
       /* query.exec("select tid,name,kol,price,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) natural join products where tid=1025;");

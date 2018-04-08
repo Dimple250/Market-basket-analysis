@@ -134,7 +134,7 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
 
       QStringList horizontalHeader;
 
-        horizontalHeader.append("На складе");
+       // horizontalHeader.append("На складе");
         int kol_on_sclad=0;
 
           for(int t=1;t<=inMonth;t++){
@@ -206,8 +206,8 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
              kol_on_sclad=query.value(0).toInt();
           }
 
-          item = new QStandardItem(QString::number(kol_on_sclad));
-           modelOstatki->setItem(0, 0, item);
+        //  item = new QStandardItem(QString::number(kol_on_sclad));
+          // modelOstatki->setItem(0, 0, item);
 
 
         int pr=0;
@@ -216,15 +216,15 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
 
             pr=(Lt2+Tt*t)*St[i-(13-t)];
 
-            if(t==1){
-            ostatok=kol_on_sclad-pr;
-            }else{
-            ostatok=ostatok-pr;
-            }
+            //if(t==1){
+            //ostatok=kol_on_sclad-pr;
+           // }else{
+          //  ostatok=ostatok-pr;
+           // }
             //qDebug()<<ostatok;
 
-            item = new QStandardItem(QString::number(ostatok));
-             modelOstatki->setItem(0, t, item);
+            item = new QStandardItem(QString::number(pr));
+             modelOstatki->setItem(0, t-1, item);
 
            // qDebug()<<QString::number(pr,'d',2);
         }

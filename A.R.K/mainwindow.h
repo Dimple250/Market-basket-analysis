@@ -62,10 +62,16 @@ private:
     QComboBox inMonth;
     QComboBox variantDiagram;
 
+    QDateEdit toDate;
+    QDateEdit fromDate;
+    QTimeEdit toTime;
+    QTimeEdit fromTime;
+
     QLineEdit minsupline;
     QLineEdit maxsupline;
     QLineEdit minconfline;
     QLineEdit maxconfline;
+    QLineEdit categoryline;
 
 
     QString isOpenItem;

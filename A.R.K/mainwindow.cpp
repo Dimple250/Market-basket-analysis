@@ -158,6 +158,8 @@ void MainWindow::createWidgetProducts(){
 
 
     tableview=new QTableView(Products);
+  // tableview->setSortingEnabled(true);
+   // tableview->sortByColumn(2, Qt::DescendingOrder);
 
     QWidget* FilterProductsView=new QWidget;
     //SettingProducts->setMinimumWidth(100);
@@ -252,8 +254,16 @@ void MainWindow::changeTransactionsView(){
     QString product="";
     QString tid="";
     QString querystr;
+
+    QString fdate=fromDate.date().toString("yyyy-MM-dd");
+    QString tdate=toDate.date().toString("yyyy-MM-dd");
+
+    QString ftime=fromTime.time().toString();
+    QString ttime=toTime.time().toString();
+
+
    if(namepProducts.text()==""){
-       querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) order by tid;";
+       querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' and time(date)>='"+ftime+"' and time(date)<='"+ttime+"'' order by tid;";
     }else{
         product=namepProducts.text();
 
@@ -267,7 +277,7 @@ void MainWindow::changeTransactionsView(){
         }
         tid=tid.remove(tid.length()-3,tid.length()-1);
 
-        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where "+tid+" order by tid;";
+        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where "+tid+" and date(date) between '"+fdate+"' and '"+tdate+"' and time(date)>='"+ftime+"' and time(date)<='"+ttime+"' order by tid;";
     //qDebug()<<querystr;
    }
 
@@ -286,7 +296,7 @@ void MainWindow::changeTransactionsView(){
 
 void MainWindow::createWidgetTransactions(){
     Tranzactions=new QWidget;
-   // Tranzactions->setStyleSheet("background-color:#4C5866;");
+   // Tranzactions->setStyleSheet("padding-left:10%;");//("background-color:#4C5866;");
     QPalette Pal(palette());
 
     // устанавливаем цвет фона
@@ -294,11 +304,10 @@ void MainWindow::createWidgetTransactions(){
      Tranzactions->setAutoFillBackground(true);
   Tranzactions->setPalette(Pal);
 
-
   tableviewTrans=new QTableView;
   tableviewTrans->setModel(database->getModelTransactions("select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) order by tid;"));
 
-    tableviewTrans->setStyleSheet(style->getTableViewStyleSheet());
+    tableviewTrans->setStyleSheet(style->getTableViewStyleSheet()+"QTableView{margin-left:30%;}");
         //tableview->setColumnHidden(0,true);
     tableviewTrans->setColumnWidth(0,250);
 
@@ -358,10 +367,49 @@ void MainWindow::createWidgetTransactions(){
         QLabel* lb2=new QLabel("Продукты:");
         lb2->setStyleSheet("font-size:15px;color:white;");
 
+       // toDate=new QDateEdit;
+        toDate.setDisplayFormat("dd-MMM-yyyy");
+
+        //fromDate=new QDateEdit;
+        fromDate.setDisplayFormat("dd-MMM-yyyy");
+
+        QLabel* lb3=new QLabel("За период от:");
+        lb3->setStyleSheet("font-size:15px;color:white;");
+
+        QLabel* lb5=new QLabel("-");
+        lb5->setStyleSheet("font-size:25px;color:white;");
+
+        //toTime=new QTimeEdit;
+        //fromTime=new QTimeEdit;
+
+        QLabel* lb6=new QLabel("Временой промежуток:");
+        lb6->setStyleSheet("font-size:15px;color:white;");
+
+        QLabel* lb8=new QLabel(":");
+        lb8->setStyleSheet("font-size:20px;color:white;");
+
+
+        QHBoxLayout* layoutDate=new QHBoxLayout;
+        layoutDate->addWidget(&fromDate);
+        layoutDate->addWidget(lb5);
+        layoutDate->addWidget(&toDate);
+        layoutDate->addStretch(1);
+
+        QHBoxLayout* layoutMonth=new QHBoxLayout;
+        layoutMonth->addWidget(&fromTime);
+        layoutMonth->addWidget(lb8);
+        layoutMonth->addWidget(&toTime);
+        layoutMonth->addStretch(1);
+
+
     QVBoxLayout*  layoutsettrans=new QVBoxLayout;
     layoutsettrans->addWidget(nameFilter);
     layoutsettrans->addWidget(lb2);
     layoutsettrans->addWidget(&namepProducts);
+    layoutsettrans->addWidget(lb3);
+    layoutsettrans->addLayout(layoutDate);
+    layoutsettrans->addWidget(lb6);
+    layoutsettrans->addLayout(layoutMonth);
     layoutsettrans->addStretch(10);
     layoutsettrans->addWidget(button_setcategory);
 
@@ -454,7 +502,9 @@ void MainWindow::createWidgetAnalis(){
     ostatkiTableView=new QTableView;
 
    // ostatkiTableView->setModel(salesAnalysis.getModelOstatki(tovar,inMonth.currentText().toInt()));
-    ostatkiTableView->setStyleSheet(style->getTableViewStyleSheet());
+    ostatkiTableView->setStyleSheet("QTableView{border: 0px solid white;background-color:#4C5866;font-size:15px;}"
+                                    "QTableView::item{border:0px solid white;background-color:white;}"
+                                    "QTableView QHeaderView{font-size:15px;background-color:#4C5866;}");
     ostatkiTableView->setFont(f);
     ostatkiTableView->resizeRowsToContents();
     ostatkiTableView->resizeColumnsToContents();
@@ -478,10 +528,10 @@ void MainWindow::createWidgetAnalis(){
             }
         }*/
 
-        QLabel* lb=new QLabel("Продажи за 2018");
+        QLabel* lb=new QLabel("Продажи за текущий год");
         lb->setStyleSheet("color:white;font-size:20px;");
 
-        QLabel* lb2=new QLabel("Остатки на конец периода");
+        QLabel* lb2=new QLabel("Прогноз на следующие месяцы");
         lb2->setStyleSheet("color:white;font-size:20px;");
 
         QLabel* lb3=new QLabel("Товар "+tovar+" закончится на складе в месяце "+month);
@@ -545,6 +595,9 @@ void MainWindow::createTabWidgetRules(){
     QLabel* maxconf=new QLabel("Максимальная достоверность %:");
     maxconf->setStyleSheet("font-size:20px;color:white;");
 
+    QLabel* cat=new QLabel("Категория товаров:");
+    cat->setStyleSheet("font-size:20px;color:white;");
+
     QPushButton* button_setttules=new QPushButton("Поиск");
     connect(button_setttules,SIGNAL(clicked()),this,SLOT(createRules()));
 
@@ -556,6 +609,8 @@ void MainWindow::createTabWidgetRules(){
     layout->addWidget(&minconfline);
     layout->addWidget(maxconf);
     layout->addWidget(&maxconfline);
+    layout->addWidget(cat);
+
     layout->addStretch(10);
     layout->addWidget(button_setttules);
 
@@ -623,6 +678,7 @@ void MainWindow::createRules(){
      rules->setMaxSup(maxsupline.text().toInt());
      rules->setMinConf(minconfline.text().toInt());
      rules->setMaxConf(maxconfline.text().toInt());
+     rules->setCategory(categoryline.text());
      rules->CreateRules();
      //rules->setTable();
 
@@ -660,6 +716,12 @@ void MainWindow::createWidgetDiagram(){
 
     QPalette Pal(palette());
 
+    QWidget* wgt=new QWidget(Diagram);
+   // wgt->setMinimumHeight(100);
+   // wgt->setMinimumWidth(100);
+    wgt->resize(100,100);
+    wgt->show();
+
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
       Diagram->setAutoFillBackground(true);
@@ -667,7 +729,7 @@ void MainWindow::createWidgetDiagram(){
 
    variantDiagram.addItem("Количество чеков за месяц");
    variantDiagram.addItem("Средняя цена чека за месяц");
-   variantDiagram.addItem("Объем продаж в у.е.за месяц");
+   variantDiagram.addItem("Объем продаж в у.е. за месяц");
 
    customplot->addGraph();
 

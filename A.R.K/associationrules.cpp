@@ -30,6 +30,10 @@ void AssociationRules::setMaxConf(int conf){
     max_conf=conf;
 }
 
+void AssociationRules::setCategory(QString cat){
+    category=cat;
+}
+
 
 void AssociationRules::CreateRules(){
 
@@ -48,7 +52,7 @@ void AssociationRules::CreateRules(){
     min_sup=(kol_chek*min_sup)/100;
     max_sup=(kol_chek*max_sup)/100;
     //fix next
-    query2->exec("SELECT name,COUNT(*) FROm transactions GROUP BY name having count(*)>="+QString::number(min_sup)+";");
+    query2->exec("SELECT t1.name,COUNT(*) FROm transactions as t1 inner join products using(name) inner join category using(idcat) where category.name like '"+category+"' GROUP BY t1.name having count(*)>="+QString::number(min_sup)+";");
     propuck=0;
 
     QMap<int,QString> condits2;

@@ -20,6 +20,7 @@ public:
     void setMinConf(int conf);
     void setMaxSup(int sup);
     void setMaxConf(int conf);
+    void setCategory(QString cat);
     QWidget *getTextRyles();
     QWidget *getTableRyles();
 private:
@@ -29,6 +30,7 @@ private:
     int max_sup;
     int max_conf;
     int length;
+    QString category;
     QMap<QString,double> condits;
     QWidget* textrules;
     QWidget* tablerules;
