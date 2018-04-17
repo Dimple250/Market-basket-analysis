@@ -15,7 +15,7 @@ QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
        verticalHeader.append(tovar);
 
     QStringList horizontalHeader;
-       horizontalHeader.append("Январь");
+     /*  horizontalHeader.append("Январь");
        horizontalHeader.append("Февраль");
        horizontalHeader.append("Март");
        horizontalHeader.append("Апрель");
@@ -26,19 +26,29 @@ QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
        horizontalHeader.append("Сентябрь");
        horizontalHeader.append("Октябрь");
        horizontalHeader.append("Ноябрь");
-       horizontalHeader.append("Декабрь");
+       horizontalHeader.append("Декабрь");*/
 
-       modelSales->setHorizontalHeaderLabels(horizontalHeader);
+       QStringList list;
+       list<<"Январь"<<"Февраль"<<"Март"<<"Апрель"<<"Май"<<"Июнь"<<"Июль"<<"Август"<<"Сентябрь"<<"Октябрь"<<"Ноябрь"<<"Декабрь";
+
+
        modelSales->setVerticalHeaderLabels(verticalHeader);
 
+       int kol_month=0;
        QSqlQuery query;
+       query.prepare("select month(date) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+tovar+"' and year(date)=year(now()) group by month(date);");
+        query.exec();
+        int k=0;
+        while (query.next()) {
+            kol_month=query.value(0).toInt();
+            horizontalHeader.append(list[k++]);
+        }
+         modelSales->setHorizontalHeaderLabels(horizontalHeader);
 
-    for(int i=1;i<=12;i++){
-    QSqlQuery query;
-        query.prepare("select count(*) from transactions natural join date where name like '"+tovar+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by name;");
-         query.exec();
-
-
+    for(int i=1;i<=kol_month;i++){
+        QSqlQuery query;
+            query.prepare("select count(*) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+tovar+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by products.name;");
+             query.exec();
         int j=0;
 
            while (query.next()) {
@@ -87,7 +97,7 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
     for(int year=beg;year<=end;year++){
     for(int month=1;month<=12;month++){
     QSqlQuery query;
-        query.prepare("select name,count(*) from transactions natural join date where name like '"+QString(tovar)+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by name;");
+        query.prepare("select products.name,count(*) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+QString(tovar)+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by products.name;");
          query.exec();
 
            while (query.next()) {

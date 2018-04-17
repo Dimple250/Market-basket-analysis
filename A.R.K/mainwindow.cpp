@@ -13,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     numchek=1001;
 
     int id = QFontDatabase::addApplicationFont("../Fonts/HelveticaRegular.ttf"); //путь к шрифту
-              QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
-              f.setFamily(family);  // QFont c вашим шрифтом
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0); //имя шрифта
+    f.setFamily(family);  // QFont c вашим шрифтом
 
 
     database=new Database;
@@ -29,8 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
     createTabWidgetRules();
     createWidgetDiagram();
     createWidgetAnalis();
-    createWidgetSclad();
-
 
    /* QMenu*  menu_file=new QMenu("&File");
     menu_file->addAction("Open",this,SLOT(OpenCSVFile()));
@@ -80,21 +78,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     treeviewleft->setStyleSheet(style->getTreeviewleftStyleSheet());
-     QListWidgetItem* item;
+    QListWidgetItem* item;
 
-     QStringList list;
-     list<<"Главная"<<"Товары"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Загрузить файл";
+    QStringList list;
+    list<<"Главная"<<"Товары"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Загрузить файл";
 
-     treeviewleft->setIconSize(QSize(70,70));
-     foreach(QString st,list){
-         item=new QListWidgetItem(st,treeviewleft);
+    treeviewleft->setIconSize(QSize(70,70));
+    foreach(QString st,list){
+        item=new QListWidgetItem(st,treeviewleft);
        // item->setIcon(QPixmap("../Picture/LeftPanel/"+st+".png"));
          //item->setText(0,st);
-     }
+    }
 
    //  treeviewleft->header()->hide();
-
-
 
 
    // tabRules->setTabsClosable(true);
@@ -103,39 +99,29 @@ MainWindow::MainWindow(QWidget *parent) :
     treeviewleft->setMaximumWidth(r.width()*0.20);
     treeviewleft->setMinimumWidth(r.width()*0.08);
      //WidgetRepository->setFixedWidth(r.width()*0.15);
-     welcome=new QLabel("Добро пожаловать\n ");
-     welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%;color:white;");
+    welcome=new QLabel("Добро пожаловать\n ");
+    welcome->setStyleSheet("font-size:50px;padding-top:-400%;padding-left:300%;background-color:#4C5866;padding-right:300%;color:white;");
 
-         treeviewleft->setFont(f);
+    treeviewleft->setFont(f);
 
-     mainGbox=new QGridLayout;
-     mainGbox->addWidget(treeviewleft,0,0);
-     mainGbox->setSpacing(5);
-     mainGbox->addWidget(welcome,0,1);
-     mainGbox->addWidget(Products,0,1);
-     mainGbox->addWidget(Tranzactions,0,1);
-     mainGbox->addWidget(Analis,0,1);
-     mainGbox->addWidget(tabRules,0,1);
-     mainGbox->addWidget(Diagram,0,1);
-     mainGbox->addWidget(Sclad,0,1);
-     prevopen=1;
+    mainGbox=new QGridLayout;
+    mainGbox->addWidget(treeviewleft,0,0);
+    mainGbox->setSpacing(5);
+    mainGbox->addWidget(welcome,0,1);
+    mainGbox->addWidget(Products,0,1);
+    mainGbox->addWidget(Tranzactions,0,1);
+    mainGbox->addWidget(Analis,0,1);
+    mainGbox->addWidget(tabRules,0,1);
+    mainGbox->addWidget(Diagram,0,1);
+    prevopen=1;
 
-     Products->setHidden(true);
-     Tranzactions->setHidden(true);
-     Analis->setHidden(true);
-     tabRules->setHidden(true);
-     Diagram->setHidden(true);
-     Sclad->setHidden(true);
+    Products->setHidden(true);
+    Tranzactions->setHidden(true);
+    Analis->setHidden(true);
+    tabRules->setHidden(true);
+    Diagram->setHidden(true);
 
-
-     ui->centralwidget->setLayout(mainGbox);
-
-     //SalesAnalysis ss;
-    // QLabel* lb=new QLabel(ss.getZnach());
-     //lb.setText();
-    // lb->show();
-     //Kagle
-
+    ui->centralwidget->setLayout(mainGbox);
 
 }
 
@@ -148,14 +134,12 @@ void MainWindow::changeProductsView(){
         category=listCategory.currentText();
         querystr="select category.name,products.name,price from products inner join category using(idcat) where category.name like '"+category+"';";
     }
-            tableview->setModel(database->getModelProducts(querystr));
+    tableview->setModel(database->getModelProducts(querystr));
 }
 
 
 void MainWindow::createWidgetProducts(){
     Products=new QWidget;
-
-
 
     tableview=new QTableView(Products);
   // tableview->setSortingEnabled(true);
@@ -167,8 +151,8 @@ void MainWindow::createWidgetProducts(){
 
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
-     Products->setAutoFillBackground(true);
-   Products->setPalette(Pal);
+    Products->setAutoFillBackground(true);
+    Products->setPalette(Pal);
 
 
    // SettingProducts->setObjectName("sett");
@@ -176,16 +160,16 @@ void MainWindow::createWidgetProducts(){
     //QString stylefilter="background-color:#292E3D;color:#9aa5b3;";
      //SettingProducts->setStyleSheet("margin-top:-10px;");
 
-        Pal.setColor(QPalette::Background,"#647387");
-         FilterProductsView->setAutoFillBackground(true);
-        FilterProductsView->setPalette(Pal);
+    Pal.setColor(QPalette::Background,"#647387");
+    FilterProductsView->setAutoFillBackground(true);
+    FilterProductsView->setPalette(Pal);
 
     QStringList ls;
 
     QSqlQuery categoryName;
         categoryName.exec("select category.name from category;");
 
-         ls<<"Все";
+    ls<<"Все";
     while (categoryName.next()){
         ls<<categoryName.value(0).toString();
     }
@@ -200,12 +184,12 @@ void MainWindow::createWidgetProducts(){
     //button_setcategory->setStyleSheet(stylefilter);
     connect(button_setcategory,SIGNAL(clicked()),this,SLOT(changeProductsView()));
 
-        QLabel* nameFilter=new QLabel("Фильтр");
-        nameFilter->setAlignment(Qt::AlignCenter);
-        nameFilter->setStyleSheet("font-size:15px;color:white;");
+    QLabel* nameFilter=new QLabel("Фильтр");
+    nameFilter->setAlignment(Qt::AlignCenter);
+    nameFilter->setStyleSheet("font-size:15px;color:white;");
 
-        QLabel* lb2=new QLabel("Категория:");
-        lb2->setStyleSheet("font-size:15px;color:white;");
+    QLabel* lb2=new QLabel("Категория:");
+    lb2->setStyleSheet("font-size:15px;color:white;");
 
     QVBoxLayout*  layoutsettprod=new QVBoxLayout;
     layoutsettprod->addWidget(nameFilter);
@@ -214,30 +198,27 @@ void MainWindow::createWidgetProducts(){
     layoutsettprod->addStretch(10);
     layoutsettprod->addWidget(button_setcategory);
 
-   FilterProductsView->setLayout(layoutsettprod);
 
+    FilterProductsView->setLayout(layoutsettprod);
 
+    tableview->setModel(database->getModelProducts("select category.name,products.name,price,kol_on_sclad from products inner join category using(idcat);"));
 
-           tableview->setModel(database->getModelProducts("select category.name,products.name,price,kol_on_sclad from products inner join category using(idcat);"));
+    tableview->setStyleSheet(style->getTableViewStyleSheet());
+    tableview->setColumnHidden(0,true);
 
-        tableview->setStyleSheet(style->getTableViewStyleSheet());
-        tableview->setColumnHidden(0,true);
+    tableview->setFont(f);
+    FilterProductsView->setFont(f);
 
-                 tableview->setFont(f);
-                 FilterProductsView->setFont(f);
+    tableview->resizeRowsToContents();
+    tableview->resizeColumnsToContents();
+    tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableview->setAlternatingRowColors(true);
+    tableview->setSelectionMode(QAbstractItemView::SingleSelection);
 
-                 tableview->resizeRowsToContents();
-                 tableview->resizeColumnsToContents();
-                tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
-                    tableview->setAlternatingRowColors(true);
-                     tableview->setSelectionMode(QAbstractItemView::SingleSelection);
-
-                     tableview->setColumnWidth(1,250);
-                     tableview->setColumnWidth(2,250);
+    tableview->setColumnWidth(1,250);
+    tableview->setColumnWidth(2,250);
                     // tableview->s;
                     // tableview->set
-
-
 
 
     QHBoxLayout* layoutprod=new QHBoxLayout;
@@ -263,35 +244,31 @@ void MainWindow::changeTransactionsView(){
 
 
    if(namepProducts.text()==""){
-       querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' and time(date)>='"+ftime+"' and time(date)<='"+ttime+"'' order by tid;";
-    }else{
+       querystr="select tid,products.name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) inner join products using(id) where date(date) between '"+fdate+"' and '"+tdate+"' and time(date)>='"+ftime+"' and time(date)<='"+ttime+"' order by tid;";
+   }else{
         product=namepProducts.text();
 
         QSqlQuery productsName;
             productsName.exec("select tid from transactions where name like '"+product+"';");
-           // qDebug()<<product;
 
         while (productsName.next()){
             tid+="tid="+productsName.value(0).toString()+" or ";
-           // qDebug()<<productsName.value(0).toString();
         }
         tid=tid.remove(tid.length()-3,tid.length()-1);
 
-        querystr="select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) where "+tid+" and date(date) between '"+fdate+"' and '"+tdate+"' and time(date)>='"+ftime+"' and time(date)<='"+ttime+"' order by tid;";
-    //qDebug()<<querystr;
+        querystr="select tid,products.name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) inner join products using(id) where "+tid+" and date(date) between '"+fdate+"' and '"+tdate+"' and time(date)>='"+ftime+"' and time(date)<='"+ttime+"' order by tid;";
    }
+    tableviewTrans->clearSpans();
+    tableviewTrans->setModel(database->getModelTransactions(querystr));
 
-            tableviewTrans->clearSpans();
-            tableviewTrans->setModel(database->getModelTransactions(querystr));
-
-            for(int i=0;i<tableviewTrans->model()->rowCount();i++){
-                QString number=tableviewTrans->model()->data(tableviewTrans->model()->index(i,0)).toString();
-                if(number.contains( "Транзакция №", Qt::CaseInsensitive)){
-               tableviewTrans->setSpan(i,0,1,5);
-               const QModelIndex index =tableviewTrans->model()->index(i,0);
-               tableviewTrans->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
-                }
-            }
+    for(int i=0;i<tableviewTrans->model()->rowCount();i++){
+        QString number=tableviewTrans->model()->data(tableviewTrans->model()->index(i,0)).toString();
+        if(number.contains( "Транзакция №", Qt::CaseInsensitive)){
+            tableviewTrans->setSpan(i,0,1,5);
+            const QModelIndex index =tableviewTrans->model()->index(i,0);
+            tableviewTrans->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+        }
+    }
 }
 
 void MainWindow::createWidgetTransactions(){
@@ -301,22 +278,22 @@ void MainWindow::createWidgetTransactions(){
 
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
-     Tranzactions->setAutoFillBackground(true);
-  Tranzactions->setPalette(Pal);
+    Tranzactions->setAutoFillBackground(true);
+    Tranzactions->setPalette(Pal);
 
-  tableviewTrans=new QTableView;
-  tableviewTrans->setModel(database->getModelTransactions("select tid,name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) order by tid;"));
+    tableviewTrans=new QTableView;
+    tableviewTrans->setModel(database->getModelTransactions("select tid,products.name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) inner join products using(id) order by tid;"));
 
     tableviewTrans->setStyleSheet(style->getTableViewStyleSheet()+"QTableView{margin-left:30%;}");
         //tableview->setColumnHidden(0,true);
     tableviewTrans->setColumnWidth(0,250);
 
-   for(int i=0;i<tableviewTrans->model()->rowCount();i++){
+    for(int i=0;i<tableviewTrans->model()->rowCount();i++){
        QString number=tableviewTrans->model()->data(tableviewTrans->model()->index(i,0)).toString();
        if(number.contains( "Транзакция №", Qt::CaseInsensitive)){
-    tableviewTrans->setSpan(i,0,1,5);
-    const QModelIndex index =tableviewTrans->model()->index(i,0);
-    tableviewTrans->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+            tableviewTrans->setSpan(i,0,1,5);
+            const QModelIndex index =tableviewTrans->model()->index(i,0);
+            tableviewTrans->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
        }
    }
 
@@ -333,10 +310,10 @@ void MainWindow::createWidgetTransactions(){
 
     QWidget* FilterTransactionsView=new QWidget;
 
-        Pal.setColor(QPalette::Background,"#647387");
-         FilterTransactionsView->setAutoFillBackground(true);
-        FilterTransactionsView->setPalette(Pal);
-        FilterTransactionsView->setFont(f);
+    Pal.setColor(QPalette::Background,"#647387");
+    FilterTransactionsView->setAutoFillBackground(true);
+    FilterTransactionsView->setPalette(Pal);
+    FilterTransactionsView->setFont(f);
 
     /*QStringList ls;
 
@@ -369,9 +346,11 @@ void MainWindow::createWidgetTransactions(){
 
        // toDate=new QDateEdit;
         toDate.setDisplayFormat("dd-MMM-yyyy");
+        toDate.setCalendarPopup(true);
 
         //fromDate=new QDateEdit;
         fromDate.setDisplayFormat("dd-MMM-yyyy");
+        fromDate.setCalendarPopup(true);
 
         QLabel* lb3=new QLabel("За период от:");
         lb3->setStyleSheet("font-size:15px;color:white;");
@@ -413,7 +392,7 @@ void MainWindow::createWidgetTransactions(){
     layoutsettrans->addStretch(10);
     layoutsettrans->addWidget(button_setcategory);
 
-   FilterTransactionsView->setLayout(layoutsettrans);
+    FilterTransactionsView->setLayout(layoutsettrans);
 
     QHBoxLayout* layout=new QHBoxLayout;
     layout->addWidget(tableviewTrans);
@@ -435,6 +414,7 @@ void MainWindow::changeAnalisProdycts(){
 
     ostatkiTableView->resizeRowsToContents();
     ostatkiTableView->resizeColumnsToContents();
+
     QString month="";
     int flagMonth=0;
 
@@ -442,7 +422,6 @@ void MainWindow::changeAnalisProdycts(){
         int number=ostatkiTableView->model()->data(ostatkiTableView->model()->index(0,i)).toInt();
         if(number<0){
             if(flagMonth==0){
-
              //   month=horizontalHeader.at(i);
                 flagMonth=1;
             }
@@ -455,35 +434,63 @@ void MainWindow::changeAnalisProdycts(){
 void MainWindow::createWidgetAnalis(){
     Analis=new QWidget;
   // Analis->setStyleSheet("background-color:#4C5866;");
-   QPalette Pal(palette());
+    QPalette Pal(palette());
 
    // устанавливаем цвет фона
-   Pal.setColor(QPalette::Background,"#4C5866");
-     Analis->setAutoFillBackground(true);
-  Analis->setPalette(Pal);
+    Pal.setColor(QPalette::Background,"#4C5866");
+    Analis->setAutoFillBackground(true);
+    Analis->setPalette(Pal);
 
-  for(int i=1;i<=12;i++){
-      inMonth.addItem(QString::number(i));
-  }
+    for(int i=1;i<=12;i++){
+        inMonth.addItem(QString::number(i));
+    }
 
-  QLabel* label=new QLabel("Продукты:");
-  label->setStyleSheet("font-size:20px;color:white;");
+    QLabel* label=new QLabel("Продукты:");
+    label->setStyleSheet("font-size:20px;color:white;");
 
-  QLabel* label2=new QLabel("Кол-во месяцев:");
-  label2->setStyleSheet("font-size:20px;color:white;");
+    QLabel* label2=new QLabel("Прогназ на кол-во месяцев:");
+    label2->setStyleSheet("font-size:20px;color:white;");
 
-  QPushButton* settingName=new QPushButton("Применить");
+    QPushButton* settingName=new QPushButton("Применить");
     connect(settingName,SIGNAL(clicked(bool)),SLOT(changeAnalisProdycts()));
 
-   QHBoxLayout* HBox=new QHBoxLayout;
-   HBox->addWidget(label);
-   HBox->addWidget(&namepSalesProducts);
-   HBox->addWidget(label2);
-   HBox->addWidget(&inMonth);
-   HBox->addWidget(settingName);
-   HBox->addStretch(9);
 
-   QString tovar="";
+    //QComboBox* cbox=new QComboBox;
+
+
+
+    QSqlQuery* query2=new QSqlQuery();
+    query2->exec("select name from products;");
+
+    QListWidget* list=new QListWidget;
+    while(query2->next()){
+    list->addItem(query2->value(0).toString());
+    //cbox->addItem(query2->value(0).toString());
+    }
+
+    QCompleter* completer = new QCompleter( this );
+    completer->setModel(list->model());
+    completer->setCaseSensitivity( Qt::CaseInsensitive );
+
+    namepSalesProducts.setCompleter(completer);
+
+    //cbox->setCompleter(completer);
+    //cbox->setMaxVisibleItems(3);
+    //completer->setCaseSensitivity(Qt::CaseInsensitive);
+    //completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+
+
+
+    QHBoxLayout* HBox=new QHBoxLayout;
+    HBox->addWidget(label);
+    HBox->addWidget(&namepSalesProducts);
+   // HBox->addWidget(cbox);
+    HBox->addWidget(label2);
+    HBox->addWidget(&inMonth);
+    HBox->addWidget(settingName);
+    HBox->addStretch(1);
+
+    QString tovar="";
 
    //int kol_month=12;
 
@@ -512,7 +519,7 @@ void MainWindow::createWidgetAnalis(){
     ostatkiTableView->setAlternatingRowColors(true);
     ostatkiTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-        QString month="";
+    QString month="";
         //int flagMonth=0;
 
         /*for(int i=0;i<ostatkiTableView->model()->columnCount();i++){
@@ -528,26 +535,25 @@ void MainWindow::createWidgetAnalis(){
             }
         }*/
 
-        QLabel* lb=new QLabel("Продажи за текущий год");
-        lb->setStyleSheet("color:white;font-size:20px;");
+    QLabel* lb=new QLabel("Продажи за текущий год");
+    lb->setStyleSheet("color:white;font-size:20px;");
 
-        QLabel* lb2=new QLabel("Прогноз на следующие месяцы");
-        lb2->setStyleSheet("color:white;font-size:20px;");
+    QLabel* lb2=new QLabel("Прогноз объема продаж на следующие месяцы");
+    lb2->setStyleSheet("color:white;font-size:20px;");
 
-        QLabel* lb3=new QLabel("Товар "+tovar+" закончится на складе в месяце "+month);
-        lb3->setStyleSheet("color:white;font-size:20px;");
+    QLabel* lb3=new QLabel("Товар "+tovar+" закончится на складе в месяце "+month);
+    lb3->setStyleSheet("color:white;font-size:20px;");
 
-        QPushButton* prodazaOstatcov=new QPushButton("Расчет продажи остатков");
+    QPushButton* prodazaOstatcov=new QPushButton("Расчет продажи остатков");
        // prodazaOstatcov->setFixedWidth(200);
-        QPushButton* kolProdaz=new QPushButton("Расчет объема продаж");
+    QPushButton* kolProdaz=new QPushButton("Расчет объема продаж");
        //  kolProdaz->setFixedWidth(200);
 
-        QHBoxLayout* Hbox=new QHBoxLayout;
+    QHBoxLayout* Hbox=new QHBoxLayout;
         //Hbox->addSpacing(400);
-        Hbox->addWidget(prodazaOstatcov);
-        Hbox->addWidget(kolProdaz);
+    Hbox->addWidget(prodazaOstatcov);
+    Hbox->addWidget(kolProdaz);
       //  Hbox->addSpacing(400);
-
 
     QVBoxLayout* layout=new QVBoxLayout;
     layout->addLayout(HBox);
@@ -570,14 +576,14 @@ void MainWindow::createTabWidgetRules(){
 
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
-     settingRules->setAutoFillBackground(true);
+    settingRules->setAutoFillBackground(true);
     settingRules->setPalette(Pal);
 
     QWidget* setting=new QWidget;
 
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
-     setting->setAutoFillBackground(true);
+    setting->setAutoFillBackground(true);
     setting->setPalette(Pal);
     setting->setMaximumWidth(400);
 
@@ -601,6 +607,21 @@ void MainWindow::createTabWidgetRules(){
     QPushButton* button_setttules=new QPushButton("Поиск");
     connect(button_setttules,SIGNAL(clicked()),this,SLOT(createRules()));
 
+        QSqlQuery* query2=new QSqlQuery();
+        query2->exec("select name from category;");
+
+        QListWidget* list=new QListWidget;
+        while(query2->next()){
+        list->addItem(query2->value(0).toString());
+        //cbox->addItem(query2->value(0).toString());
+        }
+
+        QCompleter* completer = new QCompleter( this );
+        completer->setModel(list->model());
+        completer->setCaseSensitivity( Qt::CaseInsensitive );
+
+        categoryline.setCompleter(completer);
+
     layout->addWidget(minsup);
     layout->addWidget(&minsupline);
     layout->addWidget(maxsup);
@@ -610,6 +631,7 @@ void MainWindow::createTabWidgetRules(){
     layout->addWidget(maxconf);
     layout->addWidget(&maxconfline);
     layout->addWidget(cat);
+    layout->addWidget(&categoryline);
 
     layout->addStretch(10);
     layout->addWidget(button_setttules);
@@ -622,8 +644,6 @@ void MainWindow::createTabWidgetRules(){
     settingRules->setLayout(hbox);
 
     tabRules->addTab(settingRules,"Настройка");
-
-
 }
 
 void MainWindow::createRules(){
@@ -673,18 +693,18 @@ void MainWindow::createRules(){
     tabRules->removeTab(1);
 
 
-     AssociationRules* rules=new AssociationRules;
-     rules->setMinSup(minsupline.text().toInt());
-     rules->setMaxSup(maxsupline.text().toInt());
-     rules->setMinConf(minconfline.text().toInt());
-     rules->setMaxConf(maxconfline.text().toInt());
-     rules->setCategory(categoryline.text());
-     rules->CreateRules();
+    AssociationRules* rules=new AssociationRules;
+    rules->setMinSup(minsupline.text().toInt());
+    rules->setMaxSup(maxsupline.text().toInt());
+    rules->setMinConf(minconfline.text().toInt());
+    rules->setMaxConf(maxconfline.text().toInt());
+    rules->setCategory(categoryline.text());
+    rules->CreateRules();
      //rules->setTable();
 
-       tabRules->addTab(rules->getTableRyles(),"Test Rules Table");
-        tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
-        tabRules->addTab(rules->getTextRyles(),"Test Rules Tree");
+    tabRules->addTab(rules->getTableRyles(),"Test Rules Table");
+    tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
+    tabRules->addTab(rules->getTextRyles(),"Test Rules Tree");
 
 
 }
@@ -702,6 +722,10 @@ void MainWindow::changeDiagram(){
     }
     case 2:{
         chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by month(date);","Объем продаж в у.е.");
+        break;
+    }
+    case 3:{
+
         break;
     }
     default:{
@@ -724,15 +748,14 @@ void MainWindow::createWidgetDiagram(){
 
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
-      Diagram->setAutoFillBackground(true);
-   Diagram->setPalette(Pal);
+    Diagram->setAutoFillBackground(true);
+    Diagram->setPalette(Pal);
 
-   variantDiagram.addItem("Количество чеков за месяц");
-   variantDiagram.addItem("Средняя цена чека за месяц");
-   variantDiagram.addItem("Объем продаж в у.е. за месяц");
+    variantDiagram.addItem("Количество чеков за месяц");
+    variantDiagram.addItem("Средняя цена чека за месяц");
+    variantDiagram.addItem("Объем продаж в у.е. за месяц");
 
-   customplot->addGraph();
-
+    customplot->addGraph();
 
         //select month(date),count(tid) from date where year(date)=2017 group by month(date);
 
@@ -749,7 +772,7 @@ void MainWindow::createWidgetDiagram(){
     QLabel* namegraph=new QLabel("График:");
 
     QPushButton* settgraph=new QPushButton("Настрйки");
-   settgraph->setStyleSheet("background-color:#4547E8;color:white;");
+    settgraph->setStyleSheet("background-color:#4547E8;color:white;");
    // settgraph->setPalette(QColor(69, 71, 232));
     settgraph->setMaximumWidth(100);
 
@@ -765,8 +788,8 @@ void MainWindow::createWidgetDiagram(){
 
 
     Pal.setColor(QPalette::Background,"white");
-      choiseGraph->setAutoFillBackground(true);
-   choiseGraph->setPalette(Pal);
+    choiseGraph->setAutoFillBackground(true);
+    choiseGraph->setPalette(Pal);
     choiseGraph->setMaximumHeight(50);
     choiseGraph->setLayout(hbox);
 
@@ -776,45 +799,6 @@ void MainWindow::createWidgetDiagram(){
     layout->addWidget(customplot);
 
     Diagram->setLayout(layout);
-
-}
-
-void MainWindow::createWidgetSclad(){
-    Sclad=new QWidget;
-   Sclad->setStyleSheet("background-color:#4C5866;");
-
-
-    QVBoxLayout* layout=new QVBoxLayout;
-   // layout->addWidget();
-
-    Sclad->setLayout(layout);
-}
-
-void MainWindow::createTreeTables(){
-
-   /* QTreeWidgetItem* itemBD=new QTreeWidgetItem(treeview);
-
-     itemBD->setText(0,"BD");
-
-     QPixmap pixmap("../Picture/BD.png");
-
-     itemBD->setIcon(0,pixmap);
-     treeview->setIconSize(QSize(23,23));
-
-     QTreeWidgetItem* itemBDname=new QTreeWidgetItem(itemBD);
-     itemBDname->setText(0,db2->getNameBase());
-
-     QTreeWidgetItem* itemTable=0;
-
-     QStringList list=db2->tables();
-
-     foreach(QString st,list){
-         itemTable=new QTreeWidgetItem(itemBDname);
-         itemTable->setText(0,st);
-         itemTable->setIcon(0,QIcon("../Picture/table.png"));
-     }
-
-     treeview->header()->hide();*/
 
 }
 
@@ -828,47 +812,46 @@ void MainWindow::openItem(QListWidgetItem * item){
 
     if(item->text()=="Главная"){//"Продукты"
         isOpenItem="Главная";
-      mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-     welcome->setHidden(false);
-     prevopen=1;
+        mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+        welcome->setHidden(false);
+        prevopen=1;
     }else
     if(item->text()=="Товары"){//"Продукты"
         isOpenItem="Товары";
-      mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-     Products->setHidden(false);
-     prevopen=2;
+        mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+        Products->setHidden(false);
+        prevopen=2;
     }else
-        if(item->text()=="Транзакции"){//"Транзакции"
-            isOpenItem="Транзакции";
-            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-           Tranzactions->setHidden(false);
-           prevopen=3;
-
+    if(item->text()=="Транзакции"){//"Транзакции"
+        isOpenItem="Транзакции";
+        mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+        Tranzactions->setHidden(false);
+        prevopen=3;
     }else
-        if(item->text()=="Анализ корзины"){//"Анализ корзины"
-            isOpenItem="Анализ корзины";
-            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-           Analis->setHidden(false);
-           prevopen=4;
+    if(item->text()=="Анализ корзины"){//"Анализ корзины"
+        isOpenItem="Анализ корзины";
+        mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+        Analis->setHidden(false);
+        prevopen=4;
     }else
-        if(item->text()=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
-            isOpenItem="Поиск шаболных покупок";
-            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-           tabRules->setHidden(false);
-           prevopen=5;
+    if(item->text()=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
+        isOpenItem="Поиск шаболных покупок";
+        mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+        tabRules->setHidden(false);
+        prevopen=5;
     }else
-        if(item->text()=="Аналитика"){//"Диаграммы"
-            isOpenItem="Аналитика";
-            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-           Diagram->setHidden(false);
-           prevopen=6;
-    }else
-        if(item->text()=="Склад"){//"Склад"
-            isOpenItem="Склад";
-            mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-           Sclad->setHidden(false);
-           prevopen=7;
-    }
+    if(item->text()=="Аналитика"){//"Диаграммы"
+        isOpenItem="Аналитика";
+        mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+        Diagram->setHidden(false);
+        prevopen=6;
+    }/*else
+    if(item->text()=="Склад"){//"Склад"
+        isOpenItem="Склад";
+        mainGbox->itemAt(prevopen)->widget()->setHidden(true);
+        Sclad->setHidden(false);
+        prevopen=7;
+    }*/
 
 }
 

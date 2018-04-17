@@ -41,6 +41,7 @@ void AssociationRules::CreateRules(){
     QString baskets="";
     QString ravno="";
     QString mensh="";
+   // category="%";
 
     QSqlQuery* query2=new QSqlQuery();
     query2->exec("select count(distinct tid) from transactions");
@@ -52,8 +53,10 @@ void AssociationRules::CreateRules(){
     min_sup=(kol_chek*min_sup)/100;
     max_sup=(kol_chek*max_sup)/100;
     //fix next
-    query2->exec("SELECT t1.name,COUNT(*) FROm transactions as t1 inner join products using(name) inner join category using(idcat) where category.name like '"+category+"' GROUP BY t1.name having count(*)>="+QString::number(min_sup)+";");
+    query2->exec("SELECT products.name,COUNT(*) FROm transactions as t1 inner join products using(id) inner join category using(idcat) where category.name like '"+category+"' GROUP BY products.name having count(*)>="+QString::number(min_sup)+";");
     propuck=0;
+   // qDebug()<<"SELECT products.name,COUNT(*) FROm transactions as t1 inner join products using(id) inner join category using(idcat) where category.name like '"+category+"' GROUP BY products.name having count(*)>="+QString::number(min_sup)+";";
+
 
     QMap<int,QString> condits2;
     int p=0;
@@ -124,8 +127,9 @@ void AssociationRules::CreateRules(){
 
 
     for(int i=0;i<condits2.size();i++){
-         QString exec=" select name,count(tid) from transactions where tid in(select tid from transactions where name like '"+condits2[i]+"') group by name;";
+         QString exec="select products.name,count(tid) from transactions inner join products using(id) inner join category using(idcat) where category.name like '"+category+"' and tid in(select tid from transactions inner join products using(id) where products.name like '"+condits2[i]+"') group by products.name;";
          query2->exec(exec);
+         qDebug()<<exec;
          while(query2->next()){
             if(condits2[i]>query2->value(0).toString()){
                 if(query2->value(1).toInt()>=min_sup && query2->value(1).toInt()<=max_sup){
@@ -212,6 +216,14 @@ QWidget *AssociationRules::getTextRyles(){
 
 QWidget *AssociationRules::getTableRyles(){
 
+    QSqlQuery* query2=new QSqlQuery();
+    query2->exec("select count(distinct tid) from transactions");
+
+    double kol_chek=0;
+    while(query2->next()){
+    kol_chek=query2->value(0).toInt();
+    }
+
         tablerules=new QWidget;
         tablerules->setStyleSheet("background-color:#4C5866;");
 
@@ -220,10 +232,11 @@ QWidget *AssociationRules::getTableRyles(){
         QStandardItem *item;
 
         QStringList horizontalHeader;
-           horizontalHeader.append("Шаблон");
-           horizontalHeader.append("Поддержка");
+           horizontalHeader.append("Продукт 1");
+           horizontalHeader.append("Продукт 2");
            horizontalHeader.append("Достоверность");
-           horizontalHeader.append("Четвертый");
+           horizontalHeader.append("Кол-во чеков");
+           horizontalHeader.append("Поддержка");
 
            model->setHorizontalHeaderLabels(horizontalHeader);
            //model->setVerticalHeaderLabels(verticalHeader);
@@ -236,7 +249,7 @@ QWidget *AssociationRules::getTableRyles(){
            for(int k=0;k<list[i].split(",").length();k++){
                supX*=condits[list[i].split(",")[k]];
            }
-           double improvement=sup/supX;
+
            QString st="";
            for(int k=0;k<list[i].split(",").length()-1;k++){
                st+=list[i].split(",")[k];
@@ -245,26 +258,32 @@ QWidget *AssociationRules::getTableRyles(){
                }
            }
            //Первый ряд
-           item = new QStandardItem(QString(st+"-->"+list[i].split(",")[list[i].split(",").length()-1]));
+           item = new QStandardItem(st);
            model->setItem(i, 0, item);
 
-           item = new QStandardItem(QString(QString::number(sup*100,'f',2)+"%"));
+           item = new QStandardItem(list[i].split(",")[list[i].split(",").length()-1]);
            model->setItem(i, 1, item);
 
-           item = new QStandardItem(QString(QString::number(cond*100,'f',2)+"%"));
+           item = new QStandardItem(QString::number(cond*100,'f',2)+"%");
            model->setItem(i, 2, item);
 
-           item = new QStandardItem(QString(QString::number(improvement,'f',2)));
+           item = new QStandardItem(QString::number(sup*kol_chek));
            model->setItem(i, 3, item);
+
+           item = new QStandardItem(QString(QString::number(sup*100,'f',2)+"%"));
+           model->setItem(i, 4, item);
   }
 
            table->setModel(model);
 
-           table->resizeRowsToContents();
-           table->resizeColumnsToContents();
            Style style;
 
            table->setStyleSheet(style.getTableViewStyleSheet());
+           table->resizeRowsToContents();
+           table->resizeColumnsToContents();
+           table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+           table->setAlternatingRowColors(true);
+           table->setSelectionMode(QAbstractItemView::SingleSelection);
 
            QHBoxLayout* layout=new QHBoxLayout;
            layout->addWidget(table);

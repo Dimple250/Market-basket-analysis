@@ -27,13 +27,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void createTreeTables();
     void createWidgetProducts();
     void createWidgetTransactions();
     void createTabWidgetRules();
     void createWidgetDiagram();
     void createWidgetAnalis();
-    void createWidgetSclad();
 private:
     Ui::MainWindow *ui;
 
@@ -48,6 +46,7 @@ private:
     Style* style;
     SalesAnalysis salesAnalysis;
     Chart chart;
+
 
     QMap<QString,double> condits;
     QStandardItemModel *csvModel;
@@ -83,7 +82,6 @@ private:
     QWidget* Tranzactions;
     QWidget* Diagram;
     QWidget* Analis;
-    QWidget* Sclad;
 public slots:
     void openItem(QListWidgetItem*);
    // void closeTab(int);
