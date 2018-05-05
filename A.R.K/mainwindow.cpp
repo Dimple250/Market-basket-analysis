@@ -405,16 +405,14 @@ void MainWindow::createWidgetTransactions(){
 }
 
 void MainWindow::changeAnalisProdycts(){
+    boxTovar->clear();
+    boxTovar->addItem(namepSalesProducts.text());
 
-    salesTableView->setModel(salesAnalysis.getModelSales(namepSalesProducts.text()));
+    salesTableView->setModel(salesAnalysis.getModelSales(boxTovar));
 
-    salesTableView->resizeRowsToContents();
-    salesTableView->resizeColumnsToContents();
+   //salesTableView->resize(salesTableView->width(),boxTovar->count()*100);
 
-    ostatkiTableView->setModel(salesAnalysis.getModelOstatki(namepSalesProducts.text(),inMonth.currentText().toInt()));
-
-    ostatkiTableView->resizeRowsToContents();
-    ostatkiTableView->resizeColumnsToContents();
+    ostatkiTableView->setModel(salesAnalysis.getModelOstatki(boxTovar,inMonth.currentText().toInt()));
 
     QString month="";
     int flagMonth=0;
@@ -448,50 +446,6 @@ void MainWindow::createWidgetAnalis(){
         inMonth.addItem(QString::number(i));
     }
 
-    QLabel* label=new QLabel("Продукты:");
-    label->setStyleSheet("font-size:20px;color:white;");
-
-    QLabel* label2=new QLabel("Прогназ на кол-во месяцев:");
-    label2->setStyleSheet("font-size:20px;color:white;");
-
-    QPushButton* settingName=new QPushButton("Применить");
-    connect(settingName,SIGNAL(clicked(bool)),SLOT(changeAnalisProdycts()));
-
-
-    //QComboBox* cbox=new QComboBox;
-
-
-
-    QSqlQuery* query2=new QSqlQuery();
-    query2->exec("select name from products;");
-
-    QListWidget* list=new QListWidget;
-    while(query2->next()){
-    list->addItem(query2->value(0).toString());
-    //cbox->addItem(query2->value(0).toString());
-    }
-
-    QCompleter* completer = new QCompleter( this );
-    completer->setModel(list->model());
-    completer->setCaseSensitivity( Qt::CaseInsensitive );
-
-    namepSalesProducts.setCompleter(completer);
-
-    //cbox->setCompleter(completer);
-    //cbox->setMaxVisibleItems(3);
-    //completer->setCaseSensitivity(Qt::CaseInsensitive);
-    //completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
-
-
-
-    QHBoxLayout* HBox=new QHBoxLayout;
-    HBox->addWidget(label);
-    HBox->addWidget(&namepSalesProducts);
-   // HBox->addWidget(cbox);
-    HBox->addWidget(label2);
-    HBox->addWidget(&inMonth);
-    HBox->addWidget(settingName);
-    HBox->addStretch(1);
 
     QString tovar="";
 
@@ -502,11 +456,11 @@ void MainWindow::createWidgetAnalis(){
    // salesTableView->setModel(salesAnalysis.getModelSales(tovar));
     salesTableView->setStyleSheet(style->getTableViewStyleSheet());
     salesTableView->setFont(f);
-    salesTableView->resizeRowsToContents();
-    salesTableView->resizeColumnsToContents();
-    salesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    salesTableView->setAlternatingRowColors(true);
-    salesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+  //  salesTableView->resizeRowsToContents();
+   // salesTableView->resizeColumnsToContents();
+    //salesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //salesTableView->setAlternatingRowColors(true);
+    //salesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     salesTableView->setMaximumHeight(80);
 
     ostatkiTableView=new QTableView;
@@ -538,6 +492,68 @@ void MainWindow::createWidgetAnalis(){
            ostatkiTableView->model()->setData(index,QColor("#FF0F12"),Qt::TextColorRole);
             }
         }*/
+    QLabel* label=new QLabel("Товары:");
+    label->setStyleSheet("font-size:20px;color:white;");
+
+    QLabel* label2=new QLabel("Прогноз на кол-во месяцев:");
+    label2->setStyleSheet("font-size:20px;color:white;");
+
+    QPushButton* settingName=new QPushButton("Применить");
+    connect(settingName,SIGNAL(clicked(bool)),SLOT(changeAnalisProdycts()));
+
+
+    //QComboBox* cbox=new QComboBox;
+
+
+
+    QSqlQuery* query2=new QSqlQuery();
+    query2->exec("select name from products;");
+
+    QListWidget* list=new QListWidget;
+    while(query2->next()){
+    list->addItem(query2->value(0).toString());
+    //cbox->addItem(query2->value(0).toString());
+    }
+
+    QCompleter* completer = new QCompleter( this );
+    completer->setModel(list->model());
+    completer->setCaseSensitivity( Qt::CaseInsensitive );
+
+    namepSalesProducts.setCompleter(completer);
+
+    //cbox->setCompleter(completer);
+    //cbox->setMaxVisibleItems(3);
+    //completer->setCaseSensitivity(Qt::CaseInsensitive);
+    //completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+
+    QLabel* lbTovaru=new QLabel("Выбранные товары:");
+    lbTovaru->setStyleSheet("color:white;font-size:20px;");
+
+    QPushButton* delProduct=new QPushButton("Удалить");
+    connect(delProduct,SIGNAL(clicked(bool)),SLOT(delTovar()));
+
+    boxTovar=new QComboBox;
+    boxTovar->setMinimumWidth(100);
+
+
+    QPushButton* addProduct=new QPushButton("Добавить");
+    connect(addProduct,SIGNAL(clicked(bool)),SLOT(addTovar()));
+
+    QHBoxLayout* HBox=new QHBoxLayout;
+    HBox->addWidget(label);
+    HBox->addWidget(&namepSalesProducts);
+    //HBox->addWidget(addProduct);
+    //HBox->addWidget(lbTovaru);
+    //HBox->addWidget(boxTovar);
+    //HBox->addWidget(delProduct);
+    HBox->addStretch(1);
+
+    QHBoxLayout* kolPrognoz=new QHBoxLayout;
+    kolPrognoz->addWidget(label2);
+    kolPrognoz->addWidget(&inMonth);
+    kolPrognoz->addWidget(settingName);
+    kolPrognoz->addStretch(1);
+
 
     QLabel* lb=new QLabel("Продажи за текущий год");
     lb->setStyleSheet("color:white;font-size:20px;");
@@ -561,9 +577,18 @@ void MainWindow::createWidgetAnalis(){
 
 
 
+
+     QHBoxLayout* tovaruForPrognoz=new QHBoxLayout;
+     tovaruForPrognoz->addWidget(lbTovaru);
+     tovaruForPrognoz->addWidget(boxTovar);
+     tovaruForPrognoz->addWidget(delProduct);
+     tovaruForPrognoz->addStretch(1);
+
+
         QVBoxLayout* layout=new QVBoxLayout;
     layout->addLayout(HBox);
-  //  layout->addStretch(2);
+    //layout->addLayout(tovaruForPrognoz);
+    layout->addLayout(kolPrognoz);
     layout->addWidget(lb);
     layout->addWidget(salesTableView);
     layout->addWidget(salesAnalysis.getChartSales());
@@ -571,13 +596,27 @@ void MainWindow::createWidgetAnalis(){
     layout->addWidget(ostatkiTableView);
     layout->addWidget(salesAnalysis.getChartOstatki());
     //layout->addWidget(lb3);
-    layout->addStretch(10);
+    // layout->addStretch(10);
 
 
     Analis->setLayout(layout);
     scrollAreaAnalis->setWidget(Analis);
     scrollAreaAnalis->setWidgetResizable(true);
 
+}
+
+void MainWindow::addTovar(){
+    for(int i=0;i<boxTovar->count();i++){
+        if(boxTovar->itemText(i)==namepSalesProducts.text()){
+            return;
+        }
+    }
+    boxTovar->addItem(namepSalesProducts.text());
+    namepSalesProducts.clear();
+}
+
+void MainWindow::delTovar(){
+    boxTovar->removeItem(boxTovar->currentIndex());
 }
 
 void MainWindow::createTabWidgetRules(){
@@ -589,8 +628,8 @@ void MainWindow::createTabWidgetRules(){
     rulesTableView=new QTableView;
     rulesTableView->setStyleSheet(style->getTableViewStyleSheet());
     rulesTableView->setFont(f);
-    rulesTableView->resizeRowsToContents();
-    rulesTableView->resizeColumnsToContents();
+    //rulesTableView->resizeRowsToContents();
+    //rulesTableView->resizeColumnsToContents();
     rulesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     rulesTableView->setAlternatingRowColors(true);
     rulesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -730,7 +769,8 @@ void MainWindow::createRules(){
   rulesTableView->setModel(rules->getModelRyles());
   rulesTableView->resizeRowsToContents();
   rulesTableView->resizeColumnsToContents();
-   // tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
+
+  // tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
     //tabRules->addTab(rules->getTextRyles(),"Test Rules Tree");
 
 

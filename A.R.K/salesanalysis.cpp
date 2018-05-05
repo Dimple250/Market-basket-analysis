@@ -20,7 +20,7 @@ SalesAnalysis::SalesAnalysis()
 
 }
 
-QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
+QStandardItemModel* SalesAnalysis::getModelSales(QComboBox* boxTovar){
     x.clear();
     y.clear();
     ticks.clear();
@@ -32,33 +32,16 @@ QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
 
       QStandardItem *item;
 
-       QStringList verticalHeader;
-       verticalHeader.append(tovar);
 
     QStringList horizontalHeader;
-     /*  horizontalHeader.append("Январь");
-       horizontalHeader.append("Февраль");
-       horizontalHeader.append("Март");
-       horizontalHeader.append("Апрель");
-       horizontalHeader.append("Май");
-       horizontalHeader.append("Июнь");
-       horizontalHeader.append("Июль");
-       horizontalHeader.append("Август");
-       horizontalHeader.append("Сентябрь");
-       horizontalHeader.append("Октябрь");
-       horizontalHeader.append("Ноябрь");
-       horizontalHeader.append("Декабрь");*/
 
        QStringList list;
        list<<"Январь"<<"Февраль"<<"Март"<<"Апрель"<<"Май"<<"Июнь"<<"Июль"<<"Август"<<"Сентябрь"<<"Октябрь"<<"Ноябрь"<<"Декабрь";
 
 
-       modelSales->setVerticalHeaderLabels(verticalHeader);
-
-
-       int kol_month=0;
+        int kol_month=0;
        QSqlQuery query;
-       query.prepare("select month(date) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+tovar+"' and year(date)=year(now()) group by month(date);");
+       query.prepare("select month(date) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+boxTovar->itemText(0)+"' and year(date)=year(now()) group by month(date);");
         query.exec();
         int k=0;
         while (query.next()) {
@@ -73,36 +56,40 @@ QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
 
          modelSales->setHorizontalHeaderLabels(horizontalHeader);
 
-    for(int i=1;i<=kol_month;i++){
+         QStringList verticalHeader;
+
+   for(int j=0;j<boxTovar->count();j++){
+       x.clear();
+       y.clear();
+
+       verticalHeader.append(boxTovar->itemText(j));
+
+
+         for(int i=1;i<=kol_month;i++){
         QSqlQuery query;
-            query.prepare("select count(*) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+tovar+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by products.name;");
+            query.prepare("select count(*) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+boxTovar->itemText(j)+"' and month(date)="+QString::number(i)+" and year(date)=year(now()) group by products.name;");
              query.exec();
-        int j=0;
 
            while (query.next()) {
            item = new QStandardItem(query.value(0).toString());
            modelSales->setItem(j, i-1, item);
-           j++;
 
            y.append(query.value(0).toDouble());
          }
-           if(j==0){
-               item = new QStandardItem("0");
-               modelSales->setItem(j, i-1, item);
-           }
 
            x.append(i);
 
     }
-
    // qDebug()<<x<<y;
-    setChartSales(x,y,ticks,labels);
+    setChartSales(x,y,ticks,labels,j);
+    }
+   modelSales->setVerticalHeaderLabels(verticalHeader);
 
 
     return modelSales;
 }
 
-void SalesAnalysis::setChartSales(QVector<double> x, QVector<double> y, QVector<double> ticks, QVector<QString> labels){
+void SalesAnalysis::setChartSales(QVector<double> x, QVector<double> y, QVector<double> ticks, QVector<QString> labels,int j){
 
 
     plotSales.addGraph();
@@ -132,8 +119,8 @@ void SalesAnalysis::setChartSales(QVector<double> x, QVector<double> y, QVector<
 
     plotSales.xAxis->setLabel("Месяцы");
     plotSales.yAxis->setLabel("Кол-во продаж");
-    plotSales.graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
-    plotSales.graph(0)->setPen(QPen(QColor(0, 17, 230), 2));
+    plotSales.graph(j)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
+    plotSales.graph(j)->setPen(QPen(QColor(0, 17, 230), 2));
 
     plotSales.replot();
 
@@ -143,7 +130,7 @@ QCustomPlot* SalesAnalysis::getChartSales(){
     return &plotSales;
 }
 
-QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
+QStandardItemModel* SalesAnalysis::getModelOstatki(QComboBox* boxTovar,int inMonth){
     x.clear();
     y.clear();
     ticks.clear();
@@ -184,7 +171,7 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
     for(int year=beg;year<=end;year++){
     for(int month=1;month<=12;month++){
     QSqlQuery query;
-        query.prepare("select products.name,count(*) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+QString(tovar)+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by products.name;");
+        query.prepare("select products.name,count(*) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+boxTovar->itemText(0)+"' and year(date)="+QString::number(year)+" and month(date)="+QString::number(month)+" group by products.name;");
          query.exec();
 
            while (query.next()) {
@@ -227,7 +214,7 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
      QStandardItem *item;
 
      QStringList verticalHeader;
-            verticalHeader.append(tovar);
+            verticalHeader.append(boxTovar->itemText(0));
 
       QStringList horizontalHeader;
 
@@ -309,7 +296,7 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
 
 
 
-          query.exec("select kol_on_sclad from products where name like '"+tovar+"';");
+          query.exec("select kol_on_sclad from products where name like '"+boxTovar->itemText(0)+"';");
           while (query.next()) {
              kol_on_sclad=query.value(0).toInt();
           }

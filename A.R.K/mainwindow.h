@@ -79,6 +79,7 @@ private:
     QLineEdit maxconfline;
     QComboBox categoryline;
 
+    QComboBox* boxTovar;
 
     QString isOpenItem;
     int prevopen;
@@ -99,6 +100,8 @@ public slots:
     void changeDiagram();
     void OpenCSVFile();
     void createRules();
+    void addTovar();
+    void delTovar();
 };
 
 #endif // MAINWINDOW_H

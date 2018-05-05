@@ -9,8 +9,8 @@ class SalesAnalysis
 {
 public:
     SalesAnalysis();
-    QStandardItemModel* getModelSales(QString name);
-    QStandardItemModel* getModelOstatki(QString name,int inMonth);
+    QStandardItemModel* getModelSales(QComboBox* box);
+    QStandardItemModel* getModelOstatki(QComboBox* box,int inMonth);
     QCustomPlot* getChartSales();
     QCustomPlot* getChartOstatki();
 private:
@@ -18,7 +18,7 @@ private:
     QStandardItemModel* modelSales;
     QStandardItemModel* modelOstatki;
 
-    void setChartSales(QVector<double> x,QVector<double> y,QVector<double> ticks,QVector<QString> labels);
+    void setChartSales(QVector<double> x,QVector<double> y,QVector<double> ticks,QVector<QString> labels,int j);
     void setChartOstatki(QVector<double> x,QVector<double> y,QVector<double> ticks,QVector<QString> labels);
 
     QVector<double> x;
