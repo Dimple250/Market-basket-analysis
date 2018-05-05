@@ -2,7 +2,7 @@
 
 AssociationRules::AssociationRules(QWidget *parent) : QWidget(parent)
 {
-
+    model = new QStandardItemModel;
 }
 
 AssociationRules::~AssociationRules(){
@@ -41,6 +41,7 @@ void AssociationRules::CreateRules(){
     QString baskets="";
     QString ravno="";
     QString mensh="";
+    list.clear();
    // category="%";
 
     QSqlQuery* query2=new QSqlQuery();
@@ -129,7 +130,7 @@ void AssociationRules::CreateRules(){
     for(int i=0;i<condits2.size();i++){
          QString exec="select products.name,count(tid) from transactions inner join products using(id) inner join category using(idcat) where category.name like '"+category+"' and tid in(select tid from transactions inner join products using(id) where products.name like '"+condits2[i]+"') group by products.name;";
          query2->exec(exec);
-         qDebug()<<exec;
+       //  qDebug()<<exec;
          while(query2->next()){
             if(condits2[i]>query2->value(0).toString()){
                 if(query2->value(1).toInt()>=min_sup && query2->value(1).toInt()<=max_sup){
@@ -214,7 +215,7 @@ QWidget *AssociationRules::getTextRyles(){
     return textrules;
 }
 
-QWidget *AssociationRules::getTableRyles(){
+QStandardItemModel* AssociationRules::getModelRyles(){
 
     QSqlQuery* query2=new QSqlQuery();
     query2->exec("select count(distinct tid) from transactions");
@@ -223,12 +224,9 @@ QWidget *AssociationRules::getTableRyles(){
     while(query2->next()){
     kol_chek=query2->value(0).toInt();
     }
+       // tablerules->setStyleSheet("background-color:#4C5866;");
 
-        tablerules=new QWidget;
-        tablerules->setStyleSheet("background-color:#4C5866;");
-
-        QTableView* table=new QTableView;
-        QStandardItemModel *model = new QStandardItemModel;
+        model->clear();
         QStandardItem *item;
 
         QStringList horizontalHeader;
@@ -274,21 +272,5 @@ QWidget *AssociationRules::getTableRyles(){
            model->setItem(i, 4, item);
   }
 
-           table->setModel(model);
-
-           Style style;
-
-           table->setStyleSheet(style.getTableViewStyleSheet());
-           table->resizeRowsToContents();
-           table->resizeColumnsToContents();
-           table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-           table->setAlternatingRowColors(true);
-           table->setSelectionMode(QAbstractItemView::SingleSelection);
-
-           QHBoxLayout* layout=new QHBoxLayout;
-           layout->addWidget(table);
-
-           tablerules->setLayout(layout);
-
-           return tablerules;
+           return model;
 }

@@ -22,7 +22,7 @@ public:
     void setMaxConf(int conf);
     void setCategory(QString cat);
     QWidget *getTextRyles();
-    QWidget *getTableRyles();
+    QStandardItemModel* getModelRyles();
 private:
     QList<QString> list;
     int min_sup;
@@ -33,8 +33,8 @@ private:
     QString category;
     QMap<QString,double> condits;
     QWidget* textrules;
-    QWidget* tablerules;
     int propuck;
+    QStandardItemModel *model;
 signals:
 
 public slots:

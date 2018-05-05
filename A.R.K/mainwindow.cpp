@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     csvModel = new QStandardItemModel;
     customplot=new QCustomPlot;
 
+
     createWidgetProducts();
     createWidgetTransactions();
     createTabWidgetRules();
@@ -110,14 +111,14 @@ MainWindow::MainWindow(QWidget *parent) :
     mainGbox->addWidget(welcome,0,1);
     mainGbox->addWidget(Products,0,1);
     mainGbox->addWidget(Tranzactions,0,1);
-    mainGbox->addWidget(Analis,0,1);
+    mainGbox->addWidget(scrollAreaAnalis,0,1);
     mainGbox->addWidget(tabRules,0,1);
     mainGbox->addWidget(Diagram,0,1);
     prevopen=1;
 
     Products->setHidden(true);
     Tranzactions->setHidden(true);
-    Analis->setHidden(true);
+    scrollAreaAnalis->setHidden(true);
     tabRules->setHidden(true);
     Diagram->setHidden(true);
 
@@ -433,6 +434,7 @@ void MainWindow::changeAnalisProdycts(){
 
 void MainWindow::createWidgetAnalis(){
     Analis=new QWidget;
+    scrollAreaAnalis = new QScrollArea;
   // Analis->setStyleSheet("background-color:#4C5866;");
     QPalette Pal(palette());
 
@@ -440,6 +442,7 @@ void MainWindow::createWidgetAnalis(){
     Pal.setColor(QPalette::Background,"#4C5866");
     Analis->setAutoFillBackground(true);
     Analis->setPalette(Pal);
+    scrollAreaAnalis->setPalette(Pal);
 
     for(int i=1;i<=12;i++){
         inMonth.addItem(QString::number(i));
@@ -504,7 +507,7 @@ void MainWindow::createWidgetAnalis(){
     salesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     salesTableView->setAlternatingRowColors(true);
     salesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-
+    salesTableView->setMaximumHeight(80);
 
     ostatkiTableView=new QTableView;
 
@@ -518,6 +521,7 @@ void MainWindow::createWidgetAnalis(){
     ostatkiTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ostatkiTableView->setAlternatingRowColors(true);
     ostatkiTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ostatkiTableView->setMaximumHeight(80);
 
     QString month="";
         //int flagMonth=0;
@@ -555,22 +559,41 @@ void MainWindow::createWidgetAnalis(){
     Hbox->addWidget(kolProdaz);
       //  Hbox->addSpacing(400);
 
-    QVBoxLayout* layout=new QVBoxLayout;
+
+
+        QVBoxLayout* layout=new QVBoxLayout;
     layout->addLayout(HBox);
-    layout->addStretch(2);
+  //  layout->addStretch(2);
     layout->addWidget(lb);
     layout->addWidget(salesTableView);
+    layout->addWidget(salesAnalysis.getChartSales());
     layout->addWidget(lb2);
     layout->addWidget(ostatkiTableView);
+    layout->addWidget(salesAnalysis.getChartOstatki());
     //layout->addWidget(lb3);
     layout->addStretch(10);
 
+
     Analis->setLayout(layout);
+    scrollAreaAnalis->setWidget(Analis);
+    scrollAreaAnalis->setWidgetResizable(true);
+
 }
 
 void MainWindow::createTabWidgetRules(){
     tabRules=new QTabWidget;
     QWidget* settingRules=new QWidget;
+    rules=new AssociationRules;
+
+
+    rulesTableView=new QTableView;
+    rulesTableView->setStyleSheet(style->getTableViewStyleSheet());
+    rulesTableView->setFont(f);
+    rulesTableView->resizeRowsToContents();
+    rulesTableView->resizeColumnsToContents();
+    rulesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    rulesTableView->setAlternatingRowColors(true);
+    rulesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
     QPalette Pal(palette());
 
@@ -585,20 +608,18 @@ void MainWindow::createTabWidgetRules(){
     Pal.setColor(QPalette::Background,"#4C5866");
     setting->setAutoFillBackground(true);
     setting->setPalette(Pal);
-    setting->setMaximumWidth(400);
 
-    QVBoxLayout* layout=new QVBoxLayout;
 
-    QLabel* minsup=new QLabel("Минимальная поддержка %:");
+    QLabel* minsup=new QLabel("Поддержка:         min");
     minsup->setStyleSheet("font-size:20px;color:white;");
 
-    QLabel* maxsup=new QLabel("Максимальная поддержка %:");
+    QLabel* maxsup=new QLabel("  max");
     maxsup->setStyleSheet("font-size:20px;color:white;");
 
-    QLabel* minconf=new QLabel("Минимальная достоверность %:");
+    QLabel* minconf=new QLabel("Достоверность:  min");
     minconf->setStyleSheet("font-size:20px;color:white;");
 
-    QLabel* maxconf=new QLabel("Максимальная достоверность %:");
+    QLabel* maxconf=new QLabel("  max");
     maxconf->setStyleSheet("font-size:20px;color:white;");
 
     QLabel* cat=new QLabel("Категория товаров:");
@@ -610,38 +631,43 @@ void MainWindow::createTabWidgetRules(){
         QSqlQuery* query2=new QSqlQuery();
         query2->exec("select name from category;");
 
-        QListWidget* list=new QListWidget;
         while(query2->next()){
-        list->addItem(query2->value(0).toString());
+        categoryline.addItem(query2->value(0).toString());
         //cbox->addItem(query2->value(0).toString());
         }
 
-        QCompleter* completer = new QCompleter( this );
-        completer->setModel(list->model());
-        completer->setCaseSensitivity( Qt::CaseInsensitive );
 
-        categoryline.setCompleter(completer);
+        QGridLayout* gridLayout=new QGridLayout;
+        gridLayout->addWidget(minsup,0,0);
+        gridLayout->addWidget(&minsupline,0,1);
+        gridLayout->addWidget(maxsup,0,2);
+        gridLayout->addWidget(&maxsupline,0,3);
 
-    layout->addWidget(minsup);
-    layout->addWidget(&minsupline);
-    layout->addWidget(maxsup);
-    layout->addWidget(&maxsupline);
-    layout->addWidget(minconf);
-    layout->addWidget(&minconfline);
-    layout->addWidget(maxconf);
-    layout->addWidget(&maxconfline);
-    layout->addWidget(cat);
-    layout->addWidget(&categoryline);
+        gridLayout->addWidget(minconf,1,0);
+        gridLayout->addWidget(&minconfline,1,1);
+        gridLayout->addWidget(maxconf,1,2);
+        gridLayout->addWidget(&maxconfline,1,3);
+    gridLayout->addWidget(cat,2,0);
+    gridLayout->addWidget(&categoryline,2,1,2,2);
+    gridLayout->addWidget(button_setttules,0,4);
 
-    layout->addStretch(10);
-    layout->addWidget(button_setttules);
 
-    setting->setLayout(layout);
+
+    //QVBoxLayout* layout=new QVBoxLayout;
+   // layout->addLayout(gridLayout);
+    //layout->addWidget(rulesTableView);
+
+    setting->setLayout(gridLayout);
 
     QHBoxLayout* hbox=new QHBoxLayout;
     hbox->addWidget(setting);
+    hbox->addStretch(1);
 
-    settingRules->setLayout(hbox);
+    QVBoxLayout* layout=new QVBoxLayout;
+    layout->addLayout(hbox);
+    layout->addWidget(rulesTableView);
+
+    settingRules->setLayout(layout);
 
     tabRules->addTab(settingRules,"Настройка");
 }
@@ -692,40 +718,43 @@ void MainWindow::createRules(){
     tabRules->removeTab(1);
     tabRules->removeTab(1);
 
-
-    AssociationRules* rules=new AssociationRules;
     rules->setMinSup(minsupline.text().toInt());
     rules->setMaxSup(maxsupline.text().toInt());
     rules->setMinConf(minconfline.text().toInt());
     rules->setMaxConf(maxconfline.text().toInt());
-    rules->setCategory(categoryline.text());
+    rules->setCategory(categoryline.currentText());
     rules->CreateRules();
      //rules->setTable();
 
-    tabRules->addTab(rules->getTableRyles(),"Test Rules Table");
-    tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
-    tabRules->addTab(rules->getTextRyles(),"Test Rules Tree");
+
+  rulesTableView->setModel(rules->getModelRyles());
+  rulesTableView->resizeRowsToContents();
+  rulesTableView->resizeColumnsToContents();
+   // tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
+    //tabRules->addTab(rules->getTextRyles(),"Test Rules Tree");
 
 
 }
 
 void MainWindow::changeDiagram(){
+    QString fdate=diagramFromDate.date().toString("yyyy-MM-dd");
+    QString tdate=diagramToDate.date().toString("yyyy-MM-dd");
 
     switch(variantDiagram.currentIndex()){
     case 0:{
-        chart.ChangeDiagram(*customplot,"select month(date),count(tid) from date where year(date)=2017 group by month(date);","Кол-вл чекла");
+        chart.ChangeDiagram(*customplot,"select month(date),count(tid) from date where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Кол-вл чекла",1,13);
         break;
     }
     case 1:{
-        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by month(date);","Средняя цена чека");
+        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Средняя цена чека",1,13);
         break;
     }
     case 2:{
-        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by month(date);","Объем продаж в у.е.");
+        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Объем продаж в у.е.",1,13);
         break;
     }
     case 3:{
-
+         chart.ChangeDiagram(*customplot,"select table1.sum,count(table1.tid) from (select tid,sum(price*kol) as sum from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by tid having sum(price*kol)>100 and sum(price*kol)<500) as table1 group by table1.sum;","Количество чеков.",100,500);
         break;
     }
     default:{
@@ -754,6 +783,8 @@ void MainWindow::createWidgetDiagram(){
     variantDiagram.addItem("Количество чеков за месяц");
     variantDiagram.addItem("Средняя цена чека за месяц");
     variantDiagram.addItem("Объем продаж в у.е. за месяц");
+    //variantDiagram.addItem("Количество чеков");
+    variantDiagram.setMaximumWidth(100);
 
     customplot->addGraph();
 
@@ -770,6 +801,7 @@ void MainWindow::createWidgetDiagram(){
     QWidget* choiseGraph=new QWidget;
 
     QLabel* namegraph=new QLabel("График:");
+    namegraph->setStyleSheet("font-size:15px;");
 
     QPushButton* settgraph=new QPushButton("Настрйки");
     settgraph->setStyleSheet("background-color:#4547E8;color:white;");
@@ -780,9 +812,30 @@ void MainWindow::createWidgetDiagram(){
 
     connect(&variantDiagram,SIGNAL(activated(int)),SLOT(changeDiagram()));
 
+    connect(&diagramFromDate,SIGNAL(dateChanged(QDate)),SLOT(changeDiagram()));
+    connect(&diagramToDate,SIGNAL(dateChanged(QDate)),SLOT(changeDiagram()));
+
+    diagramToDate.setDisplayFormat("dd-MMM-yyyy");
+    diagramToDate.setCalendarPopup(true);
+
+    //fromDate=new QDateEdit;
+    diagramFromDate.setDisplayFormat("dd-MMM-yyyy");
+    diagramFromDate.setCalendarPopup(true);
+
+    QLabel* lb3=new QLabel("Период от:");
+    lb3->setStyleSheet("font-size:15px;");
+
+    QLabel* lb5=new QLabel("-");
+    lb5->setStyleSheet("font-size:25px;");
+
+
     QHBoxLayout* hbox=new QHBoxLayout;
     hbox->addWidget(namegraph);
     hbox->addWidget(&variantDiagram);
+    hbox->addWidget(lb3);
+    hbox->addWidget(&diagramFromDate);
+    hbox->addWidget(lb5);
+    hbox->addWidget(&diagramToDate);
     hbox->addStretch(1);
     hbox->addWidget(settgraph);
 
@@ -831,7 +884,7 @@ void MainWindow::openItem(QListWidgetItem * item){
     if(item->text()=="Анализ корзины"){//"Анализ корзины"
         isOpenItem="Анализ корзины";
         mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-        Analis->setHidden(false);
+        scrollAreaAnalis->setHidden(false);
         prevopen=4;
     }else
     if(item->text()=="Поиск шаболных покупок"){//"Поиск шаболных покупок"

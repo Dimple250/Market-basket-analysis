@@ -9,7 +9,7 @@ class Chart
 {
 public:
     Chart();
-    void ChangeDiagram(QCustomPlot& customplot,QString query,QString yLable);
+    void ChangeDiagram(QCustomPlot& customplot,QString query,QString yLable,int min,int max);
 private:
 
 };

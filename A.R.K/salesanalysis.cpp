@@ -1,11 +1,32 @@
 #include "salesanalysis.h"
+#include "QCustomPlot/qcustomplot.h"
 
 SalesAnalysis::SalesAnalysis()
 {
+    plotSales.setMinimumHeight(300);
+    QCPTextElement *titleSales = new QCPTextElement(&plotSales);
+    titleSales->setText("Количество продаж за месяц");
+    titleSales->setFont(QFont("sans", 12));
+    plotSales.plotLayout()->insertRow(0);
+    plotSales.plotLayout()->addElement(0, 0, titleSales);
+
+
+    plotOstatki.setMinimumHeight(300);
+    QCPTextElement *titleOstatki = new QCPTextElement(&plotOstatki);
+    titleOstatki->setText("Количество продаж за месяц");
+    titleOstatki->setFont(QFont("sans", 12));
+    plotOstatki.plotLayout()->insertRow(0);
+    plotOstatki.plotLayout()->addElement(0, 0, titleOstatki);
 
 }
 
 QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
+    x.clear();
+    y.clear();
+    ticks.clear();
+    labels.clear();
+    kolMonth=0;
+    plotSales.clearPlottables();
 
     modelSales=new QStandardItemModel;
 
@@ -34,6 +55,7 @@ QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
 
        modelSales->setVerticalHeaderLabels(verticalHeader);
 
+
        int kol_month=0;
        QSqlQuery query;
        query.prepare("select month(date) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+tovar+"' and year(date)=year(now()) group by month(date);");
@@ -42,7 +64,13 @@ QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
         while (query.next()) {
             kol_month=query.value(0).toInt();
             horizontalHeader.append(list[k++]);
+
+            ticks<<k;
+            labels<<list[k-1];
+
         }
+        kolMonth=k;
+
          modelSales->setHorizontalHeaderLabels(horizontalHeader);
 
     for(int i=1;i<=kol_month;i++){
@@ -54,19 +82,75 @@ QStandardItemModel* SalesAnalysis::getModelSales(QString tovar){
            while (query.next()) {
            item = new QStandardItem(query.value(0).toString());
            modelSales->setItem(j, i-1, item);
-
            j++;
+
+           y.append(query.value(0).toDouble());
          }
            if(j==0){
                item = new QStandardItem("0");
                modelSales->setItem(j, i-1, item);
            }
 
+           x.append(i);
+
     }
+
+   // qDebug()<<x<<y;
+    setChartSales(x,y,ticks,labels);
+
+
     return modelSales;
 }
 
+void SalesAnalysis::setChartSales(QVector<double> x, QVector<double> y, QVector<double> ticks, QVector<QString> labels){
+
+
+    plotSales.addGraph();
+
+    plotSales.xAxis->setRange(0,x.size()*1.1);
+
+    double minY = y[0], maxY = y[0];
+    for (int i=1; i<x.size(); i++)
+    {
+        if (y[i]<minY) minY = y[i];
+        if (y[i]>maxY) maxY = y[i];
+    }
+
+    plotSales.yAxis->setRange(minY*0.8, maxY*1.1);
+
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+    plotSales.xAxis->setTicker(textTicker);
+
+   /* QCPBars *bars1 = new QCPBars(plotSales.xAxis, plotSales.yAxis);
+    bars1->setData(x, y);
+    bars1->setWidth(0.5);
+    bars1->setPen(Qt::NoPen);
+    bars1->setBrush(QColor(69, 71, 232));
+    bars1->rescaleAxes();*/
+    plotSales.graph()->setData(x, y);
+
+    plotSales.xAxis->setLabel("Месяцы");
+    plotSales.yAxis->setLabel("Кол-во продаж");
+    plotSales.graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
+    plotSales.graph(0)->setPen(QPen(QColor(0, 17, 230), 2));
+
+    plotSales.replot();
+
+}
+
+QCustomPlot* SalesAnalysis::getChartSales(){
+    return &plotSales;
+}
+
 QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
+    x.clear();
+    y.clear();
+    ticks.clear();
+    labels.clear();
+    kolMonth=0;
+    plotOstatki.clearPlottables();
+
 
     int beg=2017;
     int end=2018;
@@ -79,6 +163,9 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
     double k=0.5;
     double b=0.1;
     double q=0.9;
+
+    QStringList list;
+    list<<"Январь"<<"Февраль"<<"Март"<<"Апрель"<<"Май"<<"Июнь"<<"Июль"<<"Август"<<"Сентябрь"<<"Октябрь"<<"Ноябрь"<<"Декабрь";
 
 
     QSqlQuery query;
@@ -154,6 +241,10 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
               if(lastMonth>12){
                   lastMonth=1;
               }
+              ticks<<++kolMonth;
+              labels<<list[lastMonth-1];
+              x.append(kolMonth);
+
 
               switch (lastMonth) {
               case 1:{
@@ -211,6 +302,13 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
           modelOstatki->setHorizontalHeaderLabels(horizontalHeader);
           modelOstatki->setVerticalHeaderLabels(verticalHeader);
 
+
+          //QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+          //textTicker->addTicks(ticks, labels);
+          //plot.xAxis->setTicker(textTicker);
+
+
+
           query.exec("select kol_on_sclad from products where name like '"+tovar+"';");
           while (query.next()) {
              kol_on_sclad=query.value(0).toInt();
@@ -225,6 +323,7 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
         for(int t=1;t<=inMonth;t++){
 
             pr=(Lt2+Tt*t)*St[i-(13-t)];
+            y.append(pr);
 
             //if(t==1){
             //ostatok=kol_on_sclad-pr;
@@ -239,217 +338,49 @@ QStandardItemModel* SalesAnalysis::getModelOstatki(QString tovar,int inMonth){
            // qDebug()<<QString::number(pr,'d',2);
         }
    // qDebug()<<1-(avg/i)
+        setChartOstatki(x,y,ticks,labels);
+
         return modelOstatki;
 }
 
-QString SalesAnalysis::getZnach(){
-    const int n=60;
-    //Индексная переменная:
-    int i;
-    //Массивы статистических значений:
-    //объем продаж в рублях за каждый месяц
-    double y[n]={  17986229,
-                   23571965,
-                   25537589,
-                   24630951,
-                   24429696,
-                   26116377,
-                   27931501,
-                   25914893,
-                   24904130,
-                   22360354,
-                   23825299,
-                   22241744,
-                   21149853,
-                   23770186,
-                   29608386,
-                   28588548,
-                   29712036,
-                   31191793,
-                   28311730,
-                   27438262,
-                   26166319,
-                   25916207,
-                   23168086,
-                   27707909,
-                   25379305,
-                   27823570,
-                   28518039,
-                   33971886,
-                   31577081,
-                   29328611,
-                   34312920,
-                   31364478,
-                   29046432,
-                   27244171,
-                   24353446,
-                   25447525,
-                   24255101,
-                   22391876,
-                   27902911,
-                   24102028,
-                   24939643,
-                   25401741,
-                   22817314,
-                   23554471,
-                   21219769,
-                   21144903,
-                   19185427,
-                   20507490,
-                   16116508,
-                   20363081,
-                   24924310,
-                   23881278,
-                   24039243,
-                   29292943,
-                   25244289,
-                   26986987,
-                   26856798,
-                   27051059,
-                   23474916,
-                   32610182
+void SalesAnalysis::setChartOstatki(QVector<double> x, QVector<double> y, QVector<double> ticks, QVector<QString> labels){
 
-};
-    //номер месяца
-    double x[n]={1,
-                 2,
-                 3,
-                 4,
-                 5,
-                 6,
-                 7,
-                 8,
-                 9,
-                 10,
-                 11,
-                 12,
-                 13,
-                 14,
-                 15,
-                 16,
-                 17,
-                 18,
-                 19,
-                 20,
-                 21,
-                 22,
-                 23,
-                 24,
-                 25,
-                 26,
-                 27,
-                 28,
-                 29,
-                 30,
-                 31,
-                 32,
-                 33,
-                 34,
-                 35,
-                 36,
-                 37,
-                 38,
-                 39,
-                 40,
-                 41,
-                 42,
-                 43,
-                 44,
-                 45,
-                 46,
-                 47,
-                 48,
-                 49,
-                 50,
-                 51,
-                 52,
-                 53,
-                 54,
-                 55,
-                 56,
-                 57,
-                 58,
-                 59,
-                 60
 
-};
-    //Параметры модели:
-   long double a,b;
-    //Средние значения:
-    double Sx=0,Sy=0,Sxy=0,Sxx=0;
+    plotOstatki.addGraph();
 
-    //Вычисление параметров модели:
-    for(i=0; i < n; i++){
-     Sx+=x[i];
-     Sy+=y[i];
-     Sxy+=x[i]*y[i];
-     Sxx+=x[i]*x[i];
-    }
-    Sx/=n;
-    Sy/=n;
-    Sxy/=n;
-    Sxx/=n;
-    a=(Sx*Sy-Sxy)/(Sx*Sx-Sxx);
-    b=(Sxy-a*Sxx)/Sx;
-   // qDebug()<<a;
-    //qDebug()<<b;
-    QString st=QString::number(a,'d',5)+","+QString::number(b,'f',5)+"\n";
-    QString ss="Отклонение знач.";
-    st+="Месяц         Продажи руб.         Значения тренда         "+ss+"        Среднее отклонение \n";
-    //Значения тренда
-    double ztr[n];
-    for(int i=0;i<n;i++){
-        ztr[i]=a*(i+1)+b;
+    plotOstatki.xAxis->setRange(0,x.size()*1.1);
+
+    double minY = y[0], maxY = y[0];
+    for (int i=1; i<x.size(); i++)
+    {
+        if (y[i]<minY) minY = y[i];
+        if (y[i]>maxY) maxY = y[i];
     }
 
-    //Отклонение фактических значений от значений тренда
-    double zt[n];
-    for(int i=0;i<n;i++){
-        zt[i]=y[i]/(a*(i+1)+b);
-    }
+    plotOstatki.yAxis->setRange(minY*0.8, maxY*1.1);
 
-   //Среднее отклонение для каждого месяца
-     double g[12];
-     int k=0;
-     while(k<12){
-         int t=k;
-         int kol=0;
-        while(t<n){
-            g[k]+=zt[t];
-            kol++;
-            t+=12;
-        }
-        g[k]/=kol;
-         k++;
-     }
-     for(int i=0;i<12;i++){
-       //   qDebug()<<g[i];
-     }
-     //Общий индекс сезонности
-     double sr=0;
-     for(int i=0;i<12;i++){
-          sr+=g[i];
-     }
-     sr=sr/12;
-  //   qDebug()<<"Общий индекс сезонности:"<<sr;
-    // Коэффициенты сезонности очищенные от роста
-     double ghy[12];
-     for(int i=0;i<12;i++){
-          ghy[i]=g[i]/sr;
-     //    qDebug()<<ghy[i];
-     }
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+    plotOstatki.xAxis->setTicker(textTicker);
 
-     for(int i=0;i<n;i++){
-         st+=QString::number(i)+"              "+QString::number(y[i],'d',5)+"           "+QString::number(ztr[i],'d',5)+"                "+QString::number(zt[i],'d',5)+"\n";
-     }
+   /* QCPBars *bars1 = new QCPBars(plotSales.xAxis, plotSales.yAxis);
+    bars1->setData(x, y);
+    bars1->setWidth(0.5);
+    bars1->setPen(Qt::NoPen);
+    bars1->setBrush(QColor(69, 71, 232));
+    bars1->rescaleAxes();*/
+    plotOstatki.graph()->setData(x, y);
 
+    plotOstatki.xAxis->setLabel("Месяцы");
+    plotOstatki.yAxis->setLabel("Кол-во продаж");
+    plotOstatki.graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
+    plotOstatki.graph(0)->setPen(QPen(QColor(0, 17, 230), 2));
 
+    plotOstatki.replot();
 
+}
 
-    return st;
-
-    //Результат:
-    //cout << "a = " << a << endl;
-    //cout << "b = " << b << endl;
+QCustomPlot* SalesAnalysis::getChartOstatki(){
+    return &plotOstatki;
 }
 

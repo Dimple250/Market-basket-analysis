@@ -5,22 +5,72 @@ Chart::Chart()
 
 }
 
-void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel){
+void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,int min,int max){
 
     customplot.clearPlottables();
 
     QSqlQuery query;
        // query.exec("select month(date),count(tid) from date where year(date)=2017 group by month(date);");
         query.exec(exec);
+        if(yLabel=="Количество чеков."){
+
+            QVector<double> ticks;
+            QVector<QString> labels;
+            int sum=min;
+
+            double N=query.size();
+            QVector<double> x(N), y(N);
+            int i=0;
+            while (query.next()) {
+                ticks << query.value(0).toInt();
+                labels <<QString::number(sum);
+                sum+=5;
+                   x[i] =query.value(0).toInt();
+                   y[i] =query.value(1).toInt();
+                   i++;
+               }
+                customplot.xAxis->setRange(min,max);
+
+
+            QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+            textTicker->addTicks(ticks, labels);
+            customplot.xAxis->setTicker(textTicker);
+
+            double minY = y[0], maxY = y[0];
+                for (int i=1; i<N; i++)
+                {
+                    if (y[i]<minY) minY = y[i];
+                    if (y[i]>maxY) maxY = y[i];
+                }
+
+                customplot.yAxis->setRange(0, maxY*1.1);
+
+                    QCPBars *bars1 = new QCPBars(customplot.xAxis, customplot.yAxis);
+                    bars1->setData(x, y);
+                    bars1->setWidth(0.5);
+                    bars1->setPen(Qt::NoPen);
+                    bars1->setBrush(QColor(69, 71, 232));
+                    bars1->rescaleAxes();
+
+                    customplot.xAxis->setLabel("Стоимость чеков");
+                    customplot.yAxis->setLabel(yLabel);
+                    customplot.xAxis->setTickLabelRotation(90);
+                   // customplot.
+                   // customplot.rescaleAxes();
+                   // customplot.xAxis->set
+                    //customplot.xAxis->setRangeUpper(max);
+                    //customplot.xAxis->setRangeLower(min);
+
+        }else{
 
     double a = 1; //Начало интервала, где рисуем график по оси Ox
-       double b =  13; //Конец интервала, где рисуем график по оси Ox
-       double h = 1; //Шаг, с которым будем пробегать по оси Ox
+    double b =  13; //Конец интервала, где рисуем график по оси Ox
+    double h = 1; //Шаг, с которым будем пробегать по оси Ox
 
-       double N=(b-a)/h + 2;
-       QVector<double> x(N), y(N);
-       int i=0;
-       while (query.next()) {
+    double N=(b-a)/h + 2;
+    QVector<double> x(N), y(N);
+    int i=0;
+    while (query.next()) {
            x[i] = query.value(0).toDouble();
            y[i] =query.value(1).toDouble();
            i++;
@@ -72,6 +122,7 @@ void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel){
     customplot.yAxis->setLabel(yLabel);
     customplot.xAxis->setRangeUpper(13);
     customplot.xAxis->setRangeLower(0);
+        }
 
    // customplot->yAxis->setRangeUpper(maxY+200);
     //customplot->yAxis->setRangeUpper(maxY);

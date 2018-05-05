@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QtSql>
 #include <QStandardItemModel>
+#include <QScrollArea>
 
 #include "database.h"
 #include "style.h"
@@ -41,11 +42,14 @@ private:
     QTabWidget* tabRules;
     QTableView* salesTableView;
     QTableView* ostatkiTableView;
+    QTableView* rulesTableView;
+
 
     Database* database;
     Style* style;
     SalesAnalysis salesAnalysis;
     Chart chart;
+    AssociationRules* rules;
 
 
     QMap<QString,double> condits;
@@ -61,6 +65,9 @@ private:
     QComboBox inMonth;
     QComboBox variantDiagram;
 
+    QDateEdit diagramToDate;
+    QDateEdit diagramFromDate;
+
     QDateEdit toDate;
     QDateEdit fromDate;
     QTimeEdit toTime;
@@ -70,7 +77,7 @@ private:
     QLineEdit maxsupline;
     QLineEdit minconfline;
     QLineEdit maxconfline;
-    QLineEdit categoryline;
+    QComboBox categoryline;
 
 
     QString isOpenItem;
@@ -82,6 +89,7 @@ private:
     QWidget* Tranzactions;
     QWidget* Diagram;
     QWidget* Analis;
+    QScrollArea *scrollAreaAnalis;
 public slots:
     void openItem(QListWidgetItem*);
    // void closeTab(int);
