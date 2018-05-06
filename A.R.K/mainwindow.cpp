@@ -22,7 +22,10 @@ MainWindow::MainWindow(QWidget *parent) :
     style=new Style;
     treeviewleft=new QListWidget;
     csvModel = new QStandardItemModel;
+
     customplot=new QCustomPlot;
+    customplot1=new QCustomPlot;
+    customplot2=new QCustomPlot;
 
 
     createWidgetProducts();
@@ -68,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //this->setStyleSheet(style->getWindowStyleSheet());
   // treeview->setStyleSheet(style->getTreeviewStyleSheet());
-    tabRules->setStyleSheet(style->getTabWidgetStyleSheet());
+    //Rules->setStyleSheet(style->getTabWidgetStyleSheet());
   //  addData->setStyleSheet(style->getAddDataButtonStyleSheet());
 
 
@@ -82,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QListWidgetItem* item;
 
     QStringList list;
-    list<<"Главная"<<"Товары"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"Загрузить файл";
+    list<<"Товары"<<"Транзакции"<<"Анализ корзины"<<"Поиск шаболных покупок"<<"Аналитика"<<"О программе";//<<"Загрузить файл";
 
     treeviewleft->setIconSize(QSize(70,70));
     foreach(QString st,list){
@@ -112,14 +115,15 @@ MainWindow::MainWindow(QWidget *parent) :
     mainGbox->addWidget(Products,0,1);
     mainGbox->addWidget(Tranzactions,0,1);
     mainGbox->addWidget(scrollAreaAnalis,0,1);
-    mainGbox->addWidget(tabRules,0,1);
+    mainGbox->addWidget(Rules,0,1);
     mainGbox->addWidget(Diagram,0,1);
-    prevopen=1;
+    prevopen=3;
 
+    welcome->setHidden(true);
     Products->setHidden(true);
-    Tranzactions->setHidden(true);
+    //Tranzactions->setHidden(true);
     scrollAreaAnalis->setHidden(true);
-    tabRules->setHidden(true);
+    Rules->setHidden(true);
     Diagram->setHidden(true);
 
     ui->centralwidget->setLayout(mainGbox);
@@ -620,8 +624,7 @@ void MainWindow::delTovar(){
 }
 
 void MainWindow::createTabWidgetRules(){
-    tabRules=new QTabWidget;
-    QWidget* settingRules=new QWidget;
+    Rules=new QWidget;
     rules=new AssociationRules;
 
 
@@ -638,8 +641,8 @@ void MainWindow::createTabWidgetRules(){
 
     // устанавливаем цвет фона
     Pal.setColor(QPalette::Background,"#4C5866");
-    settingRules->setAutoFillBackground(true);
-    settingRules->setPalette(Pal);
+    Rules->setAutoFillBackground(true);
+    Rules->setPalette(Pal);
 
     QWidget* setting=new QWidget;
 
@@ -690,12 +693,6 @@ void MainWindow::createTabWidgetRules(){
     gridLayout->addWidget(&categoryline,2,1,2,2);
     gridLayout->addWidget(button_setttules,0,4);
 
-
-
-    //QVBoxLayout* layout=new QVBoxLayout;
-   // layout->addLayout(gridLayout);
-    //layout->addWidget(rulesTableView);
-
     setting->setLayout(gridLayout);
 
     QHBoxLayout* hbox=new QHBoxLayout;
@@ -706,9 +703,7 @@ void MainWindow::createTabWidgetRules(){
     layout->addLayout(hbox);
     layout->addWidget(rulesTableView);
 
-    settingRules->setLayout(layout);
-
-    tabRules->addTab(settingRules,"Настройка");
+    Rules->setLayout(layout);
 }
 
 void MainWindow::createRules(){
@@ -753,9 +748,9 @@ void MainWindow::createRules(){
              fileOut.close(); // Закрываем файл
          }
      numchek++;*/
-    tabRules->removeTab(1);
-    tabRules->removeTab(1);
-    tabRules->removeTab(1);
+    //tabRules->removeTab(1);
+   // tabRules->removeTab(1);
+    //tabRules->removeTab(1);
 
     rules->setMinSup(minsupline.text().toInt());
     rules->setMaxSup(maxsupline.text().toInt());
@@ -763,15 +758,11 @@ void MainWindow::createRules(){
     rules->setMaxConf(maxconfline.text().toInt());
     rules->setCategory(categoryline.currentText());
     rules->CreateRules();
-     //rules->setTable();
 
 
   rulesTableView->setModel(rules->getModelRyles());
   rulesTableView->resizeRowsToContents();
   rulesTableView->resizeColumnsToContents();
-
-  // tabRules->addTab(rules->getTextRyles(),"Test Rules Text");
-    //tabRules->addTab(rules->getTextRyles(),"Test Rules Tree");
 
 
 }
@@ -779,28 +770,31 @@ void MainWindow::createRules(){
 void MainWindow::changeDiagram(){
     QString fdate=diagramFromDate.date().toString("yyyy-MM-dd");
     QString tdate=diagramToDate.date().toString("yyyy-MM-dd");
+    int max=diagramToDate.date().month()+2;
+    int min=diagramFromDate.date().month();
+   // qDebug()<<max;
 
-    switch(variantDiagram.currentIndex()){
-    case 0:{
-        chart.ChangeDiagram(*customplot,"select month(date),count(tid) from date where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Кол-вл чекла",1,13);
-        break;
-    }
-    case 1:{
-        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Средняя цена чека",1,13);
-        break;
-    }
-    case 2:{
-        chart.ChangeDiagram(*customplot,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Объем продаж в у.е.",1,13);
-        break;
-    }
-    case 3:{
-         chart.ChangeDiagram(*customplot,"select table1.sum,count(table1.tid) from (select tid,sum(price*kol) as sum from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by tid having sum(price*kol)>100 and sum(price*kol)<500) as table1 group by table1.sum;","Количество чеков.",100,500);
-        break;
-    }
-    default:{
-        break;
-    }
-    }
+    //switch(variantDiagram.currentIndex()){
+    //case 0:{
+        chart.ChangeDiagram(*customplot,"select month(date),count(tid) from date where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Кол-вл чекла",min,max);
+     //   break;
+   // }
+   // case 1:{
+        chart.ChangeDiagram(*customplot1,"select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Средняя цена чека",min,max);
+     //   break;
+   // }
+   // case 2:{
+        chart.ChangeDiagram(*customplot2,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Объем продаж в грн.",min,max);
+     //   break;
+   // }
+   // case 3:{
+     //   chart.ChangeDiagram(*customplot,"select table1.sum,count(table1.tid) from (select tid,sum(price*kol) as sum from transactions as t1 inner join products using(id) inner join date using(tid) where year(date)=2017 group by tid having sum(price*kol)>100 and sum(price*kol)<500) as table1 group by table1.sum;","Количество чеков.",100,500);
+      //  break;
+   // }
+   // default:{
+    //    break;
+   // }
+   // }
 
 }
 
@@ -827,6 +821,27 @@ void MainWindow::createWidgetDiagram(){
     variantDiagram.setMaximumWidth(100);
 
     customplot->addGraph();
+    customplot1->addGraph();
+    customplot2->addGraph();
+
+
+    QCPTextElement *titleSales = new QCPTextElement(customplot);
+    titleSales->setText("Количество проданых чеков за месяц");
+    titleSales->setFont(QFont("sans", 12));
+    customplot->plotLayout()->insertRow(0);
+    customplot->plotLayout()->addElement(0, 0, titleSales);
+
+    QCPTextElement *titleSales1 = new QCPTextElement(customplot1);
+    titleSales1->setText("Средняя цена чека за месяц");
+    titleSales1->setFont(QFont("sans", 12));
+    customplot1->plotLayout()->insertRow(0);
+    customplot1->plotLayout()->addElement(0, 0, titleSales1);
+
+    QCPTextElement *titleSales2 = new QCPTextElement(customplot2);
+    titleSales2->setText("Объем продаж в грн. за месяц");
+    titleSales2->setFont(QFont("sans", 12));
+    customplot2->plotLayout()->insertRow(0);
+    customplot2->plotLayout()->addElement(0, 0, titleSales2);
 
         //select month(date),count(tid) from date where year(date)=2017 group by month(date);
 
@@ -870,8 +885,8 @@ void MainWindow::createWidgetDiagram(){
 
 
     QHBoxLayout* hbox=new QHBoxLayout;
-    hbox->addWidget(namegraph);
-    hbox->addWidget(&variantDiagram);
+  //  hbox->addWidget(namegraph);
+  //  hbox->addWidget(&variantDiagram);
     hbox->addWidget(lb3);
     hbox->addWidget(&diagramFromDate);
     hbox->addWidget(lb5);
@@ -890,6 +905,8 @@ void MainWindow::createWidgetDiagram(){
     QVBoxLayout* layout=new QVBoxLayout;
     layout->addWidget(choiseGraph);
     layout->addWidget(customplot);
+    layout->addWidget(customplot1);
+    layout->addWidget(customplot2);
 
     Diagram->setLayout(layout);
 
@@ -930,7 +947,7 @@ void MainWindow::openItem(QListWidgetItem * item){
     if(item->text()=="Поиск шаболных покупок"){//"Поиск шаболных покупок"
         isOpenItem="Поиск шаболных покупок";
         mainGbox->itemAt(prevopen)->widget()->setHidden(true);
-        tabRules->setHidden(false);
+        Rules->setHidden(false);
         prevopen=5;
     }else
     if(item->text()=="Аналитика"){//"Диаграммы"

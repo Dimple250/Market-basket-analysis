@@ -39,7 +39,6 @@ private:
     QTableView *tableview;
     QTableView *tableviewTrans;
     QListWidget* treeviewleft;
-    QTabWidget* tabRules;
     QTableView* salesTableView;
     QTableView* ostatkiTableView;
     QTableView* rulesTableView;
@@ -58,6 +57,8 @@ private:
     QLabel*  welcome;
 
     QCustomPlot* customplot;
+    QCustomPlot* customplot1;
+    QCustomPlot* customplot2;
 
     QComboBox listCategory;
     QLineEdit namepProducts;
@@ -88,6 +89,7 @@ private:
 
     QWidget* Products;
     QWidget* Tranzactions;
+    QWidget* Rules;
     QWidget* Diagram;
     QWidget* Analis;
     QScrollArea *scrollAreaAnalis;
