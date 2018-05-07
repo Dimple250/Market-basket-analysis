@@ -708,8 +708,56 @@ void MainWindow::analisPdf(){
 
 }
 
-void MainWindow::chartsPdf(){
+void MainWindow::rulesPdf(){
+    QPixmap pixmap1(rulesTableView->size());
+    rulesTableView->render(&pixmap1);
+    pixmap1.save("gr1.png");
 
+
+       // QString Time=Ti.toString();
+       // QString Date=Dt.toString();
+       // QString k=ui->comboBoxKRyad->currentText();
+       // QString tr=ui->comboBoxKTr->currentText();
+       // QString metod=ui->comboBoxMetods->currentText();
+        QString fileName = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
+           if (QFileInfo(fileName).suffix().isEmpty()) { fileName.append(".pdf"); }
+
+           QPrinter printer(QPrinter::PrinterResolution);
+           printer.setOutputFormat(QPrinter::PdfFormat);
+           printer.setPaperSize(QPrinter::A4);
+           printer.setOutputFileName(fileName);
+
+           QTextDocument doc;
+           doc.setHtml("<h3>Шаблонные покупки для товаров категории "+categoryline.currentText()+"</h3>"
+                       "<p>Минимальная поддержка:"+minsupline.text()+"%</p>\n"
+                       "<p>Максимальная поддержка:"+maxsupline.text()+"%</p>\n"
+                       "<p>Минимальная достоверность:"+minconfline.text()+"%</p>\n"
+                       "<p>Максимальная достоверность:"+maxconfline.text()+"%</p>\n"
+                       "<p align='center'><img src='gr1.png'  width='500'></p>\n");
+
+           /*QString text("<table><thead>");
+                       text.append("<tr>");
+                       for (int i = 0; i < rulesTableView->model()->columnCount(); i++) {
+                           text.append("<th>").append(rulesTableView->->model()->headerData(i, Qt::DisplayRole).toString()).append("</th>");
+                       }
+                       text.append("</tr></thead>");
+                       text.append("<tbody>");
+                       for (int i = 0; i < rulesTableView->model()->rowCount(); i++) {
+                           text.append("<tr>");
+                           for (int j = 0; j < rulesTableView->model()->columnCount(); j++) {
+                               QTableWidgetItem *item = rulesTableView->model()-> item(i, j);
+                               if (!item || item->text().isEmpty()) {
+                                   rulesTableView->setItem(i, j, new QTableWidgetItem("0"));
+                               }
+                               text.append("<td>").append(rulesTableView->item(i, j)->text()).append("</td>");
+                           }
+                           text.append("</tr>");
+                       }
+                       text.append("</tbody></table>");
+                       doc.setHtml(text);*/
+
+           doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+           doc.print(&printer);
 }
 
 void MainWindow::createTabWidgetRules(){
@@ -761,6 +809,9 @@ void MainWindow::createTabWidgetRules(){
     QPushButton* button_setttules=new QPushButton("Поиск");
     connect(button_setttules,SIGNAL(clicked()),this,SLOT(createRules()));
 
+    QPushButton* buttonRulesPdf=new QPushButton("Создать отчет");
+    connect(buttonRulesPdf,SIGNAL(clicked()),this,SLOT(rulesPdf()));
+
         QSqlQuery* query2=new QSqlQuery();
         query2->exec("select name from category;");
 
@@ -782,6 +833,7 @@ void MainWindow::createTabWidgetRules(){
         gridLayout->addWidget(&maxconfline,1,3);
     gridLayout->addWidget(cat,2,0);
     gridLayout->addWidget(&categoryline,2,1,2,2);
+    gridLayout->addWidget(buttonRulesPdf,1,4);
     gridLayout->addWidget(button_setttules,0,4);
 
     setting->setLayout(gridLayout);
@@ -971,10 +1023,11 @@ void MainWindow::createWidgetDiagram(){
     QLabel* namegraph=new QLabel("График:");
     namegraph->setStyleSheet("font-size:17px;");
 
-    QPushButton* settgraph=new QPushButton("Настрйки");
-    settgraph->setStyleSheet("background-color:#4547E8;color:white;");
+    QPushButton* buttonAnalitikPdf=new QPushButton("Создлать отчет");
+    connect(buttonAnalitikPdf,SIGNAL(clicked(bool)),this,SLOT(chartsPdf()));
+    //settgraph->setStyleSheet("background-color:#4547E8;color:white;");
    // settgraph->setPalette(QColor(69, 71, 232));
-    settgraph->setMaximumWidth(100);
+    //settgraph->setMaximumWidth(100);
 
    // variantDiagram.setStyleSheet(style->getComboBoxStyleSheet());
 
@@ -1005,7 +1058,7 @@ void MainWindow::createWidgetDiagram(){
     hbox->addWidget(lb5);
     hbox->addWidget(&diagramToDate);
     hbox->addStretch(1);
-    hbox->addWidget(settgraph);
+    hbox->addWidget(buttonAnalitikPdf);
 
 
     Pal.setColor(QPalette::Background,"white");
@@ -1022,6 +1075,51 @@ void MainWindow::createWidgetDiagram(){
     layout->addWidget(customplot2);
 
     Diagram->setLayout(layout);
+
+}
+
+void MainWindow::chartsPdf(){
+    QPixmap pixmap1(customplot->size());
+    customplot->render(&pixmap1);
+    pixmap1.save("gr1.png");
+
+    QPixmap pixmap2(customplot1->size());
+    customplot1->render(&pixmap2);
+    pixmap2.save("gr2.png");
+
+    QPixmap pixmap3(customplot2->size());
+    customplot2->render(&pixmap3);
+    pixmap3.save("gr3.png");
+
+
+
+
+       // QString Time=Ti.toString();
+       // QString Date=Dt.toString();
+       // QString k=ui->comboBoxKRyad->currentText();
+       // QString tr=ui->comboBoxKTr->currentText();
+       // QString metod=ui->comboBoxMetods->currentText();
+        QString fileName = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
+           if (QFileInfo(fileName).suffix().isEmpty()) { fileName.append(".pdf"); }
+           QPrinter printer(QPrinter::PrinterResolution);
+           printer.setOutputFormat(QPrinter::PdfFormat);
+           printer.setPaperSize(QPrinter::A4);
+           printer.setOutputFileName(fileName);
+
+           QTextDocument doc;
+           doc.setHtml(//"<h2>Прогноз прадажи товара "+namepSalesProducts.text()+" на "+inMonth.currentText()+" месяцев</h2>"
+                       //"<h3>"
+                       //"<p align='center'>Таблица продаж продукта за текущий год </p>\n"
+                       "<p align='center'><img src='gr1.png' height='150' width='500'></p>\n"
+
+                       //"<p align='center'>График продаж продукта за текущий год </p>\n"
+                       "<p align='center'><img src='gr2.png' height='150' width='500'></p>\n"
+
+                       //"<p align='center'>Таблица прогноза продаж продукта на cледующие месяцев</p>\n"
+                       "<p align='center'><img src='gr3.png' height='150' width='500'></p>\n");
+
+           doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+           doc.print(&printer);
 
 }
 

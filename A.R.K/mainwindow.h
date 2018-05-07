@@ -109,6 +109,7 @@ public slots:
     void showPointToolTip(QMouseEvent *event);
     void analisPdf();
     void chartsPdf();
+    void rulesPdf();
 };
 
 #endif // MAINWINDOW_H
