@@ -59,6 +59,8 @@ private:
     QCustomPlot* customplot;
     QCustomPlot* customplot1;
     QCustomPlot* customplot2;
+    QCustomPlot* customplotSales;
+    QCustomPlot* customplotOstatki;
 
     QComboBox listCategory;
     QLineEdit namepProducts;
@@ -105,6 +107,8 @@ public slots:
     void addTovar();
     void delTovar();
     void showPointToolTip(QMouseEvent *event);
+    void analisPdf();
+    void chartsPdf();
 };
 
 #endif // MAINWINDOW_H

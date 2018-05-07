@@ -134,10 +134,10 @@ void MainWindow::changeProductsView(){
     QString category="";
     QString querystr="";
     if(listCategory.currentIndex()==0){
-        querystr="select category.name,products.name,price from products inner join category using(idcat);";
+        querystr="select category.name,products.name,price,kol_on_sclad from products inner join category using(idcat);";
     }else{
         category=listCategory.currentText();
-        querystr="select category.name,products.name,price from products inner join category using(idcat) where category.name like '"+category+"';";
+        querystr="select category.name,products.name,price,kol_on_sclad from products inner join category using(idcat) where category.name like '"+category+"';";
     }
     tableview->setModel(database->getModelProducts(querystr));
 }
@@ -191,10 +191,10 @@ void MainWindow::createWidgetProducts(){
 
     QLabel* nameFilter=new QLabel("Фильтр");
     nameFilter->setAlignment(Qt::AlignCenter);
-    nameFilter->setStyleSheet("font-size:15px;color:white;");
+    nameFilter->setStyleSheet("font-size:17px;color:white;");
 
     QLabel* lb2=new QLabel("Категория:");
-    lb2->setStyleSheet("font-size:15px;color:white;");
+    lb2->setStyleSheet("font-size:17px;color:white;");
 
     QVBoxLayout*  layoutsettprod=new QVBoxLayout;
     layoutsettprod->addWidget(nameFilter);
@@ -222,6 +222,7 @@ void MainWindow::createWidgetProducts(){
 
     tableview->setColumnWidth(1,250);
     tableview->setColumnWidth(2,250);
+    tableview->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
                     // tableview->s;
                     // tableview->set
 
@@ -292,6 +293,7 @@ void MainWindow::createWidgetTransactions(){
     tableviewTrans->setStyleSheet(style->getTableViewStyleSheet()+"QTableView{margin-left:30%;}");
         //tableview->setColumnHidden(0,true);
     tableviewTrans->setColumnWidth(0,250);
+    //tableviewTrans->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     for(int i=0;i<tableviewTrans->model()->rowCount();i++){
        QString number=tableviewTrans->model()->data(tableviewTrans->model()->index(i,0)).toString();
@@ -344,10 +346,10 @@ void MainWindow::createWidgetTransactions(){
 
         QLabel* nameFilter=new QLabel("Фильтр");
         nameFilter->setAlignment(Qt::AlignCenter);
-        nameFilter->setStyleSheet("font-size:15px;color:white;");
+        nameFilter->setStyleSheet("font-size:17px;color:white;");
 
         QLabel* lb2=new QLabel("Продукты:");
-        lb2->setStyleSheet("font-size:15px;color:white;");
+        lb2->setStyleSheet("font-size:17px;color:white;");
 
        // toDate=new QDateEdit;
         toDate.setDisplayFormat("dd-MMM-yyyy");
@@ -358,7 +360,7 @@ void MainWindow::createWidgetTransactions(){
         fromDate.setCalendarPopup(true);
 
         QLabel* lb3=new QLabel("За период от:");
-        lb3->setStyleSheet("font-size:15px;color:white;");
+        lb3->setStyleSheet("font-size:17px;color:white;");
 
         QLabel* lb5=new QLabel("-");
         lb5->setStyleSheet("font-size:25px;color:white;");
@@ -367,7 +369,7 @@ void MainWindow::createWidgetTransactions(){
         //fromTime=new QTimeEdit;
 
         QLabel* lb6=new QLabel("Временой промежуток:");
-        lb6->setStyleSheet("font-size:15px;color:white;");
+        lb6->setStyleSheet("font-size:17px;color:white;");
 
         QLabel* lb8=new QLabel(":");
         lb8->setStyleSheet("font-size:20px;color:white;");
@@ -414,9 +416,25 @@ void MainWindow::changeAnalisProdycts(){
 
     salesTableView->setModel(salesAnalysis.getModelSales(boxTovar));
 
+    for(int i=0;i<salesTableView->verticalHeader()->count();i++){
+        for(int j=0;j<salesTableView->horizontalHeader()->count();j++){
+            const QModelIndex index = salesTableView->model()->index(i,j);
+               salesTableView->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+        }
+    }
+
+
    //salesTableView->resize(salesTableView->width(),boxTovar->count()*100);
 
     ostatkiTableView->setModel(salesAnalysis.getModelOstatki(boxTovar,inMonth.currentText().toInt()));
+
+    for(int i=0;i<ostatkiTableView->verticalHeader()->count();i++){
+        for(int j=0;j<ostatkiTableView->horizontalHeader()->count();j++){
+            const QModelIndex index = ostatkiTableView->model()->index(i,j);
+               ostatkiTableView->model()->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+        }
+    }
+
 
     QString month="";
     int flagMonth=0;
@@ -465,21 +483,21 @@ void MainWindow::createWidgetAnalis(){
     //salesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //salesTableView->setAlternatingRowColors(true);
     //salesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    salesTableView->setMaximumHeight(80);
+    salesTableView->setMaximumHeight(60);
 
     ostatkiTableView=new QTableView;
 
    // ostatkiTableView->setModel(salesAnalysis.getModelOstatki(tovar,inMonth.currentText().toInt()));
-    ostatkiTableView->setStyleSheet("QTableView{border: 0px solid white;background-color:#4C5866;font-size:15px;}"
+    ostatkiTableView->setStyleSheet("QTableView{border: 0px solid white;background-color:#4C5866;font-size:17px;}"
                                     "QTableView::item{border:0px solid white;background-color:white;}"
-                                    "QTableView QHeaderView{font-size:15px;background-color:#4C5866;}");
+                                    "QTableView QHeaderView{font-size:17px;background-color:#4C5866;}");
     ostatkiTableView->setFont(f);
     ostatkiTableView->resizeRowsToContents();
     ostatkiTableView->resizeColumnsToContents();
     ostatkiTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ostatkiTableView->setAlternatingRowColors(true);
     ostatkiTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    ostatkiTableView->setMaximumHeight(80);
+    ostatkiTableView->setMaximumHeight(60);
 
     QString month="";
         //int flagMonth=0;
@@ -578,29 +596,40 @@ void MainWindow::createWidgetAnalis(){
     Hbox->addWidget(prodazaOstatcov);
     Hbox->addWidget(kolProdaz);
       //  Hbox->addSpacing(400);
+    salesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ostatkiTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
 
+    QPushButton* buttonAnalisPdf=new QPushButton("Создать отчет");
+    connect(buttonAnalisPdf,SIGNAL(clicked(bool)),this,SLOT(analisPdf()));
 
 
      QHBoxLayout* tovaruForPrognoz=new QHBoxLayout;
-     tovaruForPrognoz->addWidget(lbTovaru);
-     tovaruForPrognoz->addWidget(boxTovar);
-     tovaruForPrognoz->addWidget(delProduct);
+     //tovaruForPrognoz->addWidget(lbTovaru);
+     //tovaruForPrognoz->addWidget(boxTovar);
+    // tovaruForPrognoz->addWidget(delProduct);
+     tovaruForPrognoz->addWidget(buttonAnalisPdf);
      tovaruForPrognoz->addStretch(1);
+
+     customplotSales=salesAnalysis.getChartSales();
+     customplotOstatki=salesAnalysis.getChartOstatki();
+
+     connect(customplotSales, SIGNAL(mouseMove(QMouseEvent*)), this,SLOT(showPointToolTip(QMouseEvent*)));
+     connect(customplotOstatki, SIGNAL(mouseMove(QMouseEvent*)), this,SLOT(showPointToolTip(QMouseEvent*)));
 
 
         QVBoxLayout* layout=new QVBoxLayout;
     layout->addLayout(HBox);
-    //layout->addLayout(tovaruForPrognoz);
     layout->addLayout(kolPrognoz);
+    layout->addLayout(tovaruForPrognoz);
     layout->addWidget(lb);
     layout->addWidget(salesTableView);
-    layout->addWidget(salesAnalysis.getChartSales());
+    layout->addWidget(customplotSales);
     layout->addWidget(lb2);
     layout->addWidget(ostatkiTableView);
-    layout->addWidget(salesAnalysis.getChartOstatki());
+    layout->addWidget(customplotOstatki);
     //layout->addWidget(lb3);
-    // layout->addStretch(10);
+     //layout->addStretch(1);
 
 
     Analis->setLayout(layout);
@@ -623,6 +652,66 @@ void MainWindow::delTovar(){
     boxTovar->removeItem(boxTovar->currentIndex());
 }
 
+void MainWindow::analisPdf(){
+
+    QPixmap pixmap1(salesTableView->size());
+    salesTableView->render(&pixmap1);
+    pixmap1.save("gr1.png");
+
+    QPixmap pixmap2(customplotSales->size());
+    customplotSales->render(&pixmap2);
+    pixmap2.save("gr2.png");
+
+    QPixmap pixmap3(ostatkiTableView->size());
+    ostatkiTableView->render(&pixmap3);
+    pixmap3.save("gr3.png");
+
+    QPixmap pixmap4(customplotOstatki->size());
+    customplotOstatki->render(&pixmap4);
+    pixmap4.save("gr4.png");
+
+
+
+       // QString Time=Ti.toString();
+       // QString Date=Dt.toString();
+       // QString k=ui->comboBoxKRyad->currentText();
+       // QString tr=ui->comboBoxKTr->currentText();
+       // QString metod=ui->comboBoxMetods->currentText();
+        QString fileName = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
+           if (QFileInfo(fileName).suffix().isEmpty()) { fileName.append(".pdf"); }
+           QPrinter printer(QPrinter::PrinterResolution);
+           printer.setOutputFormat(QPrinter::PdfFormat);
+           printer.setPaperSize(QPrinter::A4);
+           printer.setOutputFileName(fileName);
+
+           QTextDocument doc;
+           doc.setHtml("<h2>Прогноз прадажи товара "+namepSalesProducts.text()+" на "+inMonth.currentText()+" месяцев</h2>"
+                       //"<h3>"
+                       "<p align='center'>Таблица продаж продукта за текущий год </p>\n"
+                       "<p align='center'><img src='gr1.png' height='30' width='500'></p>\n"
+
+                       "<p align='center'>График продаж продукта за текущий год </p>\n"
+                       "<p align='center'><img src='gr2.png' height='150' width='500'></p>\n"
+                       //"<br>"
+                      // "<br>"
+                      // "<br>"
+                      // "<br>"
+                      // "<br>"
+                       "<p align='center'>Таблица прогноза продаж продукта на cледующие "+inMonth.currentText()+" месяцев</p>\n"
+                       "<p align='center'><img src='gr3.png' height='30' width='500'></p>\n"
+
+                       "<p align='center'>График прогноза продаж</p>\n"
+                       "<p align='center'><img src='gr4.png' height='150' width='500'></p>\n");
+
+           doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+           doc.print(&printer);
+
+}
+
+void MainWindow::chartsPdf(){
+
+}
+
 void MainWindow::createTabWidgetRules(){
     Rules=new QWidget;
     rules=new AssociationRules;
@@ -631,11 +720,13 @@ void MainWindow::createTabWidgetRules(){
     rulesTableView=new QTableView;
     rulesTableView->setStyleSheet(style->getTableViewStyleSheet());
     rulesTableView->setFont(f);
+    rulesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    //rulesTableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     //rulesTableView->resizeRowsToContents();
     //rulesTableView->resizeColumnsToContents();
-    rulesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    rulesTableView->setAlternatingRowColors(true);
-    rulesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    //rulesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+   // rulesTableView->setAlternatingRowColors(true);
+   // rulesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
     QPalette Pal(palette());
 
@@ -761,8 +852,8 @@ void MainWindow::createRules(){
 
 
   rulesTableView->setModel(rules->getModelRyles());
-  rulesTableView->resizeRowsToContents();
-  rulesTableView->resizeColumnsToContents();
+ // rulesTableView->resizeRowsToContents();
+  //rulesTableView->resizeColumnsToContents();
 
 
 }
@@ -802,13 +893,17 @@ void MainWindow::showPointToolTip(QMouseEvent *event)
 {
 
    // int x = customplot->xAxis->pixelToCoord(event->pos().x());
-    int y = customplot->yAxis->pixelToCoord(event->pos().y());
-    int y1 = customplot1->yAxis->pixelToCoord(event->pos().y());
-    int y2 = customplot2->yAxis->pixelToCoord(event->pos().y());
+    double y = customplot->yAxis->pixelToCoord(event->pos().y());
+    double y1 = customplot1->yAxis->pixelToCoord(event->pos().y());
+    double y2 = customplot2->yAxis->pixelToCoord(event->pos().y());
+    double y3 = customplotSales->yAxis->pixelToCoord(event->pos().y());
+    double y4 = customplotOstatki->yAxis->pixelToCoord(event->pos().y());
 
     customplot->setToolTip(QString("%1").arg(y));
     customplot1->setToolTip(QString("%1").arg(y1));
     customplot2->setToolTip(QString("%1").arg(y2));
+    customplotSales->setToolTip(QString("%1").arg(y3));
+    customplotOstatki->setToolTip(QString("%1").arg(y4));;
 
 }
 
@@ -874,7 +969,7 @@ void MainWindow::createWidgetDiagram(){
     QWidget* choiseGraph=new QWidget;
 
     QLabel* namegraph=new QLabel("График:");
-    namegraph->setStyleSheet("font-size:15px;");
+    namegraph->setStyleSheet("font-size:17px;");
 
     QPushButton* settgraph=new QPushButton("Настрйки");
     settgraph->setStyleSheet("background-color:#4547E8;color:white;");

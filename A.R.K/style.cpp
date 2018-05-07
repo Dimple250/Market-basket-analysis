@@ -84,7 +84,7 @@ QString Style::getTableViewStyleSheet(){
     return  "QTableView{"
             "border: 0px solid white;"
             "background-color:#4C5866;"
-            "font-size:15px;"
+            "font-size:17px;"
             //"margin-top:10px;"
             //"margin-left:10px;"
             //"margin-bottom:10px;"

@@ -51,7 +51,7 @@ void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,in
                    labels<<list[i-1];
                    i++;
                }
-                customplot.xAxis->setRange(min-1,max);
+                customplot.xAxis->setRange(min-1,max-1);
 
                 QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
                 textTicker->addTicks(ticks, labels);
