@@ -798,6 +798,20 @@ void MainWindow::changeDiagram(){
 
 }
 
+void MainWindow::showPointToolTip(QMouseEvent *event)
+{
+
+   // int x = customplot->xAxis->pixelToCoord(event->pos().x());
+    int y = customplot->yAxis->pixelToCoord(event->pos().y());
+    int y1 = customplot1->yAxis->pixelToCoord(event->pos().y());
+    int y2 = customplot2->yAxis->pixelToCoord(event->pos().y());
+
+    customplot->setToolTip(QString("%1").arg(y));
+    customplot1->setToolTip(QString("%1").arg(y1));
+    customplot2->setToolTip(QString("%1").arg(y2));
+
+}
+
 void MainWindow::createWidgetDiagram(){
     Diagram=new QWidget;
 
@@ -842,6 +856,10 @@ void MainWindow::createWidgetDiagram(){
     titleSales2->setFont(QFont("sans", 12));
     customplot2->plotLayout()->insertRow(0);
     customplot2->plotLayout()->addElement(0, 0, titleSales2);
+
+    connect(customplot, SIGNAL(mouseMove(QMouseEvent*)), this,SLOT(showPointToolTip(QMouseEvent*)));
+    connect(customplot1, SIGNAL(mouseMove(QMouseEvent*)), this,SLOT(showPointToolTip(QMouseEvent*)));
+    connect(customplot2, SIGNAL(mouseMove(QMouseEvent*)), this,SLOT(showPointToolTip(QMouseEvent*)));
 
         //select month(date),count(tid) from date where year(date)=2017 group by month(date);
 

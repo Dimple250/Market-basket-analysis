@@ -104,6 +104,7 @@ public slots:
     void createRules();
     void addTovar();
     void delTovar();
+    void showPointToolTip(QMouseEvent *event);
 };
 
 #endif // MAINWINDOW_H
