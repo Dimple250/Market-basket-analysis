@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     customplot2=new QCustomPlot;
 
 
+
     createWidgetProducts();
     createWidgetTransactions();
     createTabWidgetRules();
@@ -238,6 +239,7 @@ void MainWindow::createWidgetProducts(){
 }
 
 void MainWindow::changeTransactionsView(){
+        tableviewTrans->clearSpans();
     QString product="";
     QString tid="";
     QString querystr;
@@ -264,7 +266,7 @@ void MainWindow::changeTransactionsView(){
 
         querystr="select tid,products.name,kol,DATE_FORMAT(date,GET_FORMAT(DATE,'EUR')),time(date) from transactions inner join date using(tid) inner join products using(id) where "+tid+" and date(date) between '"+fdate+"' and '"+tdate+"' and time(date)>='"+ftime+"' and time(date)<='"+ttime+"' order by tid;";
    }
-    tableviewTrans->clearSpans();
+
     tableviewTrans->setModel(database->getModelTransactions(querystr));
 
     for(int i=0;i<tableviewTrans->model()->rowCount();i++){
@@ -387,6 +389,14 @@ void MainWindow::createWidgetTransactions(){
         layoutMonth->addWidget(&toTime);
         layoutMonth->addStretch(1);
 
+        QPushButton* buttonAddTrans=new QPushButton("Добавить транзакцию");
+        buttonAddTrans->setStyleSheet("font-size:17px;");
+        connect(buttonAddTrans,SIGNAL(clicked(bool)),this,SLOT(openFormAddTrans()));
+
+        QHBoxLayout* layoutAddTrans=new QHBoxLayout;
+        layoutAddTrans->addWidget(buttonAddTrans);
+        layoutAddTrans->addStretch(1);
+
 
     QVBoxLayout*  layoutsettrans=new QVBoxLayout;
     layoutsettrans->addWidget(nameFilter);
@@ -396,6 +406,7 @@ void MainWindow::createWidgetTransactions(){
     layoutsettrans->addLayout(layoutDate);
     layoutsettrans->addWidget(lb6);
     layoutsettrans->addLayout(layoutMonth);
+    layoutsettrans->addLayout(layoutAddTrans);
     layoutsettrans->addStretch(10);
     layoutsettrans->addWidget(button_setcategory);
 
@@ -408,6 +419,11 @@ void MainWindow::createWidgetTransactions(){
     Tranzactions->setLayout(layout);
     FilterTransactionsView->setMaximumWidth(Tranzactions->width()*0.45);
 
+}
+
+void MainWindow::openFormAddTrans(){
+    formAddTransaction=new AddTransaction;
+    formAddTransaction->show();
 }
 
 void MainWindow::changeAnalisProdycts(){
@@ -913,21 +929,21 @@ void MainWindow::createRules(){
 void MainWindow::changeDiagram(){
     QString fdate=diagramFromDate.date().toString("yyyy-MM-dd");
     QString tdate=diagramToDate.date().toString("yyyy-MM-dd");
-    int max=diagramToDate.date().month()+2;
-    int min=diagramFromDate.date().month();
+   // int max=diagramToDate.date().month()+2;
+   // int min=diagramFromDate.date().month();
    // qDebug()<<max;
 
     //switch(variantDiagram.currentIndex()){
     //case 0:{
-        chart.ChangeDiagram(*customplot,"select month(date),count(tid) from date where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Кол-вл чекла",min,max);
+        chart.ChangeDiagram(*customplot,"select month(date),count(tid) from date where date(date) between '"+fdate+"' and '"+tdate+"' group by year(date),month(date);","Кол-вл чекла",&diagramFromDate,&diagramToDate);
      //   break;
    // }
    // case 1:{
-        chart.ChangeDiagram(*customplot1,"select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Средняя цена чека",min,max);
+        chart.ChangeDiagram(*customplot1,"select month(date),sum(price*kol)/count(distinct tid) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by year(date),month(date);","Средняя цена чека",&diagramFromDate,&diagramToDate);
      //   break;
    // }
    // case 2:{
-        chart.ChangeDiagram(*customplot2,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by month(date);","Объем продаж в грн.",min,max);
+        chart.ChangeDiagram(*customplot2,"select month(date),sum(price*kol) from transactions as t1 inner join products using(id) inner join date using(tid) where date(date) between '"+fdate+"' and '"+tdate+"' group by year(date),month(date);","Объем продаж в грн.",&diagramFromDate,&diagramToDate);
      //   break;
    // }
    // case 3:{
@@ -987,7 +1003,7 @@ void MainWindow::createWidgetDiagram(){
 
 
     QCPTextElement *titleSales = new QCPTextElement(customplot);
-    titleSales->setText("Количество проданых чеков за месяц");
+    titleSales->setText("Количество транзакций за месяц");
     titleSales->setFont(QFont("sans", 12));
     customplot->plotLayout()->insertRow(0);
     customplot->plotLayout()->addElement(0, 0, titleSales);
@@ -1036,10 +1052,15 @@ void MainWindow::createWidgetDiagram(){
     connect(&diagramFromDate,SIGNAL(dateChanged(QDate)),SLOT(changeDiagram()));
     connect(&diagramToDate,SIGNAL(dateChanged(QDate)),SLOT(changeDiagram()));
 
+    QDate date;
+    date=QDate::currentDate();
+
+    diagramToDate.setDate(date);
     diagramToDate.setDisplayFormat("dd-MMM-yyyy");
     diagramToDate.setCalendarPopup(true);
 
     //fromDate=new QDateEdit;
+    diagramFromDate.setDate(date);
     diagramFromDate.setDisplayFormat("dd-MMM-yyyy");
     diagramFromDate.setCalendarPopup(true);
 

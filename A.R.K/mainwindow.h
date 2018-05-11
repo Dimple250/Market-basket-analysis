@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDialog>
 #include <QtWidgets>
 #include <QWidget>
 #include <QtSql>
@@ -14,6 +15,7 @@
 #include "QCustomPlot/qcustomplot.h"
 #include "salesanalysis.h"
 #include "chart.h"
+#include "addtransaction.h"
 
 namespace Ui {
 class MainWindow;
@@ -35,6 +37,7 @@ public:
     void createWidgetAnalis();
 private:
     Ui::MainWindow *ui;
+    AddTransaction* formAddTransaction;
 
     QTableView *tableview;
     QTableView *tableviewTrans;
@@ -97,7 +100,7 @@ private:
     QScrollArea *scrollAreaAnalis;
 public slots:
     void openItem(QListWidgetItem*);
-   // void closeTab(int);
+    void openFormAddTrans();
     void changeProductsView();
     void changeTransactionsView();
     void changeAnalisProdycts();

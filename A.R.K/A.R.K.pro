@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     associationrules.cpp \
     salesanalysis.cpp \
     QCustomPlot/qcustomplot.cpp \
-    chart.cpp
+    chart.cpp \
+    addtransaction.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -28,8 +29,10 @@ HEADERS  += mainwindow.h \
     associationrules.h \
     salesanalysis.h \
     QCustomPlot/qcustomplot.h \
-    chart.h
+    chart.h \
+    addtransaction.h
 
 FORMS    += \
-    mainwindow.ui
+    mainwindow.ui \
+    addtransaction.ui
 

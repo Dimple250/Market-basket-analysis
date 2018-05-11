@@ -5,7 +5,7 @@ Chart::Chart()
 
 }
 
-void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,int min,int max){
+void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,QDateEdit* fromDate,QDateEdit* toDate){
 
     customplot.clearPlottables();
     customplot.addGraph();
@@ -14,6 +14,7 @@ void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,in
     QSqlQuery query;
        // query.exec("select month(date),count(tid) from date where year(date)=2017 group by month(date);");
         query.exec(exec);
+
      //  if(yLabel=="Количество чеков."){
         if(query.size()==0){
             return;
@@ -22,7 +23,7 @@ void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,in
             QVector<double> ticks;
             QStringList list;
             QVector<QString> labels;
-            int sum=min;
+            //int sum=min;
 
             //ticks <<1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 <<10 <<11<<12;
             list <<"Январь"
@@ -40,18 +41,22 @@ void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,in
 
             double N=query.size();
             QVector<double> x, y;
-            int i=min;
+            int i=fromDate->date().month();
+            int kol=fromDate->date().month();
+            //for(int j=fromDate->date().year();j<=toDate->date().year();j++){
             while (query.next()) {
-               // ticks << query.value(0).toInt();
-              //  labels <<QString::number(sum);
-              //  sum+=5;
-                   x.append(i);
+                   x.append(kol);
                    y.append(query.value(1).toInt());
-                   ticks<<i;
+                   ticks<<kol;
                    labels<<list[i-1];
                    i++;
-               }
-                customplot.xAxis->setRange(min-1,max-1);
+                  kol++;
+                   if(i>12){
+                       i=1;
+                   }
+              // }
+            }
+                customplot.xAxis->setRange(fromDate->date().month()-1,kol+1);
 
                 QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
                 textTicker->addTicks(ticks, labels);
@@ -76,7 +81,7 @@ void Chart::ChangeDiagram(QCustomPlot& customplot,QString exec,QString yLabel,in
                     bars1->rescaleAxes();*/
 
 
-                    customplot.xAxis->setLabel("Месяцы\n2017");
+                    customplot.xAxis->setLabel("Месяцы");
                     customplot.yAxis->setLabel(yLabel);
                    // customplot.xAxis->setRangeUpper(max);
                    // customplot.xAxis->setRangeLower(min);

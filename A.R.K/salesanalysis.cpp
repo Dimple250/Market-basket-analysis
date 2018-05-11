@@ -43,6 +43,11 @@ QStandardItemModel* SalesAnalysis::getModelSales(QComboBox* boxTovar){
        QSqlQuery query;
        query.prepare("select month(date) from transactions inner join date using(tid) inner join products using(id) where products.name like '"+boxTovar->itemText(0)+"' and year(date)=year(now()) group by month(date);");
         query.exec();
+
+        if(query.size()==0){
+            return 0;
+        }
+
         int k=0;
         while (query.next()) {
             kol_month=query.value(0).toInt();
